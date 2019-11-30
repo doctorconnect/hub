@@ -1,0 +1,3 @@
+﻿CREATE LOGIN [hub]
+    WITH PASSWORD = N'g<Pov<btvqrJsorxpy`hY{bDmsFT7_&#$!~<oPs${myAtI|x', SID = 0xDF7205EEEF4BA049820AA5F1F4546FB2, DEFAULT_LANGUAGE = [us_english], CHECK_POLICY = OFF;
+
