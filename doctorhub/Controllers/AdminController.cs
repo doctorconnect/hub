@@ -613,7 +613,7 @@ namespace doctorhub.Controllers
         }
 
         /// <summary>
-        /// Manage LOB
+        /// Manage LOB test
         /// </summary>
         /// <returns></returns>
         public JsonResult GetLineofBusiness()
