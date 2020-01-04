@@ -1,0 +1,29 @@
+USE [KMT]
+GO
+CREATE PROCEDURE [dbo].[uspUpdateUserRequestStatus](
+@Id INT,
+@Status INT
+)
+AS
+BEGIN
+BEGIN TRANSACTION;
+SAVE TRANSACTION MySavePoint;
+BEGIN TRY 
+IF(@Status = 6)
+BEGIN
+UPDATE KMTUserRegistration SET Status=@Status WHERE Id=@Id AND IsActive=1
+END
+ELSE
+BEGIN
+UPDATE KMTUserRegistration SET Status=@Status, IsActive =0 WHERE Id=@Id AND IsActive=1
+END
+END TRY
+BEGIN CATCH
+IF @@TRANCOUNT > 0
+BEGIN
+ROLLBACK TRANSACTION MySavePoint;
+END
+END CATCH
+COMMIT TRANSACTION
+END
+GO
