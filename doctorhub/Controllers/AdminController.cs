@@ -612,7 +612,7 @@ namespace doctorhub.Controllers
             return RedirectToAction("ManageCapabilities");
         }
 
-        /// <summary>
+        /// <summary>//
         /// Manage LOB test
         /// </summary>
         /// <returns></returns>
