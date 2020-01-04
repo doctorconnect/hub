@@ -1,0 +1,21 @@
+USE [KMT]
+GO
+CREATE PROCEDURE [dbo].[uspGetLob]
+AS
+BEGIN
+SELECT 
+C.ID,
+C.CapId,
+BS.Name as BsName,
+B.name as CapName,
+C.Name,
+C.IDENTIFIER,
+C.ISACTIVE,
+R.username as CREATEDBY,
+C.CREATEDON,
+C.MODIFIEDBY,
+C.MODIFIEDON FROM [KMTLob] C JOIN [KMTCAPABILITIES] B ON B.id = C.Capid
+JOIN [KMTUserRegistration] R ON R.UserNTID= C.CreatedBy
+JOIN [KMTBusinesSegment] BS ON BS.Id=B.id
+END
+GO
