@@ -1,0 +1,38 @@
+
+CREATE PROC [dbo].[uspUpdateManagePolls]
+@PollID INT,
+@Title VARCHAR(MAX),
+@Options VARCHAR(MAX),
+@FromDate DATETIME,	
+@ToDate DATETIME,
+@IsActive BIT,
+@ModifiedBy VARCHAR(50),
+@ModifiedOn DATETIME    
+AS      
+BEGIN     
+  BEGIN TRANSACTION;      
+      SAVE TRANSACTION MySavePoint;        
+	    BEGIN TRY    
+	     UPDATE Poll SET 
+	     Title=@Title,Options=@Options,FromDate=@FromDate,ToDate=@ToDate,IsActive=@IsActive,ModifiedBy=@ModifiedBy,	ModifiedOn=@ModifiedOn 
+	     WHERE PollID=@PollID
+
+		 DEClARE @UserName VARCHAR(50) = NULL,
+		 @UserCode VARCHAR(50) = NULL
+
+		 SET @UserName = (SELECT UserName FROM KMTUserRegistration WHERE UserNTID = @ModifiedBy)
+		 SET @UserCode = (SELECT UserCode FROM KMTUserRegistration WHERE UserNTID = @ModifiedBy)
+
+		 INSERT INTO KMTNotification(RoleId,UserCode,IsAdminFlag,IsUserFlag,IsFacilitatorFlag,Identifier,AdminDescripation,UserDescripation,CreatedOn)
+   		 VALUES('1,10',@UserCode,0,0,0,'PollUpdation','<b>' + @UserName + '</b> has updated poll <b>'+ @Title + '</b>',NULL,@ModifiedOn)
+
+		END TRY
+      BEGIN CATCH      
+        IF @@TRANCOUNT > 0      
+        BEGIN      
+            ROLLBACK TRANSACTION MySavePoint;       
+        END      
+      END CATCH                                                 
+     COMMIT TRANSACTION
+END
+GO
