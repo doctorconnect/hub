@@ -1,0 +1,77 @@
+
+CREATE PROCEDURE [dbo].[uspUpdateImgStatus]
+(@Id INT,    
+ @Remarks varchar(250),
+ @Status char(1),
+ @ModifiedBy varchar(50),
+ @ModifiedOn DATETIME  
+ )
+AS    
+ BEGIN    
+    BEGIN TRANSACTION;          
+    SAVE TRANSACTION MySavePoint;            
+    BEGIN TRY   
+	  if(@Status = 'A')
+		 BEGIN                     
+			UPDATE KMTUserRegistration SET 
+			ImgStatus ='1',
+			Remarks = @Remarks,
+			ModifiedBy = @ModifiedBy,
+			ModifiedOn = @ModifiedOn  
+			WHERE Id = @Id   
+		END  
+	 else if(@Status = 'R')
+        BEGIN                     
+           UPDATE KMTUserRegistration SET
+		   ImgStatus = '2',
+		   Remarks = @Remarks,
+		   ModifiedBy = @ModifiedBy,
+		   ModifiedOn = @ModifiedOn
+		   WHERE Id = @Id   
+        END 
+		
+		  DEClARE @UserName VARCHAR(50) = NULL,
+		  @UserCode VARCHAR(50) = NULL,
+		  @StatusVal VARCHAR(20),
+		  @AdminUser VARCHAR(50)
+
+		  SET @UserName = (SELECT UserName FROM KMTUserRegistration WHERE Id = @Id)
+		  SET @UserCode = (SELECT UserCode FROM KMTUserRegistration WHERE Id = @Id)
+		  SET @AdminUser = (SELECT UserName FROM KMTUserRegistration WHERE UserNTID = @ModifiedBy)
+
+		  IF(@Status ='A')
+		   SET @StatusVal = 'approved'
+		  ELSE
+		   SET @StatusVal = 'rejected'
+		   
+		  INSERT INTO KMTNotification(
+		  RoleId,
+		  UserCode,
+		  IsAdminFlag,
+          IsUserFlag,
+          IsFacilitatorFlag,
+		  Identifier,
+		  AdminDescripation,
+		  UserDescripation,
+		  CreatedOn)
+
+   		  VALUES(
+		  '1,10,12',
+		  @UserCode,
+		  0,
+		  0,
+		  0,
+		  'ProfilePicApprovalStatus',
+		  '<b>' + @AdminUser + '</b> has ' + @StatusVal + ' <b>'+ @UserName + '''s</b> profile picture',
+		  'Your profile picture has been ' + @StatusVal + ' by <b>' + @AdminUser + '</b>',
+		  @ModifiedOn)   
+    END TRY    
+    BEGIN CATCH    
+    IF @@TRANCOUNT > 0          
+     BEGIN          
+     ROLLBACK TRANSACTION MySavePoint;           
+     END    
+     END CATCH    
+    COMMIT TRANSACTION    
+ END
+GO
