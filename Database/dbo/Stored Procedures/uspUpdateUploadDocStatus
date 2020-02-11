@@ -1,0 +1,60 @@
+
+CREATE PROCEDURE [dbo].[uspUpdateUploadDocStatus]    
+(@Id int,
+ @Remarks VARCHAR(250), 
+ @ApproveBy VARCHAR(50),   
+ @Approvedate DATETIME
+ )
+AS
+ BEGIN    
+    BEGIN TRANSACTION;          
+     SAVE TRANSACTION MySavePoint;            
+      BEGIN TRY   
+        BEGIN  
+		   UPDATE  UploadDocument SET 
+		   [status] = '1' ,
+		   Remarks= @Remarks ,
+		   ApproveBy =@ApproveBy,
+		   Approvedate = @Approvedate
+		   WHERE id=@Id   
+		   
+		  DEClARE @UserName VARCHAR(50) = NULL,
+		  @UserCode VARCHAR(50) = NULL,
+		  @AdminUser VARCHAR(50) = NULL
+		  
+		  SET @UserName = (SELECT UserName FROM KMTUserRegistration WHERE UserNTID = (SELECT CreatedBy FROM UploadDocument WHERE Id = @Id))
+		  SET @UserCode = (SELECT UserCode FROM KMTUserRegistration WHERE UserNTID = (SELECT CreatedBy FROM UploadDocument WHERE Id = @Id))
+		  SET @AdminUser = (SELECT UserName FROM KMTUserRegistration WHERE UserNTID = @ApproveBy)
+		   
+		  INSERT INTO KMTNotification(
+		  RoleId,
+		  UserCode,
+		  IsAdminFlag,
+          IsUserFlag,
+          IsFacilitatorFlag,
+		  Identifier,
+		  AdminDescripation,
+		  UserDescripation,
+		  CreatedOn)
+
+   		  VALUES(
+		  '1,10,12',
+		  @UserCode,
+		  0,
+		  0,
+		  0,
+		  'DocumentApprovalStatus',
+		  '<b>' + @AdminUser + '</b> has approved document <b>'+ (SELECT Title FROM UploadDocument WHERE Id = @Id ) + '</b>',
+		  'Your document ' + (SELECT Title FROM UploadDocument WHERE Id = @Id ) + '</b> has been approved by <b>' + @AdminUser + '</b>.',
+		  @Approvedate)                   
+        END       
+      END TRY    
+   BEGIN CATCH    
+      IF @@TRANCOUNT > 0          
+        BEGIN          
+            ROLLBACK TRANSACTION MySavePoint;           
+        END    
+     END CATCH    
+    COMMIT TRANSACTION    
+ END
+GO
