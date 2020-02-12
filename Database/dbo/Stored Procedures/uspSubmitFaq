@@ -1,0 +1,36 @@
+CREATE  PROCEDURE [dbo].[uspSubmitFaq]  
+(  	
+ @id  int,		 
+ @FaqQuestion  VARCHAR(max),
+ @FaqAnswer  VARCHAR(max),
+ @IsActive BIT,
+ @CreatedBy VARCHAR(50),
+ @CreatedOn DATETIME,
+ @ModifiedBy VARCHAR(50),
+ @ModifiedOn  datetime                         
+)                                                      
+AS                                                      
+BEGIN        
+    BEGIN TRANSACTION;      
+      SAVE TRANSACTION MySavePoint;        
+     BEGIN TRY
+	 if(@id=0)   
+	 BEGIN               
+    INSERT INTO KMTFaq (FaqQuestion,FaqAnswer,IsActive,CreatedBy,CreatedOn,ModifiedBy,ModifiedOn)
+	   values (@FaqQuestion,@FaqAnswer,@IsActive,@CreatedBy,@CreatedOn,@ModifiedBy,@ModifiedOn);	
+		END
+	ELSE if(@id>0)   
+	 BEGIN               
+    update KMTFaq set FaqQuestion = @FaqQuestion,FaqAnswer=@FaqAnswer,ModifiedBy=@ModifiedBy,ModifiedOn=@ModifiedOn,IsActive=@IsActive where Id = @id;
+	END          			                    
+     END TRY       
+     BEGIN CATCH      
+        IF @@TRANCOUNT > 0      
+        BEGIN      
+            ROLLBACK TRANSACTION MySavePoint;       
+        END      
+      END CATCH                                                 
+     COMMIT TRANSACTION                                                  
+END
+
+GO
