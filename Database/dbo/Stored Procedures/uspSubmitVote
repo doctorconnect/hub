@@ -1,0 +1,29 @@
+
+CREATE PROC [dbo].[uspSubmitVote](
+@Question VARCHAR (max) =null,
+@Options VARCHAR(max) =null,
+@CreatedBy VARCHAR(50)=null,
+@CreatedDate DATETIME=null,
+@ModifiedBy VARCHAR(50)=null,
+@ModifiedDate DATETIME=null,
+@IsActive BIT=null
+)
+AS
+BEGIN
+  BEGIN TRANSACTION;      
+      SAVE TRANSACTION MySavePoint;        
+	    BEGIN TRY 
+			INSERT INTO [dbo].[UsersVote](Question,Options,CreatedBy,CreatedDate,ModifiedBy,ModifiedDate,IsActive) 
+			VALUES(@Question,@Options,@CreatedBy,@CreatedDate,@ModifiedBy,@ModifiedDate,@IsActive)
+	    END TRY
+      BEGIN CATCH      
+        IF @@TRANCOUNT > 0      
+        BEGIN      
+            ROLLBACK TRANSACTION MySavePoint;       
+        END      
+      END CATCH                                                 
+     COMMIT TRANSACTION
+END
+
+
+GO
