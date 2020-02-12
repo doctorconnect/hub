@@ -1,0 +1,73 @@
+
+CREATE PROCEDURE [dbo].[uspSubmitUserFeedback] 
+(                                            
+ @UserCode VARCHAR(50),                                                                
+ @UserNTID VARCHAR(50),                                                             
+ @UserEmail VARCHAR(50),                                                      
+ @UserName VARCHAR(50),                                                  
+ @LOBId INT,     
+ @RoleId INT,        
+ @FeedbackId VARCHAR(50),          
+ @UserFeedback VARCHAR(500),                                                                                                                  
+ @CreatedBy VARCHAR(50),                                                                
+ @CreatedOn DATETIME                                            
+)                                                                
+AS                                                                
+BEGIN                  
+    BEGIN TRANSACTION;                
+     SAVE TRANSACTION MySavePoint;                  
+     BEGIN TRY                            
+     INSERT INTO KMTFeedback(                
+        UserCode,                                                                
+		UserNTID,                                                             
+		UserEmail,                                                      
+		UserName,                                                  
+		UserLOB,        
+		FeedbackId,          
+		UserFeedBack,                                                                                                                  
+		CreatedBy,                                                                
+		CreatedOn)                                                               
+                                                              
+		VALUES (                                          
+		@UserCode,                                                                
+		@UserNTID,                                                             
+		@UserEmail,                                                      
+		@UserName,            
+		@LOBId,          
+		@FeedbackId,        
+		@UserFeedback,                                                                                                                    
+		@CreatedBy,                                                                
+		@CreatedOn)      
+        
+		INSERT INTO KMTNotification(    
+		RoleId,    
+		UserCode,  
+		IsAdminFlag,
+		IsUserFlag,
+		IsFacilitatorFlag,
+		Identifier, 
+		AdminDescripation,
+		UserDescripation,
+		CreatedOn)    
+        
+		VALUES(    
+		'1,12',    
+		@UserCode,  
+		0, 
+		0,
+		0,
+		'Feedback', 
+		'<b>' + @UserName + '</b> has submitted feedback',
+		'Your feedback has been submitted successfully',
+		@CreatedOn)                                                                         
+     END TRY                 
+  BEGIN CATCH                
+        IF @@TRANCOUNT > 0                
+        BEGIN                
+            ROLLBACK TRANSACTION MySavePoint;                 
+        END                
+      END CATCH                                                           
+     COMMIT TRANSACTION                                                            
+END 
+
+GO
