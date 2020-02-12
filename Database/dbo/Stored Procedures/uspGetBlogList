@@ -1,0 +1,54 @@
+
+CREATE PROCEDURE [dbo].[uspGetBlogList]   
+(  
+@CapabilitiesId int,  
+@IsAdmin int  
+)     
+  AS      
+ BEGIN      
+ BEGIN TRANSACTION;            
+ SAVE TRANSACTION MySavePoint;              
+ BEGIN TRY  
+ IF(@IsAdmin=0)     
+  BEGIN    
+	 SELECT   
+  b.id,  
+  b.title ,  
+  b.Message,  
+  b.BlogBy AS Blogerid,  
+  R.username AS BlogBy,  
+  R.UserCode,  
+  b.status,  
+  b.Remarks,
+  b.BlogDate,
+  b.CreatedBy AS BlogCreatedBy 
+  FROM [dbo].[Blogs] b join KMTUserRegistration R  ON b.BlogBy = R.Id   
+  WHERE b.CapId = @CapabilitiesId  
+  ORDER BY b.BlogDate DESC                           
+  END    
+  IF(@IsAdmin=1)     
+  BEGIN    
+	  SELECT   
+	  b.id,  
+	  b.title ,  
+	  b.Message,  
+	  b.BlogBy AS Blogerid,  
+	  R.username AS BlogBy,  
+	  R.UserCode,  
+	  b.status,  
+	  b.Remarks,
+	  b.BlogDate,
+	  b.CreatedBy AS BlogCreatedBy   
+	  FROM [dbo].[Blogs] b join KMTUserRegistration R  on b.BlogBy = R.Id   
+	  ORDER BY b.BlogDate DESC                           
+  END        
+      END TRY      
+   BEGIN CATCH      
+      IF @@TRANCOUNT > 0            
+     BEGIN            
+            ROLLBACK TRANSACTION MySavePoint;             
+        END      
+         END CATCH      
+    COMMIT TRANSACTION      
+ END
+GO
