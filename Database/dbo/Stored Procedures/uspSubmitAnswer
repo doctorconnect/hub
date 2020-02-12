@@ -1,0 +1,31 @@
+
+create  PROCEDURE [dbo].[uspSubmitAnswer]  
+(  
+ @QuestionID int,	
+ @AnswerID  int,		 
+ @AnswerText  VARCHAR(80)              
+)                                                      
+AS                                                      
+BEGIN        
+    BEGIN TRANSACTION;      
+      SAVE TRANSACTION MySavePoint;        
+     BEGIN TRY
+	 if(@AnswerID=0)   
+	 BEGIN               
+    INSERT INTO [KMTAnswers] (AnswerText,QuestionID)
+	   values (@AnswerText,@QuestionID);	
+		END
+	ELSE if(@AnswerID>0)   
+	 BEGIN               
+    update [KMTAnswers] set AnswerText=@AnswerText ,QuestionID=@QuestionID where AnswerID = @AnswerID;
+	END          			                    
+     END TRY       
+     BEGIN CATCH      
+        IF @@TRANCOUNT > 0      
+        BEGIN      
+            ROLLBACK TRANSACTION MySavePoint;       
+        END      
+      END CATCH                                                 
+     COMMIT TRANSACTION                                                  
+END
+GO
