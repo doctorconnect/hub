@@ -1,0 +1,28 @@
+
+CREATE PROCEDURE [dbo].[uspGetPointList]    
+(  
+@CreatedBy VARCHAR(50)  
+)                  
+AS                      
+ BEGIN      
+ select sum(a.Point) Point,a.Userid from (  
+select sum(points) as Point,b.CreatedBy as Userid from KMTPointEarnSystem a join [UploadDocument] b  
+on  a.Pes_Id =b.Id group by b.CreatedBy  
+union  
+select sum(points) as Point,b.CreatedBy as Userid from KMTPointEarnSystem a join [Posts] b  
+on  a.Pes_Id =b.PostId group by b.CreatedBy  
+union  
+select sum(points) as Point,b.CreatedBy as Userid from KMTPointEarnSystem a join [Blogs] b  
+on  a.Pes_Id =b.Id group by b.CreatedBy  
+union  
+select sum(points) as Point,Pes_by as Userid   
+from KMTPointEarnSystem where Pes_id ='0' group by Pes_by  
+union 
+select sum(points) as Point,Pes_by as Userid   
+from KMTPointEarnSystem where pes_type like '%Registration%' group by Pes_by 
+union 
+select sum(a.points) as Point,b.CreatedBy as Userid from KMTPointEarnSystem a right join [KMTAssessmentResult] b  
+on  a.Pes_Id =b.Quizid where a.pes_type like '%PKT%' group by b.CreatedBy   
+) a where  a.Userid = @CreatedBY group by a.Userid   
+ END
+GO
