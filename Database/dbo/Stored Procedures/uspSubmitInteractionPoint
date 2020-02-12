@@ -1,0 +1,36 @@
+
+Create  PROCEDURE [dbo].[uspSubmitInteractionPoint]  
+(                               
+ @Id INT,
+ @InteractionType VARCHAR(50),
+ @Point INT,
+ @IsActive BIT,
+ @CreatedBy VARCHAR(50),
+ @CreatedOn DATETIME,
+ @ModifiedBy VARCHAR(50),
+ @ModifiedOn  datetime                                  
+)                                                      
+AS                                                      
+BEGIN        
+    BEGIN TRANSACTION;      
+     SAVE TRANSACTION MySavePoint;        
+     BEGIN TRY
+	 if(@Id=0)  
+	 BEGIN 
+	 INSERT INTO [KMTPointDeatil] (InteractionType,Point,IsActive,CreatedBy,CreatedOn,ModifiedBy,ModifiedOn)  
+	 VALUES (@InteractionType,@Point,@IsActive,@CreatedBy,GETDATE(),'','');
+     END  
+	 else if(@Id>0)  
+	 BEGIN 
+	 UPDATE [KMTPointDeatil] SET InteractionType= @InteractionType,Point=@Point,IsActive=@IsActive WHERE Id=@Id;
+	 END        			                    
+     END TRY   
+     BEGIN CATCH
+     IF @@TRANCOUNT > 0
+        BEGIN
+            ROLLBACK TRANSACTION MySavePoint;
+        END  
+      END CATCH                                         
+     COMMIT TRANSACTION
+END
+GO
