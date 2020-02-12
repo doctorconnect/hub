@@ -1,0 +1,36 @@
+
+CREATE PROCEDURE [dbo].[uspGetUserProfileImgList]      
+(  
+ @CapabilitiesId int,  
+ @IsAdmin int  
+ ) 
+  AS      
+ BEGIN      
+    BEGIN TRANSACTION;            
+     SAVE TRANSACTION MySavePoint;              
+      BEGIN TRY     
+    BEGIN   
+	if(@IsAdmin=0)                    
+    BEGIN  
+     select Id,UserCode,UserName,ManagerName,ImgStatus,Remarks,  
+  UserPhoto  
+  from [dbo].[KMTUserRegistration] 
+  WHERE CapabilitiesId = @CapabilitiesId 
+  END
+  if(@IsAdmin=1)                    
+       BEGIN 
+	   select Id,UserCode,UserName,ManagerName,ImgStatus,Remarks,  
+  UserPhoto  
+  from [dbo].[KMTUserRegistration] 
+END                  
+    END         
+      END TRY      
+   BEGIN CATCH      
+      IF @@TRANCOUNT > 0            
+     BEGIN            
+            ROLLBACK TRANSACTION MySavePoint;             
+        END      
+         END CATCH      
+    COMMIT TRANSACTION      
+ END  
+GO
