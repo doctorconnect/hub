@@ -1,0 +1,40 @@
+
+CREATE  PROCEDURE [dbo].[uspSubmitBulletinBoard]  
+(                               
+ @Id INT,
+ @CapId Int,
+ @Name VARCHAR(50),
+ @Description VARCHAR(50),
+ @Title VARCHAR(50),
+ @Article  VARCHAR(max),
+ @TYPE VARCHAR(50),
+ @IsActive BIT,
+ @CreatedBy VARCHAR(50),
+ @CreatedOn DATETIME,
+ @ModifiedBy VARCHAR(50),
+ @ModifiedOn  datetime                                  
+)                                                      
+AS                                                      
+BEGIN        
+    BEGIN TRANSACTION;      
+      SAVE TRANSACTION MySavePoint;        
+     BEGIN TRY
+	 if(@id=0)  
+	 BEGIN 
+	INSERT INTO KMTMANAGEBULLETINBOARD (Name,Description,Title,Article,TYPE,IsActive,CreatedBy,CreatedOn,ModifiedBy,ModifiedOn,CapId)  
+	VALUES (@Name,@Description,@Title,@Article,@TYPE,@IsActive,@CreatedBy,@CreatedOn,'','',@CapId)
+    END  
+	ELSE  if(@id>0)  
+	 BEGIN 
+	 UPDATE KMTMANAGEBULLETINBOARD SET Name=@Name,Description=@Description ,Title=@Title,Article=@Article,type=@TYPE,IsActive=@IsActive,ModifiedBy=@ModifiedBy,ModifiedOn=@ModifiedOn WHERE Id=@Id
+	 END         			                    
+     END TRY   
+     BEGIN CATCH
+     IF @@TRANCOUNT > 0
+        BEGIN
+            ROLLBACK TRANSACTION MySavePoint;
+        END  
+      END CATCH                                         
+     COMMIT TRANSACTION
+END
+GO
