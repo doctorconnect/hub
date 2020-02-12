@@ -1,0 +1,44 @@
+
+CREATE  PROCEDURE [dbo].[uspSubmitComment]  
+(  			 
+@PostId INT,
+@CreatedBy VARCHAR(50),                             
+ @Message VARCHAR(250),
+ @CommentedBy  VARCHAR(50), 
+ @Identifier  VARCHAR(10),
+ @Points  VARCHAR(10)                         
+)                                                      
+AS                                                      
+BEGIN        
+    BEGIN TRANSACTION;      
+      SAVE TRANSACTION MySavePoint;        
+     BEGIN TRY   
+	 BEGIN               
+    INSERT INTO PostComments  ( PostId,Message, CommentedBy,CommentedDate,Identifier)
+	values ( @PostId,@Message,@CommentedBy,GETDATE(),@Identifier);		
+		END	
+		 if(@Identifier ='POST')	
+		 BEGIN  
+		  INSERT INTO KMTPointEarnSystem ( Points,[Pes_Id], Pes_type,Pes_by,Pes_On)
+			values ( @Points,@PostId,'PostComment',@CreatedBy,GETDATE());  
+		 END 
+	 ELSE if(@Identifier ='BLOG')	
+		 BEGIN    
+		 INSERT INTO KMTPointEarnSystem ( Points,[Pes_Id], Pes_type,Pes_by,Pes_On)
+			values ( @Points,@PostId,'BlogComment',@CreatedBy,GETDATE()); 
+		 END  
+	 ELSE if(@Identifier ='DOC')	
+		 BEGIN    
+		 INSERT INTO KMTPointEarnSystem ( Points,[Pes_Id], Pes_type,Pes_by,Pes_On)
+			values ( @Points,@PostId,'DocComment',@CreatedBy,GETDATE()); 
+		 END 	             			                    
+     END TRY       
+     BEGIN CATCH      
+        IF @@TRANCOUNT > 0      
+        BEGIN      
+            ROLLBACK TRANSACTION MySavePoint;       
+        END      
+      END CATCH                                                 
+     COMMIT TRANSACTION                                                  
+END
+GO
