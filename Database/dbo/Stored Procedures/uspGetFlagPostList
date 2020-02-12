@@ -1,0 +1,66 @@
+
+CREATE PROCEDURE [dbo].[uspGetFlagPostList]    
+(  
+ @CapabilitiesId int, 
+ @IsAdmin int 
+ )    
+  AS      
+   BEGIN      
+     BEGIN TRANSACTION;            
+      SAVE TRANSACTION MySavePoint;              
+       BEGIN TRY     
+        BEGIN    
+	     IF(@IsAdmin=0)
+		   BEGIN   
+		   SELECT COUNT(P.PostId) AS FlagCount,  
+		   P.PostId,  
+		   P.Message,  
+		   P.Postedby,  
+		   P.PostedDate,  
+		   R.username AS PostedByName,  
+		   P.Status,  
+		   P.Remarks FROM Posts P join KMTPostFlag F ON F.PostId =p.PostId 
+		   join KMTUserRegistration R on R.id =P.Postedby
+		   WHERE F.CapId = @CapabilitiesId
+		   GROUP BY   
+		   P.PostId,  
+		   P.Message,  
+		   P.Postedby,  
+		   P.PostedDate,
+		    R.username,  
+		   P.Status,  
+		   P.Remarks   
+		  ORDER BY FlagCount DESC          
+	    END   
+         IF(@IsAdmin=1)
+       BEGIN 
+	       SELECT COUNT(P.PostId) AS FlagCount,  
+		   P.PostId,  
+		   P.Message,  
+		   P.Postedby,  
+		   P.PostedDate,  
+		   R.username AS PostedByName,  
+		   P.Status,  
+		   P.Remarks FROM Posts P join KMTPostFlag F ON F.PostId =p.PostId 
+		   join KMTUserRegistration R on R.id =P.Postedby
+		   GROUP BY   
+		   P.PostId,  
+		   P.Message,  
+		   P.Postedby,  
+		   P.PostedDate,
+		    R.username,  
+		   P.Status,  
+		   P.Remarks   
+		  ORDER BY FlagCount DESC          
+	   END  
+        END         
+      END TRY      
+    BEGIN CATCH      
+      IF @@TRANCOUNT > 0            
+     BEGIN            
+            ROLLBACK TRANSACTION MySavePoint;             
+        END      
+         END CATCH      
+    COMMIT TRANSACTION      
+ END 
+GO
