@@ -1,0 +1,27 @@
+
+CREATE PROCEDURE [dbo].[uspGetListfollower]
+@Id INT     
+  AS    
+ BEGIN    
+    BEGIN TRANSACTION;          
+     SAVE TRANSACTION MySavePoint;            
+      BEGIN TRY   
+    BEGIN  
+     select R.ID,R.UserName,R.UserCode ,'Following' status from[Follower] F
+		join [KMTUserRegistration] R on R.id=f.FollowerBy 
+		where FollowingBy = @Id  
+		union
+		select R.ID,R.UserName,R.UserCode ,'Follower' status from[Follower] F
+		join [KMTUserRegistration] R on R.id=f.FollowingBy 
+		where FollowerBy = @Id               
+    END       
+      END TRY    
+   BEGIN CATCH    
+      IF @@TRANCOUNT > 0          
+     BEGIN          
+            ROLLBACK TRANSACTION MySavePoint;           
+        END    
+         END CATCH    
+    COMMIT TRANSACTION    
+ END
+GO
