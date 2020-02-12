@@ -1,0 +1,154 @@
+
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (1, N'Admin', N'Role')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (2, N'Posts', N'x')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (3, N'Flagged Posts', N'x')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (5, N'Pending', N'Status')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (6, N'Approved', N'Status')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (7, N'Rejected', N'Status')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (8, N'Successful', N'Transfer')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (9, N'UnSuccessful', N'Transfer')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (10, N'Facilitator', N'Role')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (11, N'Contributor', N'Role')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (12, N'User', N'Role')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (13, N'Month-wise', N'FilterCriteria')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (14, N'Week-wise', N'FilterCriteria')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (15, N'Day-wise', N'FilterCriteria')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (16, N'Hour-wise', N'FilterCriteria')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (17, N'Registered Users', N'ReportType')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (18, N'User Traffic', N'ReportType')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (19, N'Interactions', N'ReportType')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (20, N'Documents Uploaded', N'ReportType')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (21, N'Blogs', N'ReportType')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (22, N'Posts', N'ReportType')
+GO
+INSERT [dbo].[KMTGeneric] ([Id], [Name], [Identifier]) VALUES (23, N'Flagged Posts', N'ReportType')
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (1, N'Admin', NULL, 0, NULL, NULL, 1, N'xyz@gmail.com', CAST(N'2018-07-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (2, N'Facilitator', NULL, 0, NULL, NULL, 1, N'xyz@gmail.com', CAST(N'2019-01-29T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (3, N'Manage Users', N'Admin/ManageUser', 1, N'ManageUser', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-07-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (4, N'Manage Display Pictures', N'Admin/ApproveImage', 1, N'ApproveImage', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (5, N'Manage Bulletin Boards', N'Admin/ManageBulletinBoard', 1, N'BulletinBoard', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (6, N'Manage Flagged Posts', N'Admin/ApprovePost', 1, N'ApprovePost', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-07-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (7, N'Manage Blogs', N'Admin/ApproveBlogs', 1, N'ApproveBlogs', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-07-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (8, N'Manage Documents', N'Admin/ApproveUploadDoc', 1, N'ApproveUploadDoc', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-07-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (9, N'Manage Document Categories', N'Admin/ManageDocumentCategory', 1, N'ManageDocumentCategory', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (10, N'Manage Feedback', N'Admin/ManageFeedBack', 1, N'ManageFeedBack', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-07-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (11, N'Manage System Links', N'Admin/ManageSystemLink', 1, N'ManageSystemLink', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (12, N'Manage RssFeeds', N'Admin/ManageRSS', 1, N'ManageRSS', N'Admin', 1, N'xyz@gmail.com', CAST(N'2019-01-29T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (13, N'Reports', N'Admin/Reports', 1, N'Reports', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-07-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (14, N'Manage Polls', N'Admin/ManagePoll', 1, N'managePoll', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (15, N'Manage Trainings', N'Admin/ManageTraining', 1, N'ManageTraining', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (16, N'Manage Assessments', N'Quiz/ManageQuiz', 1, N'ManageQuiz', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (17, N'Manage Business Segments', N'Admin/ManageBusinessSegment', 1, N'ManageBusinessSegment', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (18, N'Manage Capabilities', N'Admin/ManageCapabilities', 1, N'ManageCapabilities', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (19, N'Manage Line of Businesses', N'Admin/ManageLineofBusiness', 1, N'ManageLineofBusiness', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (20, N'Manage Badges', N'Admin/ManageBadge', 1, N'ManageBadge', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (21, N'Manage FAQs', N'Admin/ManageFaq', 1, N'ManageFaq', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (22, N'Manage Polls', N'Admin/ManagePoll', 2, N'managePoll', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (23, N'Manage Trainings', N'Admin/ManageTraining', 2, N'ManageTraining', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (24, N'Manage Assessments', N'Quiz/ManageQuiz', 2, N'ManageQuiz', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (25, N'Assessment Result', N'Admin/AssessmentResult', 1, N'AssessmentResult', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTMenu] ([MenuId], [MenuName], [MenuURL], [ParentId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (26, N'Assessment Result', N'Admin/AssessmentResult', 2, N'AssessmentResult', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-20T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+SET IDENTITY_INSERT [dbo].[KMTRolePermission] ON 
+
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (1, 1, 1, NULL, NULL, 1, N'xyz@gmail.com', CAST(N'2018-03-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (2, 10, 2, NULL, NULL, 1, N'xyz@gmail.com', CAST(N'2018-03-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (3, 1, 3, N'ManageUser', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-03-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (4, 1, 4, N'ApproveImage', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-03-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (5, 1, 5, N'BulletinBoard', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-28T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (6, 1, 6, N'ApprovePost', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-03-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (7, 1, 7, N'ApproveBlogs', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-03-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (8, 1, 8, N'ApproveUploadDoc', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-03-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (9, 1, 9, N'ManageDocumentCategory', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-28T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (10, 1, 10, N'ManageFeedBack', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-03-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (11, 1, 11, N'ManageSystemLink', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-28T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (12, 1, 12, N'ManageRSS', N'Admin', 1, N'xyz@gmail.com', CAST(N'2019-01-29T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (13, 1, 13, N'Reports', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-03-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (14, 1, 14, N'ManagePoll', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-03-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (15, 1, 15, N'ManageTraining', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-28T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (16, 1, 16, N'ManageQuiz', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-28T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (17, 1, 17, N'AddBusinessSegment', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-28T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (18, 1, 18, N'ManageCapabilities', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-28T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (19, 1, 19, N'ManageLineofBusiness', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-28T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (20, 1, 20, N'ManageBadge', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-28T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (21, 1, 21, N'ManageFaq', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-28T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (22, 10, 22, N'ManagePoll', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-03-28T02:14:26.757' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (23, 10, 23, N'ManageTraining', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-28T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (24, 10, 24, N'ManageQuiz', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-28T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (25, 1, 25, N'AssessmentResult', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-28T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+INSERT [dbo].[KMTRolePermission] ([RolePermissionId], [RoleId], [MenuId], [ActionName], [ControllerName], [IsActive], [CreatedBy], [CreatedOn], [ModifiedBy], [ModifiedOn]) VALUES (26, 10, 26, N'AssessmentResult', N'Admin', 1, N'xyz@gmail.com', CAST(N'2018-11-28T00:00:00.000' AS DateTime), NULL, NULL)
+GO
+SET IDENTITY_INSERT [dbo].[KMTRolePermission] OFF
+GO
