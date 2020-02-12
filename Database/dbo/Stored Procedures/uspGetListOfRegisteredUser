@@ -1,0 +1,77 @@
+
+CREATE PROCEDURE [dbo].[uspGetListOfRegisteredUser]     
+(  
+ @CapabilitiesId int = null,  
+ @IsAdmin int = null 
+ ) 
+AS                    
+BEGIN   
+IF(@CapabilitiesId  IS NULL OR @IsAdmin=1)
+	BEGIN               
+	  SELECT U.Id Id,          
+	  U.UserCode UserCode,          
+	  U.UserEmail UserEmail,          
+	  U.UserNTID UserNTID,          
+	  U.UserName UserName,          
+	  U.ManagerNTID ManagerNTID,          
+	  U.ManagerName ManagerName,          
+	  U.ManagerEmail ManagerEmail,          
+	  U.ManagerCode ManagerCode,          
+	  U.RoleId RoleId,          
+	  U.LOBId LOBId,          
+	  U.Status UserStatus,        
+	  U.ImgStatus,          
+	  G.Name RoleName,          
+	  BS.Name BsName,  
+	  CAP.Name CapName,   
+	  LOB.Name LOBName,       
+	  G1.Name StatusType,         
+	  U.IsActive IsActive,        
+	  U.CapabilitiesId CapabilitiesId,      
+	  U.BusinessSegmentId BusinessSegmentId,        
+	  U.AboutMe  AboutMe,        
+	  U.UserPhoto UserPhoto,  
+	  U.IsAdmin IsAdmin           
+	  FROM KMTUserRegistration U           
+	  INNER JOIN KMTGeneric G ON U.RoleId = G.Id          
+	  INNER JOIN KMTLob LOB ON U.LOBId = LOB.Id       
+	  INNER JOIN KMTBusinessSegment BS ON U.BusinessSegmentId = BS.Id  
+	  INNER JOIN [KMTCapabilities] CAP ON U.CapabilitiesId = CAP.Id         
+	  INNER JOIN KMTGeneric G1 ON U.[Status] = G1.Id     
+	END
+ELSE
+	BEGIN
+		SELECT U.Id Id,          
+	  U.UserCode UserCode,          
+	  U.UserEmail UserEmail,          
+	  U.UserNTID UserNTID,          
+	  U.UserName UserName,          
+	  U.ManagerNTID ManagerNTID,          
+	  U.ManagerName ManagerName,          
+	  U.ManagerEmail ManagerEmail,          
+	  U.ManagerCode ManagerCode,          
+	  U.RoleId RoleId,          
+	  U.LOBId LOBId,          
+	  U.Status UserStatus,        
+	  U.ImgStatus,          
+	  G.Name RoleName,          
+	  BS.Name BsName,  
+	  CAP.Name CapName,   
+	  LOB.Name LOBName,       
+	  G1.Name StatusType,         
+	  U.IsActive IsActive,        
+	  U.CapabilitiesId CapabilitiesId,      
+	  U.BusinessSegmentId BusinessSegmentId,        
+	  U.AboutMe  AboutMe,        
+	  U.UserPhoto UserPhoto,  
+	  U.IsAdmin IsAdmin           
+	  FROM KMTUserRegistration U           
+	  INNER JOIN KMTGeneric G ON U.RoleId = G.Id          
+	  INNER JOIN KMTLob LOB ON U.LOBId = LOB.Id       
+	  INNER JOIN KMTBusinessSegment BS ON U.BusinessSegmentId = BS.Id  
+	  INNER JOIN [KMTCapabilities] CAP ON U.CapabilitiesId = CAP.Id         
+	  INNER JOIN KMTGeneric G1 ON U.[Status] = G1.Id  
+	  WHERE U.CapabilitiesId = @CapabilitiesId   
+	END
+END 
+GO
