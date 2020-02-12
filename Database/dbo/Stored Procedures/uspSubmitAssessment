@@ -1,0 +1,60 @@
+
+CREATE PROCEDURE [dbo].[uspSubmitAssessment]  
+(   
+ @QuizId INT,	
+ @Marks INT,		 
+ @CreatedBy VARCHAR(50),
+ @CreatedOn DATETIME, 
+ @Points INT                     
+)                                                      
+AS                                                      
+BEGIN        
+    BEGIN TRANSACTION;      
+     SAVE TRANSACTION MySavePoint;    
+	  DEClARE @UserName VARCHAR(50) = NULL,
+	   @UserCode VARCHAR(50) = NULL
+	    SET @UserName = (SELECT UserName FROM KMTUserRegistration WHERE UserNTID = @CreatedBy)
+	    SET @UserCode = (SELECT UserCode FROM KMTUserRegistration WHERE UserNTID = @CreatedBy)         
+       BEGIN TRY
+		  IF(@Marks > 90)
+			 BEGIN               
+				INSERT INTO [KMTAssessmentResult] (QuizId,Marks,Status,CreatedBy,CreatedOn)
+				VALUES (@QuizId,@Marks,'PASS',@CreatedBy,@CreatedOn);	
+				INSERT INTO KMTPointEarnSystem ( Points,[Pes_Id], Pes_type,Pes_by,Pes_On)
+				VALUES ( @Points,@QuizId,'PKT>90',@CreatedBy,GETDATE());	
+			 END	       			                    
+		  IF(@Marks > 84 and @Marks < 91)
+			BEGIN               
+				INSERT INTO [KMTAssessmentResult] (QuizId,Marks,Status,CreatedBy,CreatedOn)
+				VALUES (@QuizId,@Marks,'PASS',@CreatedBy,@CreatedOn);		
+				INSERT INTO KMTPointEarnSystem ( Points,[Pes_Id], Pes_type,Pes_by,Pes_On)
+				VALUES ( @Points,@QuizId,'PKT>84<91',@CreatedBy,GETDATE());
+			END	    
+		  IF(@Marks > 79 and @Marks < 85)
+			BEGIN               
+				INSERT INTO [KMTAssessmentResult] (QuizId,Marks,Status,CreatedBy,CreatedOn)
+				VALUES (@QuizId,@Marks,'PASS',@CreatedBy,@CreatedOn);		
+				INSERT INTO KMTPointEarnSystem ( Points,[Pes_Id], Pes_type,Pes_by,Pes_On)
+				VALUES ( @Points,@QuizId,'PKT>79<85',@CreatedBy,GETDATE());
+			END	   
+		  IF(@Marks < 80)
+			BEGIN               
+				INSERT INTO [KMTAssessmentResult] (QuizId,Marks,Status,CreatedBy,CreatedOn)
+			    VALUES (@QuizId,@Marks,'FAIL',@CreatedBy,@CreatedOn);		
+				INSERT INTO KMTPointEarnSystem ( Points,[Pes_Id], Pes_type,Pes_by,Pes_On)
+				VALUES ( @Points,@QuizId,'PKT<80',@CreatedBy,GETDATE());
+			END	   	
+			BEGIN
+			 INSERT INTO KMTNotification(RoleId,UserCode,IsAdminFlag,IsUserFlag,IsFacilitatorFlag,Identifier,AdminDescripation,UserDescripation,CreatedOn) 
+			 VALUES('1,10,12',@UserCode,0,0,0,'SubmitAssessment','<b>' + @UserName + '</b> has submitted the assessment <b>' + (SELECT QuizName FROM KMTQuiz WHERE QuizId = @QuizId) + '</b> successfully.','Your assessment <b>' + (SELECT QuizName FROM KMTQuiz WHERE QuizId = @QuizId) + '</b> has been submitted successfully.',@CreatedOn);	
+			END		                    
+       END TRY          
+     BEGIN CATCH      
+        IF @@TRANCOUNT > 0      
+        BEGIN      
+            ROLLBACK TRANSACTION MySavePoint;       
+        END      
+      END CATCH                                                 
+     COMMIT TRANSACTION                                                  
+END
+GO
