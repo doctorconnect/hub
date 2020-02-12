@@ -1,0 +1,37 @@
+
+CREATE  PROCEDURE [dbo].[uspSubmitSystemLink]  
+(  	
+ @id int,
+ @Capid int,		 
+ @Title VARCHAR(50),
+ @Url VARCHAR(250),
+ @IsActive BIT,
+ @CreatedBy VARCHAR(50),
+ @CreatedOn DATETIME,
+ @ModifiedBy VARCHAR(50),
+ @ModifiedOn  date                         
+)                                                      
+AS                                                      
+BEGIN        
+    BEGIN TRANSACTION;      
+      SAVE TRANSACTION MySavePoint;        
+     BEGIN TRY
+	 if(@id=0)   
+	 BEGIN               
+    INSERT INTO KMTSystemLink (Title,Url,IsActive,CreatedBy,CreatedOn,ModifiedBy,ModifiedOn,CapId)
+	   values (@Title,@Url,@IsActive,@CreatedBy,@CreatedOn,@ModifiedBy,@ModifiedOn,@Capid);	
+		END
+	ELSE if(@id>0)   
+	 BEGIN               
+    update KMTSystemLink set Title = @Title,Url=@Url,ModifiedBy=@ModifiedBy,ModifiedOn=@ModifiedOn,IsActive=@IsActive where Id = @id;
+	END          			                    
+     END TRY       
+     BEGIN CATCH      
+        IF @@TRANCOUNT > 0      
+        BEGIN      
+            ROLLBACK TRANSACTION MySavePoint;       
+        END      
+      END CATCH                                                 
+     COMMIT TRANSACTION                                                  
+END
+GO
