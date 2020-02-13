@@ -1,0 +1,44 @@
+EDURE [dbo].[uspGetPostList] 
+(
+@CapabilitiesId int,
+@IsAdmin int
+)    
+  AS    
+   BEGIN    
+   BEGIN TRANSACTION;          
+   SAVE TRANSACTION MySavePoint;            
+   BEGIN TRY   
+   if(@IsAdmin=0)
+   BEGIN  
+   select P.PostId,
+   P.Message,
+   P.Postedby,
+   R.username  as PostedByName,
+   R.UserCode,
+   P.PostedDate,
+   P.Status,
+   P.Remarks from Posts P join KMTUserRegistration R on R.id= P.Postedby
+   where P.CapId = @CapabilitiesId
+   order by P.postedDate desc      
+   END if(@IsAdmin=1)
+   BEGIN  
+   select P.PostId,
+   P.Message,
+   P.Postedby,
+   R.username  as PostedByName,
+   R.UserCode,
+   P.PostedDate,
+   P.Status,
+   P.Remarks from Posts P join KMTUserRegistration R on R.id= P.Postedby
+   order by P.postedDate desc      
+   END       
+      END TRY    
+   BEGIN CATCH    
+      IF @@TRANCOUNT > 0          
+     BEGIN          
+            ROLLBACK TRANSACTION MySavePoint;           
+        END    
+         END CATCH    
+    COMMIT TRANSACTION    
+ END
+GO

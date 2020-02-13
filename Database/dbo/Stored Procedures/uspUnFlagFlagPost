@@ -1,0 +1,27 @@
+
+CREATE   PROCEDURE [dbo].[uspUnFlagFlagPost]  
+(   
+@PostId INT ,
+@Identifier VARCHAR(50),
+@CreatedOn DATETIME                                                     
+)                                                      
+AS                                                      
+BEGIN        
+    BEGIN TRANSACTION;      
+      SAVE TRANSACTION MySavePoint;        
+     BEGIN TRY   
+	 	 BEGIN  
+		 DELETE FROM KMTPostFlag WHERE PostId = @PostId;
+		END		          			                    
+     END TRY       
+     BEGIN CATCH      
+        IF @@TRANCOUNT > 0      
+        BEGIN      
+            ROLLBACK TRANSACTION MySavePoint;       
+        END      
+      END CATCH                                                 
+     COMMIT TRANSACTION                                                  
+END
+
+
+GO

@@ -1,0 +1,39 @@
+USE [KMT]
+GO
+/****** Object:  StoredProcedure [dbo].[uspSaveError]    Script Date: 8/23/2019 6:11:46 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[uspSaveError]         
+(        
+@Method nvarchar(255),        
+@Exception nvarchar(max),  
+@UserNTID nvarchar(50)         
+)        
+AS              
+BEGIN      
+ BEGIN TRANSACTION;        
+    SAVE TRANSACTION MySavePoint;          
+    BEGIN TRY            
+  INSERT INTO tblErrorLog (  
+  Method,     
+  Exception,  
+  UserNTID,ErrorTimeStamp)     
+     
+  VALUES         
+  (@Method,    
+  @Exception,  
+  @UserNTID,GETDATE())     
+  END TRY         
+  BEGIN CATCH        
+     IF @@TRANCOUNT > 0        
+        BEGIN        
+            ROLLBACK TRANSACTION MySavePoint;         
+        END        
+      END CATCH                                                   
+     COMMIT TRANSACTION       
+END
+
+GO

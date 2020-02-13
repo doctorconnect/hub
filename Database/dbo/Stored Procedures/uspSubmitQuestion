@@ -1,0 +1,54 @@
+
+CREATE  PROCEDURE [dbo].[uspSubmitQuestion]  
+(  
+ @QuestionID int,	
+ @QuizID  int,		 
+ @QuestionText  VARCHAR(max),
+ @ChoiceText1  VARCHAR(80),
+ @ChoiceText2  VARCHAR(80),
+ @ChoiceText3  VARCHAR(80) ,
+ @ChoiceText4  VARCHAR(80),
+ @ChoiceID1 int,
+ @ChoiceID2 int,
+ @ChoiceID3 int,
+ @ChoiceID4 int,
+ @AnswerText   VARCHAR(80)             
+)                                                      
+AS                                                      
+BEGIN        
+    BEGIN TRANSACTION;      
+      SAVE TRANSACTION MySavePoint;        
+  BEGIN TRY
+	 if(@QuestionID=0)   
+	 BEGIN       
+			CREATE TABLE #TempIDs (ID INT) 	        
+		    INSERT INTO [KMTQuestions] (QuestionText,QuizID) OUTPUT INSERTED.QuestionID INTO #TempIDs  values (@QuestionText,@QuizID);			
+		    INSERT INTO [KMTChoices] (ChoiceText,QuestionID) values (@ChoiceText1, (SELECT MAX (ID) AS LastID FROM #TempIDs));
+			INSERT INTO [KMTChoices] (ChoiceText,QuestionID) values (@ChoiceText2,(SELECT MAX (ID) AS LastID FROM #TempIDs));
+			INSERT INTO [KMTChoices] (ChoiceText,QuestionID) values (@ChoiceText3,(SELECT MAX (ID) AS LastID FROM #TempIDs));			
+			INSERT INTO [KMTChoices] (ChoiceText,QuestionID) values (@ChoiceText4,(SELECT MAX (ID) AS LastID FROM #TempIDs));
+			
+			INSERT INTO [KMTAnswers] (AnswerText,QuestionID)  values (@AnswerText,(SELECT MAX (ID) AS LastID FROM #TempIDs));	
+			DROP TABLE #TempIDs
+	END
+	ELSE if(@QuestionID>0)   
+	 BEGIN               
+		    update [KMTQuestions] set QuestionText=@QuestionText ,QuizID=@QuizID where QuestionID = @QuestionID;
+			update [KMTChoices] set ChoiceText=@ChoiceText1  where ChoiceID = @ChoiceID1 and QuestionID=@QuestionID ;
+			update [KMTChoices] set ChoiceText=@ChoiceText2  where ChoiceID = @ChoiceID2 and QuestionID=@QuestionID ;		
+			update [KMTChoices] set ChoiceText=@ChoiceText3  where ChoiceID = @ChoiceID3 and QuestionID=@QuestionID ;		
+			update [KMTChoices] set ChoiceText=@ChoiceText4  where ChoiceID = @ChoiceID4 and QuestionID=@QuestionID ;
+						
+			update [KMTAnswers] set AnswerText=@AnswerText  where QuestionID=@QuestionID ;
+	 END          			                    
+ END TRY       
+     BEGIN CATCH      
+        IF @@TRANCOUNT > 0      
+        BEGIN      
+            ROLLBACK TRANSACTION MySavePoint;       
+        END      
+      END CATCH                                                 
+     COMMIT TRANSACTION                                                  
+END
+
+GO

@@ -1,0 +1,102 @@
+
+CREATE PROCEDURE [dbo].[uspGetListOfAdminFeedback]       
+(      
+ @Status VARCHAR(50),      
+ @CapabilitiesId int,    
+	@IsAdmin int   
+)             
+AS              
+BEGIN 
+IF(@IsAdmin=0)                      
+    BEGIN           
+  IF(@Status = 'Pending')      
+     BEGIN      
+    SELECT F.Id Id,      
+    F.UserCode UserCode,      
+    F.UserName UserName,      
+    F.UserNTID UserNTID,      
+    F.UserEmail UserEmail,      
+    F.AdminCode AdminCode,      
+    F.AdminEmail AdminEmail,      
+    F.AdminName AdminName,      
+    F.AdminNTID AdminNTID,      
+    F.UserLOB UserLOB,      
+    F.FeedbackId FeedbackId,      
+    F.UserFeedBack UserFeedBack,      
+    F.AdminReply AdminReply,      
+    F.CreatedOn CreatedOn,      
+    F.ModifiedOn ModifiedOn,    
+    G.[Name] LOBName        
+    FROM KMTFeedback F INNER JOIN KMTGeneric G ON F.UserLOB = G.Id WHERE F.AdminReply IS NULL       AND 
+	F.CREATEDBY IN (SELECT UserNTID FROM [KMTUserRegistration] R WHERE R.CapabilitiesId = @CapabilitiesId)  
+  END      
+  ELSE      
+     BEGIN      
+    SELECT F.Id Id,      
+    F.UserCode UserCode,      
+    F.UserName UserName,      
+    F.UserNTID UserNTID,      
+    F.UserEmail UserEmail,      
+    F.AdminCode AdminCode,      
+    F.AdminEmail AdminEmail,      
+    F.AdminName AdminName,      
+    F.AdminNTID AdminNTID,      
+    F.UserLOB UserLOB,      
+    F.FeedbackId FeedbackId,      
+    F.UserFeedBack UserFeedBack,      
+    F.AdminReply AdminReply,      
+    F.CreatedOn CreatedOn,      
+    F.ModifiedOn ModifiedOn,    
+    G.[Name] LOBName       
+    FROM KMTFeedback F INNER JOIN KMTGeneric G ON F.UserLOB = G.Id WHERE F.AdminReply  IS NOT NULL  AND 
+	F.CREATEDBY IN (SELECT UserNTID FROM [KMTUserRegistration] R WHERE R.CapabilitiesId = @CapabilitiesId)  
+    ORDER BY F.ModifiedOn DESC     
+  END       
+  
+  END     
+	IF(@IsAdmin=1)                      
+    BEGIN   
+		     IF(@Status = 'Pending')      
+     BEGIN      
+    SELECT F.Id Id,      
+    F.UserCode UserCode,      
+    F.UserName UserName,      
+    F.UserNTID UserNTID,      
+    F.UserEmail UserEmail,      
+    F.AdminCode AdminCode,      
+    F.AdminEmail AdminEmail,      
+    F.AdminName AdminName,      
+    F.AdminNTID AdminNTID,      
+    F.UserLOB UserLOB,      
+    F.FeedbackId FeedbackId,      
+    F.UserFeedBack UserFeedBack,      
+    F.AdminReply AdminReply,      
+    F.CreatedOn CreatedOn,      
+    F.ModifiedOn ModifiedOn,    
+    G.[Name] LOBName        
+    FROM KMTFeedback F INNER JOIN KMTGeneric G ON F.UserLOB = G.Id WHERE F.AdminReply IS NULL       
+  END      
+  ELSE      
+     BEGIN      
+    SELECT F.Id Id,      
+    F.UserCode UserCode,      
+    F.UserName UserName,      
+    F.UserNTID UserNTID,      
+    F.UserEmail UserEmail,      
+    F.AdminCode AdminCode,      
+    F.AdminEmail AdminEmail,      
+    F.AdminName AdminName,      
+    F.AdminNTID AdminNTID,      
+    F.UserLOB UserLOB,      
+    F.FeedbackId FeedbackId,      
+    F.UserFeedBack UserFeedBack,      
+    F.AdminReply AdminReply,      
+    F.CreatedOn CreatedOn,      
+    F.ModifiedOn ModifiedOn,    
+    G.[Name] LOBName       
+    FROM KMTFeedback F INNER JOIN KMTGeneric G ON F.UserLOB = G.Id WHERE F.AdminReply  IS NOT NULL  
+    ORDER BY F.ModifiedOn DESC     
+  END         
+    END       
+  END
+GO

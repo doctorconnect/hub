@@ -1,0 +1,54 @@
+
+CREATE PROCEDURE [dbo].[uspSubmitTraining]  
+(  	
+ @id  INT,	
+ @CapId INT,	 
+ @Title  VARCHAR(200),
+ @Url  VARCHAR(200),
+ @FromDate DATETIME,
+ @ToDate DATETIME,
+ @IsActive BIT,
+ @CreatedBy VARCHAR(50),
+ @CreatedOn DATETIME,
+ @ModifiedBy VARCHAR(50),
+ @ModifiedOn DATETIME                         
+)                                                      
+AS                                                      
+BEGIN        
+    BEGIN TRANSACTION;      
+      SAVE TRANSACTION MySavePoint;  
+	   DEClARE @UserName VARCHAR(50) = NULL,
+	   @UserCode VARCHAR(50) = NULL
+	  
+	    SET @UserName = (SELECT UserName FROM KMTUserRegistration WHERE UserNTID = @CreatedBy)
+	    SET @UserCode = (SELECT UserCode FROM KMTUserRegistration WHERE UserNTID = @CreatedBy)      
+     BEGIN TRY
+	   IF(@id=0)   
+		 BEGIN               
+		   INSERT INTO KMTTraining (Title,Url,FromDate,ToDate,IsActive,CreatedBy,CreatedOn,ModifiedBy,ModifiedOn,CapId)
+		   VALUES (@Title,@Url,@FromDate,@ToDate,@IsActive,@CreatedBy,@CreatedOn,@ModifiedBy,@ModifiedOn,@CapId);
+		   INSERT INTO KMTNotification(RoleId,UserCode,IsAdminFlag,IsUserFlag,IsFacilitatorFlag,Identifier,AdminDescripation,UserDescripation,CreatedOn)
+		   VALUES('1,10',@UserCode,0,0,0,'TrainingCreated','<b>' + @UserName + '</b> has created training <b>' + @Title + '</b>',NULL,@CreatedOn);
+	
+		 END
+
+	  ELSE IF(@id>0)   
+	    BEGIN
+		   SET @UserName = (SELECT UserName FROM KMTUserRegistration WHERE UserNTID = @ModifiedBy)
+	       SET @UserCode = (SELECT UserCode FROM KMTUserRegistration WHERE UserNTID = @ModifiedBy) 
+		                
+		   UPDATE KMTTraining SET Title = @Title,Url=@Url,FromDate=@FromDate,ToDate=@ToDate,ModifiedBy=@ModifiedBy,ModifiedOn=@ModifiedOn ,IsActive=@IsActive WHERE Id = @id;
+		   INSERT INTO KMTNotification(RoleId,UserCode,IsAdminFlag,IsUserFlag,IsFacilitatorFlag,Identifier,AdminDescripation,UserDescripation,CreatedOn) 
+		   VALUES('1,10',@UserCode,0,0,0,'TrainingUpdate','<b>' + @UserName + '</b> has updated training <b>' + @Title + '</b>',NULL,@ModifiedOn);
+	
+	    END          			                    
+     END TRY       
+     BEGIN CATCH      
+        IF @@TRANCOUNT > 0      
+        BEGIN      
+            ROLLBACK TRANSACTION MySavePoint;       
+        END      
+      END CATCH                                                 
+     COMMIT TRANSACTION                                                  
+END
+GO

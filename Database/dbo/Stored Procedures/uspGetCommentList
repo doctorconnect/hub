@@ -1,0 +1,31 @@
+
+CREATE PROCEDURE [dbo].[uspGetCommentList]
+@PostId varchar(20),
+@Identifier  VARCHAR(10)      
+  AS    
+ BEGIN    
+    BEGIN TRANSACTION;          
+     SAVE TRANSACTION MySavePoint;            
+      BEGIN TRY   
+    BEGIN  
+   select P.CommentId,
+   P.PostId,
+   P.Message,
+   P.CommentedBy,
+   R.UserCode,
+   R.username AS CommentedByName ,
+   P.CommentedDate,
+   P.Identifier
+   from PostComments P join KMTUserRegistration R on R.Id=P.CommentedBy
+   where PostId = @PostId and Identifier = @Identifier   order by P.CommentedDate desc  
+    END       
+      END TRY    
+   BEGIN CATCH    
+      IF @@TRANCOUNT > 0          
+     BEGIN          
+            ROLLBACK TRANSACTION MySavePoint;           
+        END    
+         END CATCH    
+    COMMIT TRANSACTION    
+ END
+GO

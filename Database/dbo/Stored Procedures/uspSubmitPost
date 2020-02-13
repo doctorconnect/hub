@@ -1,0 +1,41 @@
+
+CREATE  PROCEDURE [dbo].[uspSubmitPost]  
+(  			 
+ @PostId INT, 
+ @CapId int ,                            
+ @PostedBy INT,
+ @CreatedBy VARCHAR(50),
+ @Message VARCHAR(1000),
+ @PostedDate DATETIME ,
+ @Remarks VARCHAR(250),
+ @ApproveBy  VARCHAR(50),  
+ @ApprovedDate DATETIME,
+ @Points  VARCHAR(10)                           
+)                                                      
+AS                                                      
+BEGIN        
+    BEGIN TRANSACTION;      
+      SAVE TRANSACTION MySavePoint;        
+     BEGIN TRY   
+	 if(@PostId=0) 
+	 BEGIN               
+       INSERT INTO POSTS  ( Message, PostedBy,PostedDate,status,CreatedBy,CapId)
+	   values ( @Message,@PostedBy,GETDATE(),'0',@CreatedBy,@CapId);
+	   INSERT INTO KMTPointEarnSystem ( Points,Pes_Id, Pes_type,Pes_by,Pes_On)
+		values ( @Points,@PostId,'UploadPost',@CreatedBy,GETDATE()); 		
+		END
+		 ELSE  if(@PostId>0) 
+		 BEGIN 
+		 UPDATE POSTS SET status='1',Remarks=@Remarks,ApproveBy=@ApproveBy,ApprovedDate=@ApprovedDate
+		  WHERE PostId=@PostId
+		 END            			                    
+     END TRY       
+     BEGIN CATCH      
+        IF @@TRANCOUNT > 0      
+        BEGIN      
+            ROLLBACK TRANSACTION MySavePoint;       
+        END      
+      END CATCH                                                 
+     COMMIT TRANSACTION                                                  
+END
+GO

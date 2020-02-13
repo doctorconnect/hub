@@ -1,0 +1,48 @@
+
+CREATE PROCEDURE [dbo].[uspUpdateFollowerCount]
+@Id INT,    
+@UserId  INT,      
+@Type  VARCHAR(20),
+@CreatedOn DATETIME   
+
+AS    
+ BEGIN    
+    BEGIN TRANSACTION;          
+     SAVE TRANSACTION MySavePoint;            
+      BEGIN TRY   
+		IF(@Type = 'Follow')  
+		BEGIN                     
+		 INSERT INTO Follower(FollowerBy,FollowingBy,FollowerDate) VALUES(@UserId,@Id,@CreatedOn)  
+
+		 DEClARE @UserName VARCHAR(50) = NULL,
+		 @UserCode VARCHAR(50) = NULL,
+		 @FollowingUser VARCHAR(50) = NULL,
+		 @FollowingUserId VARCHAR(50) = NULL
+		  
+		 SET @UserName = (SELECT UserName FROM KMTUserRegistration WHERE Id = @Id)
+		 SET @UserCode = (SELECT UserCode FROM KMTUserRegistration WHERE Id = @Id)
+		 SET @FollowingUser = (SELECT UserName FROM KMTUserRegistration WHERE Id = @UserId)
+		 SET @FollowingUserId = (SELECT UserCode FROM KMTUserRegistration WHERE Id = @UserId)
+
+		 -- Insert value for follow user 
+		 INSERT INTO KMTNotification(RoleId,UserCode,IsAdminFlag,IsUserFlag,IsFacilitatorFlag,Identifier,AdminDescripation,UserDescripation,CreatedOn)
+         VALUES('10,12',@UserCode,0,0,0,'FollowersStatus','<b>' + @UserName + '</b> has started following <b>'+ @FollowingUser + '</b>','You have started following <b>' + @FollowingUser + '</b>',@CreatedOn) 
+		 
+		 -- Insert value for following user   
+         INSERT INTO KMTNotification(RoleId,UserCode,IsAdminFlag,IsUserFlag,IsFacilitatorFlag,Identifier,AdminDescripation,UserDescripation,CreatedOn)
+         VALUES('12',@FollowingUserId,0,0,0,'FollowingStatus',NULL,'<b>' + @UserName + '</b> has started following you',@CreatedOn) 
+		END  
+		ELSE  IF(@Type = 'UnFollow')  
+		BEGIN  
+	   DELETE FROM Follower WHERE FollowerBy=@UserId and FollowingBy =@Id
+    END    
+      END TRY    
+   BEGIN CATCH    
+      IF @@TRANCOUNT > 0          
+     BEGIN          
+            ROLLBACK TRANSACTION MySavePoint;           
+        END    
+         END CATCH    
+    COMMIT TRANSACTION    
+ END
+GO

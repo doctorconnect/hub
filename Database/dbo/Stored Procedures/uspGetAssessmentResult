@@ -1,0 +1,43 @@
+
+CREATE PROCEDURE [dbo].[uspGetAssessmentResult]
+(@CapabilitiesId int,
+ @IsAdmin int
+)                  
+ AS    
+ BEGIN    
+ BEGIN TRANSACTION;          
+ SAVE TRANSACTION MySavePoint;            
+ BEGIN TRY
+ if(@IsAdmin=0)                    
+    BEGIN    
+      select 
+	  R.UserName,
+	  Q.QuizName,
+	  A.Marks,
+	  A.Status 
+	  from KMTAssessmentResult A join KMTQuiz Q  
+	  on A.Quizid = Q.QuizID
+	  JOIN KMTUserRegistration R ON A.CreatedBy=R.UserNTID
+	  WHERE R.CapabilitiesId=@CapabilitiesId
+ END 
+ if(@IsAdmin=1) 
+ BEGIN    
+      select 
+	  R.UserName,
+	  Q.QuizName,
+	  A.Marks,
+	  A.Status 
+	  from KMTAssessmentResult A join KMTQuiz Q  
+	  on A.Quizid = Q.QuizID
+	  JOIN KMTUserRegistration R ON A.CreatedBy=R.UserNTID
+ END 
+END TRY    
+   BEGIN CATCH    
+      IF @@TRANCOUNT > 0          
+     BEGIN          
+            ROLLBACK TRANSACTION MySavePoint;           
+        END    
+         END CATCH    
+    COMMIT TRANSACTION    
+ END
+GO

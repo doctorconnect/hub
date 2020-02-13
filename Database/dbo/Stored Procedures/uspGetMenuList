@@ -1,0 +1,45 @@
+
+CREATE PROCEDURE [dbo].[uspGetMenuList]  
+ (  
+ @NTID NVARCHAR(50),  
+ @IsAdmin int  
+ )                  
+AS      
+ BEGIN      
+ BEGIN TRANSACTION;            
+ SAVE TRANSACTION MySavePoint;              
+ BEGIN TRY  
+ if(@IsAdmin=0)              
+ BEGIN              
+     SELECT DISTINCT(TM.MenuId) MenuId,          
+     TM.MenuName MenuName,          
+     TM.MenuURL MenuURL,          
+     TM.ParentId ParentId,          
+     TM.IsActive IsActive           
+     FROM KMTMenu TM                
+     INNER JOIN KMTRolePermission RP ON RP.MenuId=TM.MenuId AND TM.IsActive=1                
+     INNER JOIN KMTUserRegistration UR ON UR.RoleId = RP.RoleId AND RP.IsActive=1                
+     WHERE UR.IsActive=1 AND UR.UserNTID = @NTID  AND TM.MenuId NOT IN (17, 18, 19, 20, 21)     
+   END   
+   if(@IsAdmin=1)              
+ BEGIN              
+     SELECT DISTINCT(TM.MenuId) MenuId,          
+     TM.MenuName MenuName,          
+     TM.MenuURL MenuURL,          
+     TM.ParentId ParentId,          
+     TM.IsActive IsActive           
+     FROM KMTMenu TM                
+     INNER JOIN KMTRolePermission RP ON RP.MenuId=TM.MenuId AND TM.IsActive=1                
+     INNER JOIN KMTUserRegistration UR ON UR.RoleId = RP.RoleId AND RP.IsActive=1                
+     WHERE UR.IsActive=1 AND UR.UserNTID = @NTID   
+   END          
+      END TRY      
+   BEGIN CATCH      
+      IF @@TRANCOUNT > 0            
+     BEGIN            
+            ROLLBACK TRANSACTION MySavePoint;             
+        END      
+         END CATCH      
+    COMMIT TRANSACTION      
+ END
+GO

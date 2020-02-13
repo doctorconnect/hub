@@ -1,0 +1,44 @@
+
+CREATE PROCEDURE [dbo].[uspGetPopulerPostList]     
+  (
+ @CapabilitiesId int,
+ @IsAdmin int
+ )                
+AS    
+ BEGIN    
+ BEGIN TRANSACTION;          
+ SAVE TRANSACTION MySavePoint;            
+ BEGIN TRY
+ if(@IsAdmin=0)            
+ BEGIN        
+   select P.PostId,
+   P.Message,
+   R.username  as PostedByName,
+   R.UserCode 
+   from Posts P join KMTUserRegistration R on R.id= P.Postedby
+   where P.PostId  in (select a.pes_id from (
+   select top(5) sum(points) as points, pes_id from [dbo].[KMTPointEarnSystem] 
+   where Pes_type like '%Post%' group by pes_id order by points desc)a)
+   and P.CapId = @CapabilitiesId         
+   END 
+   if(@IsAdmin=1)            
+   BEGIN        
+   select P.PostId,
+   P.Message,
+   R.username  as PostedByName,
+   R.UserCode 
+   from Posts P join KMTUserRegistration R on R.id= P.Postedby
+   where P.PostId  in (select a.pes_id from (
+   select top(5) sum(points) as points, pes_id from [dbo].[KMTPointEarnSystem] 
+   where Pes_type like '%Post%' group by pes_id order by points desc)a)    
+   END  
+    END TRY    
+   BEGIN CATCH    
+      IF @@TRANCOUNT > 0          
+     BEGIN          
+            ROLLBACK TRANSACTION MySavePoint;           
+        END    
+         END CATCH    
+    COMMIT TRANSACTION    
+ END
+GO

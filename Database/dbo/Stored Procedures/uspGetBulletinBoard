@@ -1,0 +1,58 @@
+
+CREATE PROCEDURE [dbo].[uspGetBulletinBoard]       
+(    
+ @CapabilitiesId int,    
+ @IsAdmin int    
+ )                    
+ AS        
+ BEGIN        
+ BEGIN TRANSACTION;              
+ SAVE TRANSACTION MySavePoint;                
+ BEGIN TRY    
+ if(@IsAdmin=0)                      
+    BEGIN        
+ SELECT 
+        C.Id,
+		C.Name,
+	    C.Title, 
+		C.Description, 
+		C.Article, 
+		C.type, 
+		C.IsActive, 
+		R.username as CREATEDBY,    
+		C.CreatedOn,    
+        C.ModifiedBy,    
+        C.ModifiedOn    
+  FROM [KmtManageBulletinBoard] C JOIN [KMTUserRegistration] R     
+  ON C.CREATEDBY= R.userNtid    
+  WHERE C.CapId = @CapabilitiesId    
+  order by c.id asc    
+   END     
+ if(@IsAdmin=1)                      
+       BEGIN        
+       SELECT     
+  C.Id,    
+  C.Name,    
+  C.Title,    
+  C.Description,    
+  C.Article,    
+  C.type,    
+  C.IsActive,    
+  R.username as CREATEDBY,    
+  C.CreatedOn,    
+  C.ModifiedBy,    
+  C.ModifiedOn    
+  FROM [KmtManageBulletinBoard] C JOIN [KMTUserRegistration] R 
+  ON C.CREATEDBY= R.userNtid    
+  order by c.id asc    
+ END    
+ END TRY        
+   BEGIN CATCH        
+      IF @@TRANCOUNT > 0              
+     BEGIN              
+            ROLLBACK TRANSACTION MySavePoint;               
+        END        
+         END CATCH        
+    COMMIT TRANSACTION        
+ END		
+GO

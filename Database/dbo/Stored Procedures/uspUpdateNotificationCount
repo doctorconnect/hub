@@ -1,0 +1,39 @@
+
+CREATE PROC [dbo].[uspUpdateNotificationCount]  
+(  
+ @RegisterNotificationTime DATETIME,  
+ @UserId INT,
+ @Flag VARCHAR(50),
+ @UserCode VARCHAR(50) 
+)  
+AS  
+ BEGIN  
+    BEGIN TRANSACTION;                        
+     SAVE TRANSACTION MySavePoint;                          
+       BEGIN TRY  
+	     IF(@Flag = 'AdminFlag')
+		    BEGIN
+	           UPDATE KMTNotification SET IsAdminFlag = 1 WHERE Id = @UserId --AND CreatedOn > @RegisterNotificationTime   
+			END
+            ELSE IF(@Flag = 'FacilitatorFlag')
+		    BEGIN
+		       UPDATE KMTNotification SET IsFacilitatorFlag = 1 WHERE Id = @UserId --AND CreatedOn > @RegisterNotificationTime   
+		    END
+			ELSE IF(@Flag = 'UserFlag')
+		    BEGIN
+		       UPDATE KMTNotification SET IsUserFlag = 1 WHERE Id = @UserId AND @UserCode = @UserCode --AND CreatedOn > @RegisterNotificationTime   
+		    END
+	   END TRY        
+	   BEGIN CATCH        
+      IF @@TRANCOUNT > 0                        
+        BEGIN                        
+            ROLLBACK TRANSACTION MySavePoint;                         
+        END                  
+      END CATCH                  
+    COMMIT TRANSACTION     
+  
+ END
+
+
+
+GO

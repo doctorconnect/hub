@@ -1,0 +1,42 @@
+
+CREATE  PROCEDURE [dbo].[uspSubmitBadge]  
+(                               
+ @Id INT,
+ @BadgeId INT,
+ @BadgeName VARCHAR(50),
+ @BadgePoint INT,
+ @BadgePointTo INT,
+ @BadgeImage varbinary(max),
+ @IsActive BIT,
+ @CreatedBy VARCHAR(50),
+ @CreatedOn DATETIME,
+ @ModifiedBy VARCHAR(50),
+ @ModifiedOn  datetime                                  
+)                                                      
+AS                                                      
+BEGIN        
+    BEGIN TRANSACTION;      
+     SAVE TRANSACTION MySavePoint;        
+     BEGIN TRY
+	 if(@Id=0)  
+	 BEGIN 
+	 INSERT INTO KMTBadgeDetail (BadgeId,BadgeName,BadgePoint,BadgePointTo,IsActive,CreatedBy,CreatedOn,ModifiedBy,ModifiedOn)  
+	 VALUES (@Id,@BadgeName,@BadgePoint,@BadgePointTo,@IsActive,@CreatedBy,GETDATE(),'','');
+	 INSERT INTO KMTBadge (BadgeImage)
+	  VALUES (@BadgeImage);
+     END  
+	 else if(@Id>0)  
+	 BEGIN 
+	 UPDATE KMTBadgeDetail SET BadgeName= @BadgeName,BadgePoint=@BadgePoint,BadgePointTo=@BadgePointTo,IsActive=@IsActive WHERE Id=@Id;
+	 UPDATE KMTBadge SET BadgeImage= @BadgeImage WHERE BadgeId=@Id;
+	 END        			                    
+     END TRY   
+     BEGIN CATCH
+     IF @@TRANCOUNT > 0
+        BEGIN
+            ROLLBACK TRANSACTION MySavePoint;
+        END  
+      END CATCH                                         
+     COMMIT TRANSACTION
+END
+GO

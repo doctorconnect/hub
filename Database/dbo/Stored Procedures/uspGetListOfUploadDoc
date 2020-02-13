@@ -1,0 +1,63 @@
+
+ CREATE PROCEDURE [dbo].[uspGetListOfUploadDoc]
+ (
+ @CapabilitiesId int,
+ @IsAdmin int
+ ) 
+  AS    
+ BEGIN    
+ BEGIN TRANSACTION;          
+ SAVE TRANSACTION MySavePoint;            
+ BEGIN TRY
+ if(@IsAdmin=0)  
+     BEGIN           
+	  SELECT
+	  u.Id,
+	  u.Title,
+	  u.Message,
+	  d.name as Category,
+	  u.Name,
+	  u.type,
+	  u.UploadBy,
+	  r.UserName as UploadByName,
+	  r.UserCode,
+	  u.Status,
+	  u.FilePath,
+	  u.Remarks,
+	  u.UploadDate
+	  from UploadDocument u join KMTUserRegistration r on u.UPLOADBY = r.Id
+	  join [KMTDocumentCategory] d on u.Category= d.Id
+	  where u.CapId = @CapabilitiesId
+	  ORDER BY UploadDate ASC
+END 
+if(@IsAdmin=1)  
+     BEGIN           
+	  SELECT
+	  u.Id,
+	  u.Title,
+	  u.Message,
+	  d.name as Category,
+	  u.Name,
+	  u.type,
+	  u.UploadBy,
+	  r.UserName as UploadByName,
+	  r.UserCode,
+	  u.Status,
+	  u.FilePath,
+	  u.Remarks,
+	  u.UploadDate
+	  from UploadDocument u join KMTUserRegistration r on u.UPLOADBY = r.Id
+	  join [KMTDocumentCategory] d on u.Category= d.Id
+	   ORDER BY u.UploadDate ASC
+END 
+END TRY    
+   BEGIN CATCH    
+      IF @@TRANCOUNT > 0          
+     BEGIN          
+            ROLLBACK TRANSACTION MySavePoint;           
+        END    
+         END CATCH    
+    COMMIT TRANSACTION    
+ END
+
+GO

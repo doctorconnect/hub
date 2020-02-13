@@ -1,0 +1,37 @@
+
+CREATE  PROCEDURE [dbo].[uspSubmitDocumentCategory]  
+(  	
+ @id  int,
+ @CapId int ,	 
+ @Name  VARCHAR(50),
+ @IsActive BIT,
+ @CreatedBy VARCHAR(50),
+ @CreatedOn DATETIME,
+ @ModifiedBy VARCHAR(50),
+ @ModifiedOn  DATETIME                         
+)                                                      
+AS                                                      
+BEGIN        
+    BEGIN TRANSACTION;      
+      SAVE TRANSACTION MySavePoint;        
+     BEGIN TRY
+	 if(@id=0)   
+	 BEGIN               
+    INSERT INTO KMTDocumentCategory (NAME,ISACTIVE,CREATEDBY,CREATEDON,MODIFIEDBY,MODIFIEDON,CapId)
+	   VALUES (@Name,@IsActive,@CreatedBy,@CreatedOn,'','',@CapId);		
+		END
+	ELSE if(@id>0)   
+	 BEGIN               
+    update KMTDocumentCategory set NAME = @Name,ModifiedBy=@ModifiedBy,ModifiedOn=@ModifiedOn,IsActive=@IsActive where Id = @id;
+	END          			                    
+     END TRY       
+     BEGIN CATCH      
+        IF @@TRANCOUNT > 0      
+        BEGIN      
+            ROLLBACK TRANSACTION MySavePoint;       
+        END      
+      END CATCH                                                 
+     COMMIT TRANSACTION                                                  
+END
+
+GO

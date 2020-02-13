@@ -1,0 +1,24 @@
+
+create PROCEDURE [dbo].[uspGetMyfollower]
+@Id INT     
+  AS    
+ BEGIN    
+    BEGIN TRANSACTION;          
+     SAVE TRANSACTION MySavePoint;            
+      BEGIN TRY   
+    BEGIN  
+select FollowingBy,FollowerBy from(select x.total as tt, x.status as st  from(
+ select count(FollowingBy) total, 'FollowingBy' status from[Follower] where FollowingBy = @Id 
+ union select count(FollowerBy) as follwing, 'FollowerBy'   from[Follower] where FollowerBy = @Id) x 
+) d pivot(max(tt)  for st in (FollowingBy, FollowerBy)) piv                     
+    END       
+      END TRY    
+   BEGIN CATCH    
+      IF @@TRANCOUNT > 0          
+     BEGIN          
+            ROLLBACK TRANSACTION MySavePoint;           
+        END    
+         END CATCH    
+    COMMIT TRANSACTION    
+ END
+GO

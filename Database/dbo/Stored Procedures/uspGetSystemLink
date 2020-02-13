@@ -1,0 +1,44 @@
+
+CREATE PROCEDURE [dbo].[uspGetSystemLink]                  
+(
+ @CapabilitiesId int,
+ @IsAdmin int
+ )                
+ AS    
+ BEGIN    
+ BEGIN TRANSACTION;          
+ SAVE TRANSACTION MySavePoint;            
+ BEGIN TRY
+ if(@IsAdmin=0)                   
+    BEGIN     
+      SELECT S.Id,
+	  	S.Title,
+		S.Url,
+		S.ISACTIVE,
+		R.username as CREATEDBY,
+		S.CREATEDON,
+		S.MODIFIEDBY,
+		S.MODIFIEDON FROM [KMTSystemLink] S JOIN [KMTUserRegistration] R ON R.userNtid=S.CREATEDBY
+		where S.CapId = @CapabilitiesId
+ END 
+ if(@IsAdmin=1)                   
+    BEGIN     
+      SELECT S.Id,
+	  	S.Title,
+		S.Url,
+		S.ISACTIVE,
+		R.username as CREATEDBY,
+		S.CREATEDON,
+		S.MODIFIEDBY,
+		S.MODIFIEDON FROM [KMTSystemLink] S JOIN [KMTUserRegistration] R ON R.userNtid=S.CREATEDBY
+ END 
+ END TRY    
+   BEGIN CATCH    
+      IF @@TRANCOUNT > 0          
+     BEGIN          
+            ROLLBACK TRANSACTION MySavePoint;           
+        END    
+         END CATCH    
+    COMMIT TRANSACTION    
+ END
+GO

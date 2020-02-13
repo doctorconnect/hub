@@ -1,0 +1,21 @@
+
+CREATE proc [dbo].[uspGetPolls](          
+@CurrentDate datetime =null,
+@CapabilitiesId int,    
+@IsAdmin int          
+)            
+as            
+BEGIN             
+	IF(@IsAdmin=0)
+		BEGIN
+			SELECT Title,Options,convert(varchar,FromDate,101) as FromDate,convert(nvarchar,ToDate,101) as ToDate from Poll P
+			WHERE P.CREATEDBY IN (SELECT UserNTID FROM [KMTUserRegistration] R WHERE R.CapabilitiesId = @CapabilitiesId) AND CAST(@CurrentDate AS date) between CAST(FromDate as date) and CAST(ToDate as date) and IsActive=1
+			ORDER BY PollID Desc
+		END
+	ELSE IF(@IsAdmin=1)
+		BEGIN
+			SELECT Title,Options,convert(varchar,FromDate,101) as FromDate,convert(nvarchar,ToDate,101) as ToDate FROM Poll WHERE CAST(@CurrentDate AS DATE) BETWEEN CAST(FromDate AS DATE) and CAST(ToDate AS DATE) and IsActive=1
+			ORDER BY PollID DESC
+		END
+END
+GO

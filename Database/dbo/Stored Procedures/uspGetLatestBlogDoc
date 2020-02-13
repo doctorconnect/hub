@@ -1,0 +1,47 @@
+
+CREATE PROCEDURE [dbo].[uspGetLatestBlogDoc]
+(
+	@CapabilitiesId int,    
+	@IsAdmin int    
+)  
+AS      
+BEGIN      
+	IF(@IsAdmin=0)                      
+    BEGIN 	  
+		SELECT TOP(7) A.id,
+		 A.type,
+		 A.title,
+		 A.Message,
+		 R.UserName  as UserName, 
+		 R.UserCode, 
+		 A.dt, 
+		 A.status,
+		 a.CapId   
+		FROM (SELECT  id,'BLOG' as type ,title as title,message,blogby,blogdate as dt,status,CapId from Blogs  
+		UNION  
+		SELECT id,'DOC' as type ,Title  as title,message,uploadby,uploaddate as dt,status,CapId from [dbo].[UploadDocument] ) A  
+		JOIN kmtuserregistration R  
+		on R.id= A.blogby   
+		WHERE A.status ='1'  AND a.CapId = @CapabilitiesId
+		ORDER BY A.dt desc                        
+	END     
+	IF(@IsAdmin=1)                      
+    BEGIN 
+		SELECT TOP(7) A.id, 
+		A.type, 
+		A.title, 
+		A.Message, 
+		R.UserName  as UserName, 
+		R.UserCode, 
+		A.dt, 
+		A.status   
+		FROM (SELECT  id,'BLOG' as type ,title as title,message,blogby,blogdate as dt,status from Blogs  
+		UNION  
+		SELECT id,'DOC' as type ,Title  as title,message,uploadby,uploaddate as dt,status from [dbo].[UploadDocument] ) A  
+		JOIN kmtuserregistration R  
+		on R.id= A.blogby   
+		WHERE A.status ='1'  
+		ORDER BY A.dt desc
+	END			  
+END
+GO

@@ -1,0 +1,4251 @@
+------------------UserRegistration.js-----------------------------
+
+$(document).ready(function () {
+    $('.menu-container').hide(); // Hide menu
+    GetEmployeeDetails($('#hdEmployeeNTIDSessionVal').val())
+});
+
+$('.ddlValidation').change(function () {
+    var roleId = parseInt($('#ddlRole').val()) || 0;
+    var lobId = parseInt($('#ddlLOB').val()) || 0;
+    var bsId = parseInt($('#ddlBS').val()) || 0;
+    var capId = parseInt($('#ddlCAP').val()) || 0;
+
+    if (roleId == 0 || lobId == 0 || bsId == 0 || capId == 0)
+        $('.regstrBtn').prop("disabled", true);
+    else
+        $('.regstrBtn').prop("disabled", false);
+});
+
+function GetEmployeeDetails(requesterVal) {
+    $.ajax({
+        url: "/Common/GetActiveDirectoryUserDetail",
+        type: "GET",
+        dataType: "JSON",
+        data: { searchParameter: requesterVal },
+        success: function (data) {
+            if (data.UserCode !== null) {
+                FillRequestFormDetails(data);
+            }
+            else {
+                alert("Invalid input or record doesn't exist");
+                return false;
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+function FillRequestFormDetails(data) {
+    $('#hdUserName').val(data.UserName);
+    $('#UserName').val(data.UserName);
+    $('#hdUserNTID').val(data.UserNTID);
+    $('#hdUserEmail').val(data.UserEmail);
+    $('#UserEmail').val(data.UserEmail);
+    $('#UserCode').val(data.UserCode);
+    $('#hdUserCode').val(data.UserCode);
+    $('#hdManagerCode').val(data.ManagerCode);
+    $('#hdManagerEmail').val(data.ManagerEmail);
+    $('#hdManagerNTID').val(data.ManagerNTID);
+    $('#hdManagerName').val(data.ManagerName);
+    $('#ManagerName').val(data.ManagerName);
+}
+
+
+-----------------ReusableMessage.js-------------------------------
+var arrMsg = new Array();
+
+//Validation...Start
+arrMsg["VL001"] = 'Please enter numeric value.';
+arrMsg["VL002"] = 'All fields with sign(*) are required.';
+arrMsg["VL003"] = 'Please select site.';
+arrMsg["VL004"] = 'No data found or MRT already approved.';
+arrMsg["VL005"] = 'Record already exist!';
+arrMsg["VL006"] = 'Enter numeric value.';
+arrMsg["VL007"] = 'Issue Quantity can not be greater then Availabe Stock';
+//Validation...End
+
+//Confirmation...Start
+arrMsg["CN001"] = 'Are you sure you want to save?';
+arrMsg["CN002"] = 'Are you sure you want to update?';
+arrMsg["CN003"] = 'Are you sure you want to delete?';
+arrMsg["CN004"] = 'Are you sure you want to deactivate?';
+arrMsg["CN005"] = 'Are you sure you want to approve?';
+arrMsg["CN006"] = 'Are you sure you want to reject?';
+//Confirmation...End
+
+//Transection...Start
+arrMsg["TN001"] = 'Record saved successfully.';
+arrMsg["TN002"] = 'Record updated successfully.';
+arrMsg["TN003"] = 'Record deleted successfully.';
+//Transection...End
+
+//Exception...Start
+arrMsg["EX001"] = 'Error while saving record.';
+arrMsg["EX002"] = 'Error while updating record.';
+arrMsg["EX003"] = 'Network issue.';
+//Exception...End
+
+//General...Start
+arrMsg["GEN01"] = 'Processing, please wait...';
+//General..End
+ 
+
+------------------------ReusableFunction.js-----------------------
+var viewModel = {};
+var copyViewModel = {};
+var str;
+
+function AlertMessage(msg) {
+    alert(msg)
+}
+
+function BlockScreen() {
+    $.blockUI({
+        css: {
+            border: 'none',
+            padding: '15px',
+            backgroundColor: '#000',
+            '-webkit-border-radius': '10px',
+            '-moz-border-radius': '10px',
+            opacity: .8,
+            color: '#fff'
+        }
+    });
+}
+
+function UnblockScreen() {
+    $.unblockUI();
+}
+
+
+function CheckboxDefaultProperty() {
+    $("input[type=checkbox][Id=IsActive]").prop("checked", true).attr("disabled", true);
+}
+
+//  To disable/enable all typeof controls
+function EnableDisableControls(CntrlId, propertyType, CntrlType) {
+    if (propertyType == "disabled") {
+        if (CntrlType == "T") {
+            $('#' + CntrlId).attr("disabled", "disabled");
+        }
+        else if (CntrlType == "D") {
+            $('#' + CntrlId).attr("disabled", "disabled");
+        }
+        else if (CntrlType == "B") {
+            $('#' + CntrlId).attr("disabled", "disabled");
+        }
+        else if (CntrlType == "C") {
+            $('input[Id=' + CntrlId + ']').attr("disabled", "disabled");
+        }
+    }
+    else if (propertyType == "enabled") {
+        if (CntrlType == "T") {
+            $('#' + CntrlId).prop("disabled", false);
+        }
+        else if (CntrlType == "D") {
+            $('#' + CntrlId).prop("disabled", false);
+        }
+        else if (CntrlType == "B") {
+            $('#' + CntrlId).prop("disabled", false);
+        }
+        else if (CntrlType == "C") {
+            $('input[Id=' + CntrlId + ']').prop("disabled", false);
+        }
+    }
+}
+
+//  To clear all typeof controls
+function ClearControls(CntrlId, CntrlType) {
+    if (CntrlType == "T") {
+        $('#' + CntrlId).val("");
+        //$('#' + CntrlId).removeClass();
+    }
+    else if (CntrlType == "D") {
+        $('#' + CntrlId).val("");
+        //$('#' + CntrlId).removeClass("disabled");
+    }
+    else if (CntrlType == "C") {
+        $('input[Id=' + CntrlId + ']').removeAttr('checked');
+    }
+    else if (CntrlType == "R") {
+        //$('#' + CntrlId).val("");
+    }
+}
+
+function HideUpdateShowSave() {
+    $("#btnUpdate").hide();
+    $("#btnSave").show();
+}
+
+function HideSaveShowUpdate() {
+    $("#btnUpdate").show();
+    $("#btnSave").hide();
+}
+
+function InActiveConfirmation(CheckValue) {
+    if (CheckValue == true) {
+        $('input[type=checkbox][id=IsActive]').click(function () {
+            if (!$('input[type=checkbox][id=IsActive]').prop("checked")) {
+                if (confirm(arrMsg["CN004"])) {
+                    $("input[type=checkbox][Id=IsActive]").prop("checked", false);
+                }
+                else {
+                    $("input[type=checkbox][Id=IsActive]").prop("checked", true);
+                }
+            }
+        });
+    }
+}
+
+    var alertMsg = '';
+    if (Type == "S") {
+        alertMsg = arrMsg["CN001"];
+    }
+    else if (Type == "U") {
+        alertMsg = arrMsg["CN002"];
+    }
+    if (confirm(alertMsg)) {
+        ajaxindicatorstart(arrMsg["GEN01"]);
+        jQuery.ajax({
+            async: false,
+            type: "POST",
+            url: Action,
+            data: ViewModel,
+            contentType: "application/json",
+            success: function (result) {
+                if (result.StatusCode == 1) {
+                    AlertMessage(result.StatusMessage);
+                    RedirectToAction(RedirectTo);
+                }
+                else if (result.StatusCode == 0) {
+                    AlertMessage(result.StatusMessage);
+                }
+                ajaxindicatorstop();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                 ajaxindicatorstop();
+                AlertMessage(arrMsg["EX001"]);
+            }
+        });
+    }
+
+
+function AjaxCallingWithConfirmMsg(Action, ViewModel, RedirectTo, alertMsg) {
+    if (confirm(alertMsg)) {
+        ajaxindicatorstart(arrMsg["GEN01"]);
+        jQuery.ajax({
+            async: false,
+            type: "POST",
+            url: Action,
+            data: ViewModel,
+            contentType: "application/json",
+            success: function (result) {
+                if (result.StatusCode == 1) {
+                    AlertMessage(result.StatusMessage);
+                    RedirectToAction(RedirectTo);
+                }
+                else if (result.StatusCode == 0) {
+                    AlertMessage(result.StatusMessage);
+                }
+                ajaxindicatorstop();
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                ajaxindicatorstop();
+                AlertMessage(arrMsg["EX001"]);
+            }
+        });
+    }
+}
+
+function AjaxCallingWithoutConfirm(Action, ViewModel, RedirectTo, Type) {
+
+    ajaxindicatorstart(arrMsg["GEN01"]);
+    jQuery.ajax({
+        async: false,
+        type: "POST",
+        url: Action,
+        data: ViewModel,
+        contentType: "application/json",
+        success: function (result) {
+            //debugger;
+            if (result.StatusCode == 1) {
+                AlertMessage(result.StatusMessage);
+                RedirectToAction(RedirectTo);
+            }
+            else if (result.StatusCode == 0) {
+                AlertMessage(result.StatusMessage);
+            }
+            ajaxindicatorstop();
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            ajaxindicatorstop();
+            AlertMessage(arrMsg["EX001"]);
+        }
+    });
+
+}
+ 
+function RedirectToAction(RedirectTo) {
+    window.location = RedirectTo;
+}
+
+
+function SetSelectInDdl() {
+    $("#Category_SubCategoryId").append($("<option></option>").val("0").html("--Select--"));
+    $("#Site_City_Cluster_ClusterId").append($("<option></option>").val("0").html("--Select--"));
+    $("#Site_City_CityId").append($("<option></option>").val("0").html("--Select--"));
+    $("#Site_SiteId").append($("<option></option>").val("0").html("--Select--"));
+    $("#Vendor_VendorId").append($("<option></option>").val("0").html("--Select--"));
+}
+
+
+function BindDDLCommon(controlId, param, controller, action) {
+    //debugger;
+    $('#' + controlId).empty();
+    $("#" + controlId).append($("<option></option>").val("0").html("--Select--"));
+
+    $.ajax({
+        async: false,
+        url: "/" + controller + "/" + action,
+        data: { Id: param },
+        contentType: "application/json; charset=utf-8",
+        cashe: false,
+        success: function (data) {
+            //debugger
+            $.each(data, function (key, value) {
+                $("#" + controlId).append($("<option></option>").val(value.Value).html(value.Text));
+            });
+
+        },
+        error: function (a, b, c) {
+        }
+    });
+}
+
+
+function BindCountry(controlId, controller, action) {
+    //debugger;
+    $('#' + controlId).empty();
+    $("#" + controlId).append($("<option></option>").val("0").html("--Select--"));
+
+    EmptyDDL("ddlClusterId");
+    EmptyDDL("ddlCityId");
+    EmptyDDL("ddlSiteId");
+
+    $.ajax({
+        async: false,
+        url: "/" + controller + "/" + action,
+        //data: { Id: param },
+        contentType: "application/json; charset=utf-8",
+        cashe: false,
+        success: function (data) {
+            //debugger
+            $.each(data, function (key, value) {
+                $("#" + controlId).append($("<option></option>").val(value.Value).html(value.Text));
+            });
+
+        },
+        error: function (a, b, c) {
+        }
+    });
+}
+
+function BindCategory(controlId, controller, action) {
+    //debugger;
+    $('#' + controlId).empty();
+    $("#" + controlId).append($("<option></option>").val("0").html("--Select--"));
+
+    $.ajax({
+        async: false,
+        url: "/" + controller + "/" + action,
+        //data: { Id: param },
+        contentType: "application/json; charset=utf-8",
+        cashe: false,
+        success: function (data) {
+            //debugger
+            $.each(data, function (key, value) {
+                $("#" + controlId).append($("<option></option>").val(value.Value).html(value.Text));
+            });
+
+        },
+        error: function (a, b, c) {
+        }
+    });
+}
+
+function BindTower(controlId, controller, action, SiteId) {
+    //debugger;
+    $('#' + controlId).empty();
+    $("#" + controlId).append($("<option></option>").val("0").html("--Select--"));
+
+    $.ajax({
+        async: false,
+        url: "/" + controller + "/" + action,
+        data: {SiteId: SiteId },
+        contentType: "application/json; charset=utf-8",
+        cashe: false,
+        success: function (data) {
+            //debugger
+            $.each(data, function (key, value) {
+                $("#" + controlId).append($("<option></option>").val(value.Value).html(value.Text));
+            });
+
+        },
+        error: function (a, b, c) {
+        }
+    });
+}
+
+function BindFloor(controlId, controller, action, TowerId) {
+    //debugger;
+    $('#' + controlId).empty();
+    $("#" + controlId).append($("<option></option>").val("0").html("--Select--"));
+
+    $.ajax({
+        async: false,
+        url: "/" + controller + "/" + action,
+        data: { TowerId: TowerId },
+        contentType: "application/json; charset=utf-8",
+        cashe: false,
+        success: function (data) {
+            //debugger
+            $.each(data, function (key, value) {
+                $("#" + controlId).append($("<option></option>").val(value.Value).html(value.Text));
+            });
+
+        },
+        error: function (a, b, c) {
+        }
+    });
+}
+ 
+
+function EmptyDDL(ddlId) {
+    $('#' + ddlId).empty();
+    $("#" + ddlId).append($("<option></option>").val("0").html("--Select--"));
+}
+
+function ClearPartialDDL() {
+    EnableDisableControls("ddlCountryId", "enabled", "D");
+    EnableDisableControls("ddlClusterId", "enabled", "D");
+    EnableDisableControls("ddlCityId", "enabled", "D");
+    EnableDisableControls("ddlSiteId", "enabled", "D");
+
+    ClearControls("ddlCountryId", "D");
+    EmptyDDL("ddlClusterId");
+    EmptyDDL("ddlCityId");
+    EmptyDDL("ddlSiteId");
+}
+
+function EnablePartialViewDDL() {
+    EnableDisableControls("ddlCountryId", "enabled", "D");
+    EnableDisableControls("ddlClusterId", "enabled", "D");
+    EnableDisableControls("ddlCityId", "enabled", "D");
+    EnableDisableControls("ddlSiteId", "enabled", "D");
+}
+
+function DisablePartialViewDDL() {
+    EnableDisableControls("ddlCountryId", "disabled", "D");
+    EnableDisableControls("ddlClusterId", "disabled", "D");
+    EnableDisableControls("ddlCityId", "disabled", "D");
+    EnableDisableControls("ddlSiteId", "disabled", "D");
+}
+ 
+function ClearDDL(viewModel) {
+    //debugger;
+    //Super Admin 
+    if (viewModel.LoggedInUser.RoleId() == 1) {
+        EnableDisableControls("ddlCountryId", "enabled", "D");
+        EnableDisableControls("ddlClusterId", "enabled", "D");
+        EnableDisableControls("ddlCityId", "enabled", "D");
+        EnableDisableControls("ddlSiteId", "enabled", "D");
+        BindCountry("ddlCountryId", "DDLCommon", "GetCountry");
+        EmptyDDL("ddlClusterId");
+        EmptyDDL("ddlCityId");
+        EmptyDDL("ddlSiteId");
+    }
+        //Admin
+    else if (viewModel.LoggedInUser.RoleId() == 2) {
+        EnableDisableControls("ddlCountryId", "disabled", "D");
+        EnableDisableControls("ddlClusterId", "disabled", "D");
+        EnableDisableControls("ddlCityId", "enabled", "D");
+        EnableDisableControls("ddlSiteId", "enabled", "D");
+        BindCountry("ddlCountryId", "DDLCommon", "GetCountry");
+        $("#ddlCountryId > [value=" + viewModel.LoggedInUser.CountryId() + "]").prop("selected", "true");
+        BindDDLCommon("ddlClusterId", viewModel.LoggedInUser.CountryId(), "DDLCommon", "GetCluster");
+        $("#ddlClusterId > [value=" + viewModel.LoggedInUser.ClusterId() + "]").prop("selected", "true");
+        BindDDLCommon("ddlCityId", viewModel.LoggedInUser.ClusterId(), "DDLCommon", "GetCity");
+        EmptyDDL("ddlSiteId");
+    }
+        //Supervisor
+    else if (viewModel.LoggedInUser.RoleId() == 3) {
+        BindCountry("ddlCountryId", "DDLCommon", "GetCountry");
+        $("#ddlCountryId > [value=" + viewModel.LoggedInUser.CountryId() + "]").prop("selected", "true");
+        BindDDLCommon("ddlClusterId", viewModel.LoggedInUser.CountryId(), "DDLCommon", "GetCluster");
+        $("#ddlClusterId > [value=" + viewModel.LoggedInUser.ClusterId() + "]").prop("selected", "true");
+        BindDDLCommon("ddlCityId", viewModel.LoggedInUser.ClusterId(), "DDLCommon", "GetCity");
+        $("#ddlCityId > [value=" + viewModel.LoggedInUser.CityId() + "]").prop("selected", "true");
+        BindDDLCommon("ddlSiteId", viewModel.LoggedInUser.CityId(), "DDLCommon", "GetSite");
+        $("#ddlSiteId > [value=" + viewModel.LoggedInUser.SiteId() + "]").prop("selected", "true");
+        DisablePartialViewDDL();
+    }
+
+}
+
+// to remove space
+function myTrim(x) {
+   // debugger;
+    return x.replace(/^\s+|\s+$/gm, '');
+}
+
+// Kushal Srivastava
+function HideShowControls(CntrlId, Status) {
+    if (Status == "Hide") {
+        $('#' + CntrlId).hide();
+    }
+    else if (Status == 'Show') {
+        $('#' + CntrlId).show();
+    }
+
+}
+
+function onlyDecimal(element, decimals) {
+    $(element).keypress(function (event) {
+        num = $(this).val();
+        num = isNaN(num) || num === '' || num === null ? 0.00 : num;
+        if ((event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which < 48 || event.which > 57)) {
+            event.preventDefault();
+
+        }
+        if ($(this).val() == parseFloat(num).toFixed(decimals)) {
+            event.preventDefault();
+        }
+    });
+}
+
+function showMessage(errMsg, type, lines, autoSlideDown) {
+    $('#errMsg').html(errMsg);
+    var top = '92%';
+    //$('#errImg').attr('src', '../Images/' + type + '.png');
+    if (lines > 2) {
+        top = '85%';
+    }
+    if (lines > 4) {
+        top = '80%';
+    }
+    $('#errorSlider').animate({ 'top': top }, "6000", "linear");
+    if (autoSlideDown) {
+        setTimeout(function () { closeError() }, 6000)
+    }
+}
+function closeError() {
+    $('#errorSlider').animate({ 'top': '100%' }, "6000", "linear");
+    $('#errMsg').html('');
+}
+function HideShowControl(CntrlArray, Action) {
+    //debugger;
+    if (Action == "H") {
+        for (var i = 0; i < CntrlArray.length; i++) {
+            $('#' + CntrlArray[i]).hide();
+        }
+    }
+    else if (Action == "S") {
+        for (var i = 0; i < CntrlArray.length; i++) {
+            $('#' + CntrlArray[i]).show();
+        }
+    }
+}
+function ReadOnly(CtrlID, Value) {
+    $('#' + CtrlID).prop("readonly", Value);
+}
+
+function ScrollTop() {
+    $(window).scroll(function () {
+        if ($(this).scrollTop() > 100) {
+            $('.scrollToTop').fadeIn();
+        } else {
+            $('.scrollToTop').fadeOut();
+        }
+    });
+    $('.scrollToTop').click(function () {
+        $('html, body').animate({ scrollTop: 0 }, 800);
+        return false;
+    });
+}
+function ScrollToTopInEdit()
+{
+    $('html, body').animate({ scrollTop: 0 }, 800);
+}
+
+function IsANumber(inputVal)
+{
+    //var intRegex = /^\d+$/;   
+    var intRegex = /^[+-]?\d+(\.\d+)?([eE][+-]?\d+)?$/;
+    if (intRegex.test(inputVal)) {
+        return true;
+    }
+    else
+    {
+        return false
+    }
+}
+
+-----------------ReturnPartialView.js--------------------------------
+function LoadPostsAndComment() {
+    $.ajax
+        ({
+            url: "/Home/LoadPostsAndCommentPartialView",
+            contentType: "application/html; charset=utf-8",
+            type: "POST",
+            datatype: "html",
+            success: function (t) {
+                $("#dvHomePostsAndCommentBind").html(t)
+            },
+            error: function () {
+                $("#dvHomePostsAndCommentBind").html("Post Not Found");
+                window.location.href = "/Home/Error";
+            }
+        })
+}
+function LoadDocumentHome() {
+    $.ajax
+        ({
+            url: "/Home/LoadDocumentPartialView",
+            contentType: "application/html; charset=utf-8",
+            type: "POST",
+            datatype: "html",
+            success: function (t) {
+                $("#dvHomeDocumentBind").html(t)
+            },
+            error: function () {
+                $("#dvHomeDocumentBind").html("Document Not Found");
+                window.location.href = "/Home/Error";
+            }
+        })
+}
+function LoadBlogeHome() {
+    $.ajax
+        ({
+            url: "/Home/LoadBlogePartialView",
+            contentType: "application/html; charset=utf-8",
+            type: "POST",
+            datatype: "html",
+            success: function (t) {
+                $("#dvBlogeBind").html(t)
+            },
+            error: function () {
+                $("#dvBlogeBind").html("Blog Not Found");
+                window.location.href = "/Home/Error";
+            }
+        })
+}
+
+-----------------------Reports.js--------------------------------
+$(function () {
+    $('#txtDate').daterangepicker({
+        "timePickerIncrement": 1,
+        "opens": "left",
+        "drops": "down",
+        "buttonClasses": "btn btn-sm",
+        "applyClass": "btn-success",
+        "cancelClass": "btn-default",
+        locale: {
+            format: 'MM/DD/YYYY'
+        }
+    }, function (start, end, label) {
+    });
+    $("#tblTabularReport").hide();
+    $("#myCharts").hide();
+    if ($("#ddlReport").val() === "18") {
+        $("#ddlCAP").attr('disabled', 'disabled');
+    }
+    else {
+        $("#ddlCAP").removeAttr('disabled');
+    }
+
+    $("#ddlReport").change(function () {
+
+        if ($(this).val() === "18") {
+
+            $("#ddlCAP").attr('disabled', 'disabled');
+        }
+        else {
+            $("#ddlCAP").removeAttr('disabled');
+        }
+    });
+    $('.daterange-icon i').click(function () {
+        $(this).parent().find('input').click();
+    });
+});
+
+function GenerateReport() {
+    var dateLen = $('#txtDate').val().trim().length;
+    var ReportId = parseInt($('#ddlReport').val()) || 0;
+    var IsError = false;
+    if (!dateLen > 0) {
+        $('#txtDate').addClass("validation_failed");
+        $('#errorDateRangeSpan').show();
+        IsError = true;
+    }
+    if (IsError) {
+        if (!dateLen > 0) {
+            $('#txtDate').focus();
+        }
+    }
+    else {
+        var selCriteria = document.getElementById("ddlFilterCriteria");
+        var Criteria = selCriteria.options[selCriteria.selectedIndex].text;
+        var DateRange = $('#txtDate').val();
+        var Range = DateRange.split(" - ");
+        var StartDate = Range[0];
+        var EndDate = Range[1];
+        var Capabilities = $("#ddlCAP").val();
+        var CapabilitiesText = document.getElementById("ddlCAP");
+        var CapText = CapabilitiesText.options[CapabilitiesText.selectedIndex].text;
+        GetUtilizationReport(ReportId, StartDate, EndDate, Criteria, Capabilities, CapText);
+    }
+}
+
+function GetUtilizationReport(ReportId, StartDate, EndDate, Criteria, Capabilities, CapText) {
+    $("#barcanvas").remove();// removing previous canvas element
+    $("#piecanvas").remove();// removing previous canvas element
+    //change the data values or add new values for new graph
+    $("#myChartPie").after("<canvas id='piecanvas'></canvas>");
+    $("#myChartBar").after("<canvas id='barcanvas'></canvas>");
+    $("#tblTabularReport").show();
+    $("#myCharts").show();
+    $.ajax({
+        url: "/Admin/GetUtilizationReport",
+        method: 'post',
+        dataType: 'json',
+        data: { ReportId: ReportId, StartDate: StartDate, EndDate: EndDate, Criteria: Criteria, Capabilities: Capabilities, CapText: CapText },
+        success: function (data) {
+            datatableInstance = $('#tblTabularReport').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                dom: 'Bfrtip',
+                buttons: [
+                    'copyHtml5', 'print', { extend: 'csvHtml5', filename: 'DateTime Report' },
+                    { extend: 'excelHtml5', filename: 'DateTime Report' }
+                ],
+                columns: [
+                    { 'data': 'Interval' },
+                    { 'data': 'Utilization' }
+                ]
+            });
+            var labels = []; var y = []; var color = [];
+            var dynamicColors = function () {
+                var r = Math.floor(Math.random() * 255);
+                var g = Math.floor(Math.random() * 255);
+                var b = Math.floor(Math.random() * 255);
+                return "rgb(" + r + "," + g + "," + b + ")";
+            };
+            for (i = 0; i < data.length; i++) {
+                labels.push(data[i].Interval);
+                y.push(data[i].Utilization);
+                color.push(dynamicColors());
+            }
+
+            var myBarChart = new Chart($("#barcanvas"), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        backgroundColor: color,
+                        data: y,
+                        borderWidth: 1
+                    }]
+                },
+                options: { legend: { display: false }, responsive: true, maintainAspectRatio: true }
+            });
+            myBarChart.render();
+
+            var myPieChart = new Chart($("#piecanvas"), {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        backgroundColor: color,
+                        data: y,
+                        borderWidth: 1
+                    }]
+                },
+                options: { legend: { display: true, position: 'bottom' }, responsive: true, maintainAspectRatio: true }
+            });
+            myPieChart.render();
+            //var dataPoints = [];
+            //for (var i = 0; i < data.length; i++) {
+            //    dataPoints.push({
+            //        x: new Date(data[i].Interval),
+            //        y: data[i].Utilization
+            //    });
+            //}
+            //var pieChart = new CanvasJS.Chart("pieChartContainer", {
+            //    title: { text: "Pie Chart" },
+            //    animationEnabled: true,
+            //    data: [{
+            //        type: "pie",
+            //        dataPoints: dataPoints
+            //    }]
+            //});
+            //pieChart.render();
+            //var barChart = new CanvasJS.Chart("barChartContainer", {
+            //    title: { text: "Bar Graph" },
+            //    animationEnabled: true,
+            //    data: [{
+            //        type: "bar",
+            //        dataPoints: dataPoints
+            //    }]
+            //});
+            //barChart.render();
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+//function DownloadCharts() {
+//    // get size of report page
+//    var reportPageHeight = $('#myCharts').innerHeight();
+//    var reportPageWidth = $('#myCharts').innerWidth();
+
+//    // create a new canvas object that we will populate with all other canvas objects
+//    var pdfCanvas = $('<canvas />').attr({
+//        id: "canvaspdf",
+//        width: reportPageWidth,
+//        height: reportPageHeight
+//    });
+
+//    // keep track canvas position
+//    var pdfctx = $(pdfCanvas)[0].getContext('2d');
+//    var pdfctxX = 0;
+//    var pdfctxY = 0;
+//    var buffer = 100;
+
+//    // for each chart.js chart
+//    $("canvas").each(function (index) {
+//        // get the chart height/width
+//        var canvasHeight = $(this).innerHeight();
+//        var canvasWidth = $(this).innerWidth();
+
+//        // draw the chart into the new canvas
+//        pdfctx.drawImage($(this)[0], pdfctxX, pdfctxY, canvasWidth, canvasHeight);
+//        pdfctxX += canvasWidth + buffer;
+//        // our report page is in a grid pattern so replicate that in the new canvas
+//        if (index % 2 === 1) {
+//            pdfctxX = 0;
+//            pdfctxY += canvasHeight + buffer;
+//        }
+//    });
+
+//    // create new pdf and add our new canvas as an image
+//    var pdf = new jsPDF('l', 'pt', [reportPageWidth, reportPageHeight]);
+//    pdf.addImage($(pdfCanvas)[0], 'PNG', 0, 0);
+
+//    // download the pdf
+//    pdf.save('filename.pdf');
+//};
+
+//donwload pdf from original canvas
+function DownloadCharts() {
+    var doc = new jsPDF('p', 'pt', 'a4');
+    doc.text(270, 20, 'Bar Chart');
+    var canvas = document.querySelector('#barcanvas');
+
+    var w = canvas.width;
+    var h = canvas.height;
+    var context = canvas.getContext('2d');
+    var data;
+    //get the current ImageData for the canvas.
+    data = context.getImageData(0, 0, w, h);
+    //store the current globalCompositeOperation
+    var compositeOperation = context.globalCompositeOperation;
+    //set to draw behind current content
+    context.globalCompositeOperation = "destination-over";
+    //set background color
+    context.fillStyle = "white";
+    //draw background / rect on entire canvas
+    context.fillRect(0, 0, w, h);
+
+    var canvasImg = canvas.toDataURL("image/jpeg", 1.0, 0);
+
+    //clear the canvas
+    context.clearRect(0, 0, w, h);
+    //restore it with original / cached ImageData
+    context.putImageData(data, 0, 0);
+    //reset the globalCompositeOperation to what it was
+    context.globalCompositeOperation = compositeOperation;
+
+    doc.addImage(canvasImg, 'JPEG', 20, 50, 560, 280);
+    doc.addPage();
+    doc.text(270, 20, 'Pie Chart');
+    var piecanvas = document.querySelector('#piecanvas');
+
+    w = piecanvas.width;
+    h = piecanvas.height;
+    var piecontext = piecanvas.getContext('2d');
+    var piedata;
+    //get the current ImageData for the canvas.
+    piedata = piecontext.getImageData(0, 0, w, h);
+    //store the current globalCompositeOperation
+    compositeOperation = context.globalCompositeOperation;
+    //set to draw behind current content
+    piecontext.globalCompositeOperation = "destination-over";
+    //set background color
+    piecontext.fillStyle = "white";
+    //draw background / rect on entire canvas
+    piecontext.fillRect(0, 0, w, h);
+
+    piecanvasImg = piecanvas.toDataURL("image/jpeg", 1.0, 0);
+
+    //clear the canvas
+    piecontext.clearRect(0, 0, w, h);
+    //restore it with original / cached ImageData
+    piecontext.putImageData(data, 0, 0);
+    //reset the globalCompositeOperation to what it was
+    piecontext.globalCompositeOperation = compositeOperation;
+
+    doc.addImage(piecanvasImg, 'JPEG', 20, 50, 560, 280);
+    doc.save('canvas.pdf');
+}
+
+
+//download pdf form hidden canvas
+function downloadPDF2() {
+    var newCanvas = document.querySelector('#supercool-canvas');
+
+    //create image from dummy canvas
+    var newCanvasImg = newCanvas.toDataURL("image/jpeg", 1.0);
+
+    //creates PDF from img
+    var doc = new jsPDF('landscape');
+    doc.setFontSize(20);
+    doc.text(15, 15, "Super Cool Chart");
+    doc.addImage(newCanvasImg, 'JPEG', 10, 10, 280, 150);
+    doc.save('new-canvas.pdf');
+}
+
+
+---------------------PushNotification.js-------------------------
+
+
+$(function () {
+    $('span.noti').click(function (e) {
+        e.stopPropagation();
+        showNotificationDetails();
+    })
+
+    function showNotificationDetails() {
+        $('#notiContent').empty();
+        $('#notiContent').append($('<li>Loading...</li>'));
+        $.ajax({
+            type: 'POST',
+            url: '/Home/UpdateNotificationCount',
+            success: function (result) {
+                $('#notiContent').empty();
+                if ((result.data).length > 0) {
+                    //$.each(result.data, function (index, value) {
+                    //    if (result.loggedRoleId == "1" || result.loggedRoleId == "10")
+                    //        $('#notiContent').append($('<li><div class="col-md-3 col-sm-3 col-xs-3"><div class="notify-img"><img src="../images/avatar2.png" alt=""></div></div> <div class="col-md-9 col-sm-9 col-xs-9 pd-l0">' + value.AdminDescripation + '</div></li>'))
+
+                    //    else
+                    //        $('#notiContent').append($('<li><div class="col-md-3 col-sm-3 col-xs-3"><div class="notify-img"><img src="../images/avatar2.png" alt=""></div></div> <div class="col-md-9 col-sm-9 col-xs-9 pd-l0">' + value.UserDescripation + '</div></li>'))
+                    //});
+                    $.each(result.data, function (index, value) {
+                        if (result.loggedRoleId == "1" || result.loggedRoleId == "10")
+                            $('#notiContent').append($('<li><div class="col-md-12 col-sm-12 col-xs-12">' + value.AdminDescripation + '</div></li>'));
+
+                        else
+                            $('#notiContent').append($('<li><div class="col-md-12 col-sm-12 col-xs-12">' + value.UserDescripation + '</div></li>'));
+                    });
+                    $('.notify-drop').show();
+                    $('.notilbl').hide();
+                } else {
+                    $('.notify-drop').hide();
+                    alert('Not found any notification');
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                window.location.href = "/Home/Error";
+            }
+        })
+    }
+})
+
+
+-----------------MyBlog.js ------------------------
+
+
+$(document).ready(function () {
+    $("#btnShowModal").click(function () {
+        $("#loginModal").modal('show');
+    });
+
+    $("#btnHideModal").click(function () {
+        $("#loginModal").modal('hide');
+    });
+});
+
+
+
+
+
+-----------------ManageUser.js---------------------------
+$(document).ready(function () {
+    var datatableInstance;
+    CheckKeyId();
+    GetUser();
+    $("#chkAll").children().remove();
+});
+
+function CheckKeyId() {
+    var keyValue = parseInt($('#hdKeyId').val()) || 0;
+
+    if (keyValue > 0)
+        $('.usersection-div').show();
+    else
+        $('.usersection-div').hide();
+}
+
+function GetUser() {
+    $.ajax({
+        url: "/Admin/GetManageUser",
+        method: 'post',
+        dataType: 'json',
+        async: false,
+        success: function (data) {
+            datatableInstance = $('#tblManageUser').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                columns: [
+                    { 'data': 'Id' },
+                    {
+                        'data': 'UserName',
+                        'render': function (data, type, full, meta) {
+                            return '<span>' + full.UserName + '(' + full.UserCode + ')' + '</span>'
+                        }
+                    },
+                    { 'data': 'ManagerName' },
+                    { 'data': 'RoleName' },
+                    { 'data': 'BusinessSegmentName' },
+                    { 'data': 'CapabilitiesName' },
+                    { 'data': 'LOBName' },
+                    { 'data': 'StatusType' },
+                    {
+                        'data': 'Id',
+                        'sortable': false,
+                        'visible': true,
+                        'render': function (data, type, full, meta) {
+                            if (full.Status === 5)
+                                return '<a title="Manage" href="/Admin/ManageUser?key=' + full.Id + '"><i class="glyphicon glyphicon-edit"></i>&nbsp;Manage</a> &nbsp;&nbsp;<a onclick=ApproveStatus(' + full.Id + ');> <i class="glyphicon glyphicon-ok"></i> Approve</a>&nbsp;&nbsp;<a onclick=RejectStatus(' + full.Id + ');><i class="glyphicon glyphicon-remove"></i> Reject</a>';
+                            else if (full.Status === 6)
+                                return '<a title="Manage" href="/Admin/ManageUser?key=' + full.Id + '"><i class="glyphicon glyphicon-edit"></i>&nbsp;Manage</a> &nbsp;&nbsp;<a onclick=RejectStatus(' + full.Id + ');><i class="glyphicon glyphicon-remove"></i> Reject</a>';
+                            else if (full.Status === 7)
+                                return '';
+                        }
+                    }
+                ],
+                "columnDefs": [
+                    {
+                        "searchable": false,
+                        'targets': 0,
+                        'checkboxes': {
+                            'selectRow': true
+                        }
+                    }],
+                'select': {
+                    'style': 'multi; margin-left:7px;'
+                },
+                'order': [[1, 'asc']]
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+function ApproveStatus(Id) {
+    var status = "Approve";
+
+    $.confirm({
+        title: '',
+        type: 'green',
+        content: '<p style="font-style:italic;">Are you sure, you want to Approve user request?</p>',
+        buttons: {
+            confirm: function () {
+                $.ajax({
+                    url: "/Admin/UpdateUserRequestStatus",
+                    method: 'post',
+                    dataType: 'json',
+                    data: { UserId: Id, Status: status },
+                    success: function (data) {
+                        window.location.href = '/Admin/ManageUser';
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        window.location.href = "/Home/Error";
+                    }
+                });
+            },
+            cancel: function () {
+            }
+        }
+    });
+}
+
+function RejectStatus(Id) {
+    var status = "Reject";
+    $.confirm({
+        title: '',
+        type: 'red',
+        content: '<p style="font-style:italic;">Are you sure, you want to Reject user request?</p>',
+        buttons: {
+            confirm: function () {
+                $.ajax({
+                    url: "/Admin/UpdateUserRequestStatus",
+                    method: 'post',
+                    dataType: 'json',
+                    data: { UserId: Id, Status: status },
+                    success: function (data) {
+                        window.location.href = '/Admin/ManageUser';
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        window.location.href = "/Home/Error";
+                    }
+                });
+            },
+            cancel: function () {
+            }
+        }
+    });
+}
+
+function ApproveAllRequests() {
+    var checkboxValues = [];
+
+    var rows_selected = datatableInstance.column(0).checkboxes.selected();
+    if (rows_selected.length > 0) {
+        $.each(rows_selected, function (index, rowId) {
+            checkboxValues.push(rowId);
+        });
+    } else {
+        alert("Please select the checkbox(s)");
+        return false;
+    }
+
+    $.ajax({
+        url: "/Admin/UpdateBulkRequestStatus",
+        method: 'post',
+        dataType: 'json',
+        data: { RequestIds: checkboxValues },
+        success: function (data) {
+            window.location.href = '/Admin/ManageUser';
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+
+}
+
+function RejectAllRequests() {
+    var checkboxValues = [];
+
+    var rows_selected = datatableInstance.column(0).checkboxes.selected();
+    if (rows_selected.length > 0) {
+        $.each(rows_selected, function (index, rowId) {
+            checkboxValues.push(rowId);
+        });
+    } else {
+        alert("Please select the checkbox(s)");
+        return false;
+    }
+
+    $.ajax({
+        url: "/Admin/UpdateBulkRequestStatusReject",
+        method: 'post',
+        dataType: 'json',
+        data: { RequestIds: checkboxValues },
+        success: function (data) {
+            window.location.href = '/Admin/ManageUser';
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+
+}
+
+
+
+
+
+-----------------------ManageTraining.js----------------------
+$(document).ready(function () {
+    GetTraining();
+    $("#txtFromDate").attr('readOnly', 'true');
+    $("#txtToDate").attr('readOnly', 'true');
+    $("#txtFromDate").datepicker({
+        minDate: new Date(),
+        onSelect: function (selectedDate) {
+            $("#txtToDate").val(selectedDate);
+            $("#txtToDate").datepicker("option", { minDate: new Date(selectedDate) })
+        }
+    });
+
+    $("#txtToDate").datepicker({
+        onSelect: function (selectedDate) {
+            alert(selectedDate);
+            toDate = new Date(selectedDate);
+        }
+    });
+    $("#chbIsActive").prop('checked', true);
+});
+
+function GetTraining() {
+    $.ajax({
+        url: "/Admin/GetTraining",
+        method: 'post',
+        dataType: 'json',
+        success: function (data) {
+            var datatableInstance = $('#tblManageTraining').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                columns: [
+                    { 'data': 'Title' },
+                    { 'data': 'Link' },
+                    {
+                        'data': 'FromDate',
+                        'render': function (jsonDate) {
+                            var date = new Date(parseInt(jsonDate.substr(6)));
+                            var month = date.getMonth() + 1;
+                            var fulldate = month + "/" + date.getDate() + "/" + date.getFullYear();
+                            fulldate = ChangeDateFormatToName(fulldate);
+
+                            return fulldate;
+                        }
+                    },
+                    {
+                        'data': 'ToDate',
+                        'render': function (jsonDate) {
+                            var date = new Date(parseInt(jsonDate.substr(6)));
+                            var month = date.getMonth() + 1;
+                            var fulldate = month + "/" + date.getDate() + "/" + date.getFullYear();
+                            fulldate = ChangeDateFormatToName(fulldate);
+
+                            return fulldate;
+                        }
+                    },
+                    { 'data': 'IsActive' },
+                    { 'data': 'CreatedBy' },
+                    //{
+                    //    'data': 'CreatedOn',
+                    //    'render': function (jsonDate) {
+                    //        var date = new Date(parseInt(jsonDate.substr(6)));
+                    //        var month = date.getMonth() + 1;
+                    //        return month + "/" + date.getDate() + "/" + date.getFullYear();
+                    //    }
+                    //},
+                    {
+                        'data': 'TrainingId',
+                        'sortable': false,
+                        'visible': true,
+                        'render': function (data, type, full, meta) {
+                            return '<a title="Manage"  href="/Admin/ManageTraining?key=' + full.TrainingId + '"><i class="glyphicon glyphicon-edit"></i>&nbsp;Manage</a>';
+                        }
+                    }
+                ],
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+function ChangeDateFormatToName(inputDate) {
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    var date = inputDate.split('/');
+    date = date[1] + "-" + (monthNames[date[0] - 1]) + "-" + date[2];
+
+    return date;
+}
+
+
+
+--------------------ManageSystemLink.js--------------------
+$(document).ready(function () {
+    GetBusinessSegment();
+
+    $("button[type=submit]").click(function () {
+        var FaqQuestion = $('#txtTitle').val().trim().length;
+        var FaqAnswer = $('#txtUrl').val().trim().length;
+        if (!FaqQuestion > 0 && !FaqAnswer > 0) {
+            $('#errortitleId').show();
+            $('#errorUrlId').show();
+            return false;
+        }
+    });
+});
+
+function GetBusinessSegment() {
+    $.ajax({
+        url: "/Admin/GetSystemLink",
+        method: 'post',
+        dataType: 'json',
+        success: function (data) {
+            var datatableInstance = $('#tblManageSystemLink').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                columns: [                    
+                    { 'data': 'Title' },
+                    { 'data': 'Url' },
+                    { 'data': 'IsActive' },
+                    { 'data': 'CreatedBy' },
+                    {
+                        'data': 'CreatedOn',
+                        'render': function (jsonDate) {
+                            var date = new Date(parseInt(jsonDate.substr(6)));
+                            var month = date.getMonth() + 1;
+                            return month + "/" + date.getDate() + "/" + date.getFullYear();
+                        }
+                    },
+                    {
+                        'data': 'Id',
+                        'sortable': false,
+                        'visible': true,
+                        'render': function (data, type, full, meta) {
+                            return '<a title="Manage"  href="/Admin/ManageSystemLink?key=' + full.Id + '"><i class="glyphicon glyphicon-edit"></i>&nbsp;Manage</a>';
+                        }
+                    }
+                ],
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+
+
+------------------ManageRssFeed.js----------------------
+$(document).ready(function () {
+    GetRSSFeed();
+
+    $("button[type=submit]").click(function () {
+        var FaqQuestion = $('#txtTitle').val().trim().length;
+        var FaqAnswer = $('#txtUrl').val().trim().length;
+        if (!FaqQuestion > 0 && !FaqAnswer > 0) {
+            $('#errortitleId').show();
+            $('#errorUrlId').show();
+            return false;
+        }
+    });
+});
+
+function GetRSSFeed() {
+    $.ajax({
+        url: "/Admin/GetRSS",
+        method: 'post',
+        dataType: 'json',
+        success: function (data) {
+            var datatableInstance = $('#tblManageRS').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                columns: [                   
+                    { 'data': 'Title' },
+                    { 'data': 'Url' },
+                    { 'data': 'IsActive' },
+                    { 'data': 'CreatedBy' },
+                    {
+                        'data': 'CreatedOn',
+                        'render': function (jsonDate) {
+                            var date = new Date(parseInt(jsonDate.substr(6)));
+                            var month = date.getMonth() + 1;
+                            return month + "/" + date.getDate() + "/" + date.getFullYear();
+                        }
+                    },
+                    {
+                        'data': 'Id',
+                        'sortable': false,
+                        'visible': true,
+                        'render': function (data, type, full, meta) {
+                            return '<a title="Manage"  href="/Admin/ManageRSS?key=' + full.Id + '"><i class="glyphicon glyphicon-edit"></i>&nbsp;Manage</a>';
+                        }
+                    }
+                ],
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+
+-----------------------ManageQuizChoice.js----------------------------------
+$(document).ready(function () {
+    GetAnswer();
+
+    $("button[type=submit]").click(function () {
+        var BusinessSegment = $('#txtChoice').val().trim().length;
+        if (!BusinessSegment > 0) {
+            $('#errorChoiceId').show();
+            return false;
+        }
+    });
+});
+
+function GetAnswer() {
+    $.ajax({
+        url: "/Quiz/GetQuizChoice",
+        method: 'post',
+        dataType: 'json',
+        success: function (data) {
+            var datatableInstance = $('#tblManageChoice').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                columns: [
+                    { 'data': 'QuestionID' },
+                    { 'data': 'QuestionText' },
+                    { 'data': 'ChoiceText' },
+                    {
+                        'data': 'ChoiceID',
+                        'sortable': false,
+                        'visible': true,
+                        'render': function (data, type, full, meta) {
+                            return '<a title="Manage"  href="/Quiz/ManageQuizChoice?key=' + full.ChoiceID + '"><i class="glyphicon glyphicon-edit"></i>&nbsp;Manage</a>';
+                        }
+                    }
+                ],
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+
+-------------------ManageQuiz.js------------------------
+$(document).ready(function () {
+    $("#txtFromDate").attr('readOnly', 'true');
+    $("#txtToDate").attr('readOnly', 'true');
+    $("#txtFromDate").datepicker({
+        minDate : new Date(),
+        onSelect: function (selectedDate) {
+            $("#txtToDate").val(selectedDate);
+            $("#txtToDate").datepicker("option", { minDate: new Date(selectedDate) })
+        }
+    });
+
+    $("#txtToDate").datepicker({
+        onSelect: function (selectedDate) {
+            toDate = new Date(selectedDate);
+        }
+    });
+
+    $("#chbIsActive").prop('checked', true);
+    GetQuiz();
+
+    $("button[type=submit]").click(function () {
+        var txtQuiz = $('#txtQuiz').val().trim().length;
+        var FromDate = $('#txtFromDate').val().trim().length;
+        var ToDate = $('#txtToDate').val().trim().length;
+        if (!txtQuiz > 0 || !FromDate > 0 || !ToDate > 0) {
+            $('#errorAssessmentId').show();
+            $('#errorfromdateId').show();
+            $('#errortodateId').show();
+            return false;
+        }
+    });
+
+});
+
+function GetQuiz() {
+    $.ajax({
+        url: "/Quiz/GetQuiz",
+        method: 'post',
+        dataType: 'json',
+        success: function (data) {
+            var datatableInstance = $('#tblManageQuiz').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                columns: [
+                    { 'data': 'QuizName' },
+                    {
+                        'data': 'FromDate',
+                        'render': function (jsonDate) {
+                            var date = new Date(parseInt(jsonDate.substr(6)));
+                            var month = date.getMonth() + 1;
+                            var fulldate = month + "/" + date.getDate() + "/" + date.getFullYear();
+                            fulldate = ChangeDateFormatToName(fulldate);
+
+                            return fulldate;
+                        }
+                    },
+                    {
+                        'data': 'ToDate',
+                        'render': function (jsonDate) {
+                            var date = new Date(parseInt(jsonDate.substr(6)));
+                            var month = date.getMonth() + 1;
+                            var fulldate = month + "/" + date.getDate() + "/" + date.getFullYear();
+                            fulldate = ChangeDateFormatToName(fulldate);
+
+                            return fulldate;
+                        }
+                    },
+                    { 'data': 'IsActive' },
+                    { 'data': 'CreatedBy' },
+                    {
+                        'data': 'QuizID',
+                        'sortable': false,
+                        'visible': true,
+                        'render': function (data, type, full, meta) {
+                            return '<a title="Manage"  href="/Quiz/ManageQuiz?key=' + full.QuizID + '"><i class="glyphicon glyphicon-edit"></i>&nbsp;Manage</a>';
+                        }
+                    }
+                ],
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+function ChangeDateFormatToName(inputDate) {
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    var date = inputDate.split('/');
+    date = date[1] + "-" + (monthNames[date[0] - 1]) + "-" + date[2];
+
+    return date;
+}
+
+
+
+-------------------ManageQuestion.js--------------------
+$(document).ready(function () {
+    GetQuestiont();    
+        var CatId = parseInt($('#ddlQuiz').val()) || 0;
+        if (CatId == 0)
+            $('.btnSubmit').prop("disabled", true);
+        else
+            $('.btnSubmit').prop("disabled", false);
+   
+
+    $("button[type=submit]").click(function () {
+        var Question = $('#txtQuestion').val().trim().length;
+        var ChoiceA = $('#txtChoiceA').val().trim().length;
+        var ChoiceB = $('#txtChoiceB').val().trim().length;
+        var isCheckedA = $("#chbIsAnswerA").is(":checked");
+        var isCheckedB = $("#chbIsAnswerB").is(":checked");
+        var isCheckedC = $("#chbIsAnswerC").is(":checked");
+        var isCheckedD = $("#chbIsAnswerD").is(":checked");        
+        if (!Question > 0 || !ChoiceA > 0 || !ChoiceB > 0 ) {
+            $('#errorQuestionId').show();
+            $('#errorChoiceIdA').show();
+            $('#errorChoiceIdB').show();
+            
+            return false;
+        }
+
+        if (isCheckedA || isCheckedB || isCheckedC || isCheckedD) {
+
+        } else {
+            alert("Please checked One Correct Answer");
+            return false;
+        }
+    });
+});
+
+function GetQuestiont() {
+    $.ajax({
+        url: "/Quiz/GetQuestion",
+        method: 'post',
+        dataType: 'json',
+        success: function (data) {
+            var datatableInstance = $('#tblManageQuestion').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                columns: [
+                    { 'data': 'QuizName' },
+                    { 'data': 'QuestionText' },
+                    {
+                        'data': 'AnswerText',
+                        'render': function (data, type, full, meta) {
+                            var AnswerText = full.AnswerText;
+                            return '<span style="color:green">' + AnswerText + '</span>';
+                        }
+                    },
+                    {
+                        'data': 'ChoiceText',
+                        'render': function (data, type, full, meta) {
+                            var choice = full.ChoiceText.split('/');
+                            var ch = "";
+                            for (var i = 0; i < choice.length; i++) {
+                                ch = ch + choice[i].replace('!X', '') + "<br>";                               
+                            }
+                            return '<span>' + ch + '</span>';
+                        }
+                    },
+                    {
+                        'data': 'QuestionID',
+                        'sortable': false,
+                        'visible': true,
+                        'render': function (data, type, full, meta) {
+                            return '<a title="Manage"  href="/Quiz/ManageQuestion?key=' + full.QuestionID + '"><i class="glyphicon glyphicon-edit"></i>&nbsp;Manage</a>';
+                        }
+                    }
+                ],
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+
+----------------------ManagePoll.js---------------------------
+$(document).ready(function () {
+    $("#txtFromDate").attr('readOnly', 'true');
+    $("#txtToDate").attr('readOnly', 'true');
+    $("#txtFromDate").datepicker({
+        minDate:'0',
+        onSelect: function (selectedDate) {
+            var dt = new Date(selectedDate);
+            dt.setDate(dt.getDate())
+            $("#txtToDate").datepicker("option", "minDate", dt)
+        }
+    });
+    $("#txtToDate").datepicker({
+    });
+    $("#chbIsActive").prop('checked', true);
+    var PollID = $("#PollID").val();
+    if (PollID.length > 0) {
+        $("#txtFromDate").attr('disabled', 'disabled');
+        $("#txtToDate").attr('disabled', 'disabled');
+    }
+    GetManagePoll();
+});
+function ValidateManagePoll() {
+    var _Question = $("#txtQuestion").val();
+    var _Options = $("#txtOptions").val();
+    var _FromDate = $("#txtFromDate").val();
+    var _ToDate = $("#txtToDate").val();
+    var _ChkActive = $('#IsActive').is(':checked');
+    if (_Question == "" || _Options == "" || _FromDate == "" || _ToDate == "") {
+        alert("All fields are required.");
+        return false;
+    }
+}
+
+function GetManagePoll() {
+    $.ajax({
+        url: "/Admin/ManagePollDetails",
+        method: 'post',
+        dataType: 'json',
+        success: function (data) {
+            datatableInstance = $('#tblManagePoll').DataTable({
+                destroy: true,
+                paging: true,
+                sort: true,
+                searching: true,
+                data: data,
+                columns: [
+                    { 'data': 'Questions' },
+                    { 'data': 'Options' },
+                    {
+                        'data': 'FromDate',
+                        'render': function (jsonDate) {
+                            var date = new Date(parseInt(jsonDate.substr(6)));
+                            var month = date.getMonth() + 1;
+                            var fulldate = month + "/" + date.getDate() + "/" + date.getFullYear();
+                            fulldate = ChangeDateFormatToName(fulldate);
+
+                            return fulldate;
+                        }
+                    },
+                    {
+                        'data': 'ToDate',
+                        'render': function (jsonDate) {
+                            var date = new Date(parseInt(jsonDate.substr(6)));
+                            var month = date.getMonth() + 1;
+                            var fulldate = month + "/" + date.getDate() + "/" + date.getFullYear();
+                            fulldate = ChangeDateFormatToName(fulldate);
+
+                            return fulldate;
+                        }
+                    },
+                    { 'data': 'IsActive' },
+                    {
+                        'data': 'PollID',
+                        'sortable': false,
+                        'visible': true,
+                        'render': function (data, type, full, meta) {
+                            return '<a title="Manage" href="/Admin/ManagePoll?key=' + full.PollID + '"><i class="fa fa-edit font-20px"></i>&nbsp;Manage</a>';
+                        }
+                    }
+                ],
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+function ChangeDateFormatToName(inputDate) {
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    var date = inputDate.split('/');
+    date = date[1] + "-" + (monthNames[date[0] - 1]) + "-" + date[2];
+
+    return date;
+}
+
+
+
+--------------------ManageFeedback.js---------------------
+
+
+$(document).ready(function () {
+    GetPendingFeedback();
+    GetCompletedFeedback();
+    GetPagination();
+    $("#chkParent").children().remove();
+});
+
+//$('#chkParent').click(function (e) {
+//    $(this).closest('table').find('td input:checkbox').prop('checked', this.checked);
+//});
+
+function GetPendingFeedback() {
+    $.ajax({
+        url: "/Admin/GetUserFeedbackDetails",
+        type: "POST",
+        dataType: "JSON",
+        data: { Status: 'Pending' },
+        async: false,
+        success: function (data) {
+            if (data.length > 0) {
+                var trHTML = '';
+                $.each(data, function (i, item) {
+                    trHTML += '<tr><td style="width:2%;"><input type="checkbox"/></td><td style="width:28%;"><table class= "custum-grid-table" style="font-size:12px;"><tr><td><b>Code</b>: ' + data[i].UserCode + '</td></tr><tr><td><b>Name</b>: ' + data[i].UserName + '</td></tr><tr><td><b>Email</b>: ' + data[i].UserEmail + '</td></tr><tr></tr></table></td><td style="width:33%;">' + data[i].FeedbackQuestion + '</td><input type="hidden" id="hdFeedBackId" value=' + data[i].FeedBackId + '><td><textarea style="width:100%"/></td><input type="hidden" id="hdUserId" value=' + data[i].UserCode + ' /></tr>';
+                });
+                $('#tblPendingRequest tbody').append(trHTML);
+            }
+            else {
+                $('.btnUpdate').prop("disabled", true);
+                $('#tblPendingRequest tbody').append('<tr><td></td><td style="color:red;font-size:15px;">No pending feedback is available.</td><td></td><td></td></tr>');
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+function GetCompletedFeedback() {
+    $.ajax({
+        url: "/Admin/GetUserFeedbackDetails",
+        type: "POST",
+        dataType: "JSON",
+        data: { Status: 'Completed' },
+        async: false,
+        success: function (data) {
+            if (data.UserCode !== "") {
+                var trHTML = '';
+                $.each(data, function (i, item) {
+                    trHTML += '<tr><td style="width:28%;"><table class= "custum-grid-table" style="font-size:12px;"><tr><td style=""><b>Code</b>: ' + data[i].UserCode + '</td></tr><tr><td><b>Name</b>: ' + data[i].UserName + '</td></tr><tr><td><b>Email</b>: ' + data[i].UserEmail + '</td></tr><tr></tr></table></td><td>' + data[i].FeedbackQuestion + '</td><td>' + data[i].AdminReply + '</td></tr>';
+                });
+                $('#tblApprovedRequest tbody').append(trHTML);
+            }
+            else {
+                alert("Invalid input or record doesn't exist");
+                return false;
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+function SubmitAdminReply() {
+    var checkboxValues = [];
+
+    $('#tblPendingRequest tbody').find('tr').each(function (i) {
+        var row = $(this);
+        if (row.find('input[type="checkbox"]').is(':checked')) {
+            var feedbackId = row.find('input[type="hidden"]').val();
+            var adminreply = row.find('textarea').val();
+            var userId = row.find('input[id=hdUserId]').val();
+            if (adminreply === "") {
+                alert("You must fill the text area!")
+                return false;
+            }
+            var val = feedbackId + '^' + adminreply + '^' + userId;
+            checkboxValues.push(val)
+        }
+        return checkboxValues;
+    });
+
+    if (!$.isEmptyObject(checkboxValues)) {
+        $.ajax({
+            url: "/Admin/SubmitAdminReply",
+            type: "POST",
+            dataType: "JSON",
+            data: { feedbackIds: checkboxValues },
+            success: function (data) {
+                window.location.href = "/admin/managefeedback"
+            },,
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                window.location.href = "/Home/Error";
+            }
+        });
+    }
+}
+
+function GetPagination() {
+    var myTable = "#tblApprovedRequest";
+    var myTableBody = myTable + " tbody";
+    var myTableRows = myTableBody + " tr";
+    var myTableColumn = myTable + " th";
+
+    function initTable() {
+        $(myTableBody).attr("data-pageSize", 50);
+        $(myTableBody).attr("data-firstRecord", 0);
+        $('#previous').hide();
+        $('#next').show();
+
+        paginate(parseInt($(myTableBody).attr("data-firstRecord"), 10),
+            parseInt($(myTableBody).attr("data-pageSize"), 10));
+    }
+    $(myTableColumn).click(function () {
+        paginate(parseInt($(myTableBody).attr("data-firstRecord"), 10),
+            parseInt($(myTableBody).attr("data-pageSize"), 10));
+    });
+
+    $("a.paginate").click(function (e) {
+        e.preventDefault();
+        var tableRows = $(myTableRows);
+        var tmpRec = parseInt($(myTableBody).attr("data-firstRecord"), 10);
+        var pageSize = parseInt($(myTableBody).attr("data-pageSize"), 10);
+
+        if ($(this).attr("id") == "next") {
+            tmpRec += pageSize;
+        } else {
+            tmpRec -= pageSize;
+        }
+        if (tmpRec < 0 || tmpRec > tableRows.length) return
+        $(myTableBody).attr("data-firstRecord", tmpRec);
+
+        paginate(tmpRec, pageSize);
+    });
+
+    var paginate = function (start, size) {
+        var tableRows = $(myTableRows);
+        var end = start + size;
+        tableRows.hide();
+        tableRows.slice(start, end).show();
+        $(".paginate").show();
+        if (tableRows.eq(0).is(":visible")) $('#previous').hide();
+        if (tableRows.eq(tableRows.length - 1).is(":visible")) $('#next').hide();
+    }
+    initTable();
+}
+
+
+-----------------------ManageFAQ.js----------------------
+$(document).ready(function () {
+    GetFAQ();
+
+    $("button[type=submit]").click(function () {
+        var FaqQuestion = $('#txtQuestion').val().trim().length;
+        var FaqAnswer = $('#txtAnswer').val().trim().length;
+        if (!FaqQuestion > 0 && !FaqAnswer > 0) {
+            $('#errorFaqQueId').show();
+            $('#errorFaqAnsId').show();
+            return false;
+        }
+    });
+});
+
+
+
+function GetFAQ() {
+    $.ajax({
+        url: "/Admin/GetFAQ",
+        method: 'post',
+        dataType: 'json',
+        success: function (data) {
+            var datatableInstance = $('#tblManageFAQ').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                autoWidth: false,
+                 columns: [
+                    { 'data': 'Id' },
+                    { 'data': 'FaqQuestion' },
+                    { 'data': 'FaqAnswer' },
+                    { 'data': 'IsActive' },
+                    { 'data': 'CreatedBy' },
+                    {
+                        'data': 'CreatedOn',
+                        'render': function (jsonDate) {
+                            var date = new Date(parseInt(jsonDate.substr(6)));
+                            var month = date.getMonth() + 1;
+                            return month + "/" + date.getDate() + "/" + date.getFullYear();
+                        }
+                    },
+                    {
+                        'data': 'Id',
+                        'sortable': false,
+                        'visible': true,
+                        'render': function (data, type, full, meta) {
+                            return '<a title="Manage"  href="/Admin/ManageFaq?key=' + full.Id + '"><i class="glyphicon glyphicon-edit"></i>&nbsp;Manage</a>';
+                        }
+                    }
+                ],
+                columnDefs: [
+                    {
+                        render: function (data, type, full, meta) {
+                            return "<div class='text-wrap width-200'>" + data + "</div>";
+                        },
+                        targets: 3
+                    }
+                ]
+            });
+        }
+    });
+}
+
+
+
+-----------------------ManageBulletinBoard.js---------------------
+$(document).ready(function () {
+    GetBullentinBoard();
+
+    $("button[type=submit]").click(function () {
+       // debugger;
+        var name = $('#txtName').val().trim().length;
+        var title = $('#txtTitle').val().trim().length;
+        var des = $('#txtDescription').val().trim().length;
+        var art = $('#txtArticle').val().trim().length;
+
+        if (!name > 0 && !title > 0 && !des > 0 && !art > 0) {
+            return false;
+        }
+    });
+});
+
+function GetBullentinBoard() {
+    $.ajax({
+        url: "/Admin/GetBulletinBoard",
+        method: 'post',
+        dataType: 'json',
+        success: function (data) {
+            var datatableInstance = $('#tblManageBulletinBoard').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                responsive: true,
+                data: data,
+                columns: [                    
+                    { 'data': 'Name' },
+                    { 'data': 'Title' },
+                    { 'data': 'Description' },
+                    { 'data': 'Article' },
+                    { 'data': 'IsActive' },
+                    { 'data': 'CreatedBy' },
+                    {
+                        'data': 'CreatedOn',
+                        'render': function (jsonDate) {
+                            var date = new Date(parseInt(jsonDate.substr(6)));
+                            var month = date.getMonth() + 1;
+                            return month + "/" + date.getDate() + "/" + date.getFullYear();
+                        }
+                    },
+                    {
+                        'data': 'Id',
+                        'sortable': false,
+                        'visible': true,
+                        'render': function (data, type, full, meta) {
+                            return '<a title="Manage"  href="/Admin/ManageBulletinBoard?key=' + full.Id + '"><i class="glyphicon glyphicon-edit"></i>&nbsp;Manage</a>';
+                        }
+                    }
+                ],
+            });
+        }
+    });
+}
+
+
+----------------ManageBadge.js-------------------------------
+$(document).ready(function () {
+    GetBadge();
+    $("button[type=submit]").click(function () {
+        var BadgeName = $('#txtBadgeName').val().trim().length;
+        var BadgePoint = $('#txtBadgePoint').val().trim().length;
+        var BadgePointTo = $('#txtBadgePointTo').val().trim().length;
+        var fileExt = $('#fileUpload').val().split('.').pop().toLowerCase();
+        if ($.inArray(fileExt, ['jpeg', 'jpg', 'png']) === -1) {
+            $('#errorBannerSpan').show();
+            return false;
+        }
+        if (!BadgeName > 0 && !BadgePoint > 0 && !BadgePointTo > 0) {
+            $('#errorBadgeNameId').show();
+            $('#errorBadgePointId').show();
+            $('#errorBadgePointIdTo').show();
+            return false;
+        }
+    });
+});
+
+function GetBadge() {
+    $.ajax({
+        url: "/Admin/GetBadge",
+        method: 'post',
+        dataType: 'json',
+        success: function (data) {
+            var datatableInstance = $('#tblManageBadge').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                columns: [
+                    { 'data': 'Id' },
+                    {
+                        "data": "BImage",
+                        "render": function (data) {
+                            return '<img src="data:image/png;base64,' + data + '" />';
+                        }
+                    },
+                    { 'data': 'BadgeName' },
+                    {
+                        'data': 'BadgePoint',
+                        'render': function (data, type, full, meta) {
+                            return '<span>' + full.BadgePoint+'-'+ full.BadgePointTo+'</span>'
+                        }
+                    },
+                    { 'data': 'IsActive' },
+                    { 'data': 'CreatedBy' },
+                    {
+                        'data': 'CreatedOn',
+                        'render': function (jsonDate) {
+                            var date = new Date(parseInt(jsonDate.substr(6)));
+                            var month = date.getMonth() + 1;
+                            return month + "/" + date.getDate() + "/" + date.getFullYear();
+                        }
+                    },
+                    {
+                        'data': 'Id',
+                        'sortable': false,
+                        'visible': true,
+                        'render': function (data, type, full, meta) {
+                            return '<a title="Manage"  href="/Admin/ManageBadge?key=' + full.Id + '"><i class="glyphicon glyphicon-edit"></i>&nbsp;Manage</a>';
+                        }
+                    }
+                ],
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+-----------------------ManageAnswer.js---------------------
+$(document).ready(function () {
+    GetAnswer();
+
+    $("button[type=submit]").click(function () {
+        var BusinessSegment = $('#txtAnswer').val().trim().length;
+        if (!BusinessSegment > 0) {
+            $('#errorAnswerId').show();
+            return false;
+        }
+    });
+});
+
+function GetAnswer() {
+    $.ajax({
+        url: "/Quiz/GetAnswer",
+        method: 'post',
+        dataType: 'json',
+        success: function (data) {
+            var datatableInstance = $('#tblManageAnswer').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                columns: [
+                    { 'data': 'AnswerID' },
+                    { 'data': 'QuestionText' },
+                    { 'data': 'AnswerText' },
+                    {
+                        'data': 'AnswerID',
+                        'sortable': false,
+                        'visible': true,
+                        'render': function (data, type, full, meta) {
+                            return '<a title="Manage"  href="/Quiz/ManageAnswer?key=' + full.AnswerID + '"><i class="glyphicon glyphicon-edit"></i>&nbsp;Manage</a>';
+                        }
+                    }
+                ],
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+-------------------------LineOfBusiness.js------------------------
+
+$(document).ready(function () {
+    GetBusinessSegment();
+
+    $("button[type=submit]").click(function () {
+        var BusinessSegment = $('#txtLob').val().trim().length;
+        if (!BusinessSegment > 0) {
+            $('#errorLobId').show();
+            return false;
+        }
+    });
+});
+
+function GetBusinessSegment() {
+    $.ajax({
+        url: "/Admin/GetLineofBusiness",
+        method: 'post',
+        dataType: 'json',
+        success: function (data) {
+            var datatableInstance = $('#tblManageLineofBusiness').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                columns: [
+                    { 'data': 'Id' },
+                    { 'data': 'BsName' },
+                    { 'data': 'CapName' },
+                    { 'data': 'Name' },                    
+                    { 'data': 'IsActive' },
+                    { 'data': 'CreatedBy' },
+                    {
+                        'data': 'CreatedOn',
+                        'render': function (jsonDate) {
+                            var date = new Date(parseInt(jsonDate.substr(6)));
+                            var month = date.getMonth() + 1;
+                            return month + "/" + date.getDate() + "/" + date.getFullYear();
+                        }
+                    },
+                    {
+                        'data': 'Id',
+                        'sortable': false,
+                        'visible': true,
+                        'render': function (data, type, full, meta) {
+                            return '<a title="Manage"  href="/Admin/ManageLineofBusiness?key=' + full.Id + '"><i class="glyphicon glyphicon-edit"></i>&nbsp;Manage</a>';
+                        }
+                    }
+                ],
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+---------KnowledgeTree.js-----------------
+
+
+function FilterResults() {
+    var categories = [];
+    $.each($("input[name='category']:checked"), function () {
+        categories.push($(this)[0].id);
+    });
+    var doctypes = [];
+    $.each($("input[name='doctype']:checked"), function () {
+        doctypes.push($(this)[0].id);
+    });
+    var lobs = [];
+    $.each($("input[name='lob']:checked"), function () {
+        lobs.push($(this)[0].id);
+    });
+    window.location.href = "/KnowledgeTree/KnowledgeTree?categories=" + categories + "&doctypes=" + doctypes + "&lobs=" + lobs;
+}
+
+
+
+---------DocumentUpload.js-----------------------------
+$(document).ready(function () {
+    $('.ddlValidation').change(function () {
+        var CatId = parseInt($('#ddlCAT').val()) || 0;
+        if (CatId == 0)
+            $('.btnSubmit').prop("disabled", true);
+        else
+            $('.btnSubmit').prop("disabled", false);
+    });
+
+});
+
+$('#filemessage').keypress(function () {
+    var maxLength = $(this).val().length;
+    if (maxLength >= 45) {
+        alert('You cannot enter more than ' + maxLength + ' chars');
+        return false;
+    }
+});
+
+
+
+--------------------DocumentCategory.js----------------------
+$(document).ready(function () {
+    GetBusinessSegment();
+
+    $("#btnSave").click(function () {
+        var BusinessSegment = $('#txtDocumentCategory').val().trim().length;
+        if (!BusinessSegment > 0) {
+            $('#errorDocumentCategoryId').show();
+            return false;
+        }
+    });
+});
+
+function GetBusinessSegment() {
+    $.ajax({
+        url: "/Admin/GetDocumentCategory",
+        method: 'post',
+        dataType: 'json',
+        success: function (data) {
+            var datatableInstance = $('#tblDocumentCategory').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                columns: [
+                    { 'data': 'Name' },
+                    { 'data': 'IsActive' },
+                    { 'data': 'CreatedBy' },
+                    {
+                        'data': 'CreatedOn',
+                        'render': function (jsonDate) {
+                            var date = new Date(parseInt(jsonDate.substr(6)));
+                            var month = date.getMonth() + 1;
+                            return month + "/" + date.getDate() + "/" + date.getFullYear();
+                        }
+                    },
+                    {
+                        'data': 'ID',
+                        'sortable': false,
+                        'visible': true,
+                        'render': function (data, type, full, meta) {
+                            return '<a title="Manage"  href="/Admin/ManageDocumentCategory?key=' + full.ID + '"><i class="glyphicon glyphicon-edit"></i>&nbsp;Manage</a>';
+                        }
+                    }
+                ],
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+
+-----------------------CustomLoader.js------------------
+function ajaxindicatorstart(text) {
+      if ($('body').find('#resultLoading').attr('id') != 'resultLoading') {
+        $('body').append('<div id="resultLoading" style="display:none"><div><img src="../../images/Loader.gif" alt="" /><div>' + text + '</div></div><div class="bg"></div></div>');
+    }
+
+    $('#resultLoading').css({
+        'width': '100%',
+        'height': '100%',
+        'position': 'fixed',
+        'z-index': '10000000',
+        'top': '0',
+        'left': '0',
+        'right': '0',
+        'bottom': '0',
+        'margin': 'auto'
+    });
+
+    $('#resultLoading .bg').css({
+        'background': '#000000',
+        'opacity': '0.7',
+        'width': '100%',
+        'height': '100%',
+        'position': 'absolute',
+        'top': '0'
+    });
+
+    $('#resultLoading>div:first').css({
+        'width': '250px',
+        'height': '75px',
+        'text-align': 'center',
+        'position': 'fixed',
+        'top': '0',
+        'left': '0',
+        'right': '0',
+        'bottom': '0',
+        'margin': 'auto',
+        'font-size': '16px',
+        'z-index': '10',
+        'color': '#ffffff'
+            
+    });
+
+    $('#resultLoading .bg').height('100%');
+    $('#resultLoading').fadeIn(0);
+    $('body').css('cursor', 'wait');
+}
+
+function ajaxindicatorstop() {
+    $('#resultLoading .bg').height('100%');
+    $('#resultLoading').fadeOut(300);
+    $('body').css('cursor', 'default');
+}
+
+$(document).ajaxStart(function (e) {
+    //show ajax indicator
+         ajaxindicatorstart('Processing, please wait...');
+}).ajaxStop(function () {
+        //hide ajax indicator
+    ajaxindicatorstop();
+});
+
+//on form submit
+$('form').on("submit", function () {
+      //ShowProgress();
+    ajaxindicatorstart('Processing, please wait...');
+});
+
+------------------CommonFunction.js-----------------------
+function SubmitFormValidation() {
+    var businessId = parseInt($('#ddlBusiness').val()) || 0;
+    var sg29Id = $('#ddlSG29Approver').val() || 0;
+    var transferLoc = $('#ddlRequestedTransferLocation').val();
+    var requestType = parseInt($('#ddlRequestType').val()) || 0;
+    var transferReason = $('#txtTransferReason').val().trim().length;
+    var processLen = $('#txtTenureMonthsInProcess').val().trim().length;
+    var locLen = $('#txtTenureMonthsInLocation').val().trim().length;
+    var dateLen = $('#txtEffectiveTransferDate').val().trim().length;
+    var allowanceLen = $("input[name=IsRelocationAllowance]:checked").length;
+    var correctiveActionPlan = $("input[name=IsCorrectiveActionPlan]:checked").length;
+    var salaryGrade = parseInt($('#ddlSalaryGrade').val()) || 0;
+    var emailVal = $('#txtTransferApprovalEmail').val().trim().length;
+    var hdEmployeeNameSessionValue = $('#hdEmployeeNameSessionValue').val();
+    var hdEmployeeIdSessionValue = $('#hdEmployeeIdSessionValue').val();
+    var hdEmployeeEmailSessionValue = $('#hdEmployeeEmailSessionValue').val();
+    var hdEmployeeNTIDSessionVal = $('#hdEmployeeNTIDSessionVal').val();
+
+    $('#hdRequestSubmiteeEmployeeName').val(hdEmployeeNameSessionValue);
+    $('#hdRequestSubmiteeEmployeeId').val(hdEmployeeIdSessionValue);
+    $('#hdRequestSubmiteeEmployeeEmail').val(hdEmployeeEmailSessionValue);
+    $('#hdRequestSubmiteeEmployeeNTID').val(hdEmployeeNTIDSessionVal);
+    var IsError = false;
+    if (businessId === "" || businessId == 0) {
+        $('#ddlBusiness').addClass("validation_failed");
+        $('#errorBusinessSpan').show();
+        IsError = true;
+    }
+    if (sg29Id === "" || sg29Id == 0) {
+        $('#ddlSG29Approver').addClass("validation_failed");
+        $('#errorSG29ApproverSpan').show();
+        IsError = true;
+    }
+    if (transferLoc === "" || transferLoc == 0) {
+        $('#ddlRequestedTransferLocation').addClass("validation_failed");
+        $('#errorRequestedTransferSpan').show();
+        IsError = true;
+    }
+    if (requestType === "" || requestType == 0) {
+        $('#ddlRequestType').addClass("validation_failed");
+        $('#errorRequestTypeSpan').show();
+        IsError = true;
+    }
+    if (!transferReason > 0) {
+        $('#txtTransferReason').addClass("validation_failed");
+        $('#errorTransferReasonSpan').show();
+        IsError = true;
+    }
+    if (!processLen > 0) {
+        $('#txtTenureMonthsInProcess').addClass("validation_failed");
+        $('#errorProcessSpan').show();
+        IsError = true;
+    }
+    if (!locLen > 0) {
+        $('#txtTenureMonthsInLocation').addClass("validation_failed");
+        $('#errorUHGLocationSpan').show();
+        IsError = true;
+    }
+    if (!dateLen > 0) {
+        $('#txtEffectiveTransferDate').addClass("validation_failed");
+        $('#errorEffectiveTransferSpan').show();
+        IsError = true;
+    }
+    if (correctiveActionPlan === 0) {
+        $('input[name=IsCorrectiveActionPlan]').addClass("validation_failed");
+        $('#errorCorrectiveActionPlanSpan').show();
+        IsError = true;
+    }
+    if (allowanceLen === 0) {
+        $('input[name=IsRelocationAllowance]').addClass("validation_failed");
+        $('#errorRelocationAllowanceSpan').show();
+        IsError = true;
+    }
+    if (salaryGrade === "" || salaryGrade == 0) {
+        $('#ddlSalaryGrade').addClass("validation_failed");
+        $('#errorSalarySpan').show();
+        IsError = true;
+    }
+
+    var transferLocZone = parseInt($('#hdRequestedLocationZone').val());
+    var requestTypeVal = parseInt($('#ddlRequestType').val());
+    var selectedRelocationVal = $("input[name=IsRelocationAllowance]:checked").val();
+
+    if (transferLocZone === 2 && requestTypeVal === 1 && selectedRelocationVal === "True") {
+        if ($('#hdRequestId').val() !== undefined) {
+            if (!$('#hdTransferApprovalEmailName').val().length > 0 && !emailVal > 0) {
+                $('#errorApprovalEmailSpan').show();
+                $('#txtTransferApprovalEmail').addClass("validation_failed");
+                IsError = true;
+            }
+        }
+        else {
+            if (!emailVal > 0) {
+                $('#errorApprovalEmailSpan').show();
+                $('#txtTransferApprovalEmail').addClass("validation_failed");
+                IsError = true;
+            }
+        }
+    }
+    if (IsError) {
+        if (businessId === "") {
+            $('#ddlBusiness').focus();
+        }
+        else if (sg29Id === 0) {
+            $('#ddlSG29Approver').focus();
+        }
+        else if (transferLoc === "") {
+            $('#ddlRequestedTransferLocation').focus();
+        }
+        else if (requestType === "") {
+            $('#ddlRequestType').focus();
+        }
+        else if (!transferReason > 0) {
+            $('#txtTransferReason').focus();
+        }
+        else if (!processLen > 0) {
+            $('#txtTenureMonthsInProcess').focus();
+        }
+        else if (!locLen > 0) {
+            $('#txtTenureMonthsInLocation').focus();
+        }
+        else if (!dateLen > 0) {
+            $('#txtEffectiveTransferDate').focus();
+        }
+        else if (allowanceLen === 0) {
+            $('input[name=IsRelocationAllowance]').focus();
+        }
+        else if (salaryGrade === "") {
+            $('#ddlSalaryGrade').focus();
+        }
+        else if (transferLocZone === 2 && requestTypeVal === 1 && selectedRelocationVal === "True") {
+            if ($('#hdRequestId').val() !== undefined) {
+                if (!$('#hdTransferApprovalEmailName').val().length > 0 && !emailVal > 0) {
+                    $('#txtTransferApprovalEmail').focus();
+                }
+            }
+            else {
+                if (!emailVal > 0) {
+                    $('#txtTransferApprovalEmail').focus();
+                }
+            }
+        }
+    }
+    return IsError;
+}
+
+function SubmitIJPFormValidation() {
+    var businessId = parseInt($('#ddlBusiness').val()) || 0;
+    var transferLoc = $('#ddlPreviousLocation').val();
+    var transferReason = $('#txtTransferReason').val().trim().length;
+    var transferDate = $('#txtDateOfTransfer').val().trim().length;
+    var relocationDate = $('#txtRelocationAllowanceEffectiveDate').val().trim().length;
+    var allowanceLen = $("input[name=IsRelocationAllowance]:checked").length;
+    var salaryGrade = parseInt($('#ddlSalaryGrade').val()) || 0;
+    var emailVal = $('#txtTransferApprovalEmail').val().trim().length;
+    var hdEmployeeNameSessionValue = $('#hdEmployeeNameSessionValue').val();
+    var hdEmployeeIdSessionValue = $('#hdEmployeeIdSessionValue').val();
+    var hdEmployeeEmailSessionValue = $('#hdEmployeeEmailSessionValue').val();
+    var hdEmployeeNTIDSessionVal = $('#hdEmployeeNTIDSessionVal').val();
+
+    $('#hdRequestSubmiteeEmployeeName').val(hdEmployeeNameSessionValue);
+    $('#hdRequestSubmiteeEmployeeId').val(hdEmployeeIdSessionValue);
+    $('#hdRequestSubmiteeEmployeeEmail').val(hdEmployeeEmailSessionValue);
+    $('#hdRequestSubmiteeEmployeeNTID').val(hdEmployeeNTIDSessionVal);
+    var IsError = false;
+    if (businessId == 0 || businessId == "") {
+        $('#ddlBusiness').addClass("validation_failed");
+        $('#errorBusinessSpan').show();
+        IsError = true;
+    }
+    if (transferLoc === "" || transferLoc == 0) {
+        $('#ddlRequestedTransferLocation').addClass("validation_failed");
+        $('#errorLocationSpan').show();
+        IsError = true;
+    }
+    if (!transferReason > 0) {
+        $('#txtTransferReason').addClass("validation_failed");
+        $('#errorTransferReasonSpan').show();
+        IsError = true;
+    }
+    if (!transferDate > 0) {
+        $('#txtDateOfTransfer').addClass("validation_failed");
+        $('#errorDOTSpan').show();
+        IsError = true;
+    }
+    if (!relocationDate > 0) {
+        $('#txtRelocationAllowanceEffectiveDate').addClass("validation_failed");
+        $('#errorRelocationSpan').show();
+        IsError = true;
+    }
+    if (allowanceLen === 0) {
+        $('#errorRelocationAllowanceSpan').show();
+        IsError = true;
+    }
+    if (salaryGrade === "" || salaryGrade == 0) {
+        $('#ddlSalaryGrade').addClass("validation_failed");
+        $('#errorSalarySpan').show();
+        IsError = true;
+    }
+
+    var transferLocZone = parseInt($('#hdPreviousLocationZone').val());
+    var selectedRelocationVal = $("input[name=IsRelocationAllowance]:checked").val();
+
+    if (transferLocZone === 2 && selectedRelocationVal === "True") {
+        if ($('#hdRequestId').val() !== undefined) {
+            if (!$('#hdTransferApprovalEmailName').val().length > 0 && !emailVal > 0) {
+                $('#txtTransferApprovalEmail').addClass("validation_failed");
+                $('#errorApprovalEmailSpan').show();
+                IsError = true;
+            }
+        }
+        else {
+            if (!emailVal > 0) {
+                $('#txtTransferApprovalEmail').addClass("validation_failed");
+                $('#errorApprovalEmailSpan').show();
+                IsError = true;
+            }
+        }
+    }
+    if (IsError) {
+        if (businessId === "") {
+            $('#ddlBusiness').focus();
+        }
+        else if (transferLoc === "") {
+            $('#ddlRequestedTransferLocation').focus();
+        }
+        else if (!transferReason > 0) {
+            $('#txtTransferReason').focus();
+        }
+        else if (!transferDate > 0) {
+            $('#txtDateOfTransfer').focus();
+        }
+        else if (!relocationDate > 0) {
+            $('#txtRelocationAllowanceEffectiveDate').focus();
+        }
+        else if (salaryGrade === "") {
+            $('#ddlSalaryGrade').focus();
+        }
+        else if (transferLocZone === 2 && selectedRelocationVal === "True") {
+            if ($('#hdRequestId').val() !== undefined) {
+                if (!$('#hdTransferApprovalEmailName').val().length > 0 && !emailVal > 0) {
+                    $('#txtTransferApprovalEmail').focus();
+                }
+            }
+            else {
+                if (!emailVal > 0) {
+                    $('#txtTransferApprovalEmail').focus();
+                }
+            }
+        }
+    }
+    return IsError;
+}
+
+function DisclaimerValidation() {
+    var isDisclaimerChecked = $('#chkDisclaimerITP').prop('checked');
+    var actionVal = $('#hdActionValue').val();
+
+    if (actionVal === undefined) {
+        if (isDisclaimerChecked) {
+            $('.btnITPAction').prop('disabled', false);
+        }
+        else {
+            $('.btnITPAction').prop('disabled', true);
+        }
+    } else {
+        if (isDisclaimerChecked && actionVal === "false") {
+            $('.btnITPAction').prop('disabled', false);
+        } else {
+            $('.btnITPAction').prop('disabled', true);
+        }
+    }
+}
+
+function IJPDisclaimerValidation() {
+    var isDisclaimerChecked = $('#chkDisclaimerIJP').prop('checked');
+    var actionVal = $('#hdActionValue').val();
+
+    if (actionVal === undefined) {
+        if (isDisclaimerChecked) {
+            $('.btnIJPAction').prop('disabled', false);
+        }
+        else {
+            $('.btnIJPAction').prop('disabled', true);
+        }
+    } else {
+        if (isDisclaimerChecked && actionVal === "false") {
+            $('.btnIJPAction').prop('disabled', false);
+        } else {
+            $('.btnIJPAction').prop('disabled', true);
+        }
+    }
+}
+
+function DDLRequestedTransferLocation() {
+    $('#ddlRequestType').val("");
+    $('#errorRequestedTransferSpan').hide();
+    var currentLocZone = parseInt($('#hdCurrentLocationZone').val());
+
+    GetZoneOfTransferLocation($('#ddlRequestedTransferLocation').val());
+    var transferLocZone = parseInt($('#hdRequestedLocationZone').val());
+
+    if (currentLocZone === transferLocZone) {
+        $('.emailTransferDiv').hide();
+        $('#relocationInfoId').hide();
+        $('#txtRelocationAmount').val(0);
+        $('#hdRelocationAmount').val(0);
+        $("input[name=IsRelocationAllowance]").prop('disabled', true);
+        $('#rbRelocationAllowanceNo').prop({ 'checked': true, 'disabled': true });
+        $('#hdRelocationAllowanceYes').val($("input[name=IsRelocationAllowance]:checked").val());
+        $('#errorRelocationAllowanceSpan').hide();
+    }
+    else if ((currentLocZone === 1 || currentLocZone === 2) && (transferLocZone === 2 || transferLocZone === 1)) {
+        $('#txtRelocationAmount').val("");
+        $('#hdRelocationAmount').val("");
+        $("input[name=IsRelocationAllowance]").prop({ 'disabled': false, 'checked': false });
+    }
+    else {
+        $('#txtRelocationAmount').val("");
+        $('#hdRelocationAmount').val("");
+        $('.emailTransferDiv').hide();
+        $('#relocationInfoId').hide();
+        $("input[name=IsRelocationAllowance]").prop({ 'disabled': false, 'checked': false });
+    }
+}
+
+function DDLRequestType() {
+    $('#errorRequestTypeSpan').hide();
+    var requestTypeVal = parseInt($('#ddlRequestType').val());
+    var currentLocZone = parseInt($('#hdCurrentLocationZone').val());
+    var transferLocZone = parseInt($('#hdRequestedLocationZone').val());
+    if (currentLocZone == transferLocZone) {
+        $('#txtRelocationAmount').val(0);
+        $('#hdRelocationAmount').val(0);
+        $('.emailTransferDiv').hide();
+        $("input[name=IsRelocationAllowance]").prop('disabled', true);
+        $('#rbRelocationAllowanceNo').prop({ 'checked': true, 'disabled': true });
+        $('#hdRelocationAllowanceYes').val($("input[name=IsRelocationAllowance]:checked").val());
+        $('#errorRelocationAllowanceSpan').hide();
+        $('#relocationInfoId').hide();
+    } else if ((currentLocZone === 1 || currentLocZone === 2) && (transferLocZone === 2 || transferLocZone === 1)) {
+        if (requestTypeVal === 1) {
+            $('#ddlSalaryGrade').val("");
+            $('.emailTransferDiv').show();
+            $('#relocationInfoId').show();
+            $("input[name=IsRelocationAllowance]").prop({ 'disabled': false, 'checked': false });
+        } else {
+            $('#txtRelocationAmount').val(0);
+            $('#hdRelocationAmount').val(0);
+            $('.emailTransferDiv').hide();
+            $("input[name=IsRelocationAllowance]").prop('disabled', true);
+            $('#rbRelocationAllowanceNo').prop({ 'checked': true, 'disabled': true });
+            $('#hdRelocationAllowanceYes').val($("input[name=IsRelocationAllowance]:checked").val());
+            $('#errorRelocationAllowanceSpan').hide();
+            $('#relocationInfoId').hide();
+        }
+    } else {
+        if (requestTypeVal === 1) {
+            $('#ddlSalaryGrade').val("");
+            $('.emailTransferDiv').hide();
+            $('#relocationInfoId').hide();
+            $("input[name=IsRelocationAllowance]").prop({ 'disabled': true });
+            $('#rbRelocationAllowanceYes').prop({ 'checked': true, 'disabled': true });
+            $('#hdRelocationAllowanceYes').val($("input[name=IsRelocationAllowance]:checked").val());
+        } else {
+            $('#txtRelocationAmount').val(0);
+            $('#hdRelocationAmount').val(0);
+            $("input[name=IsRelocationAllowance]").prop({ 'disabled': true });
+            $('#rbRelocationAllowanceNo').prop({ 'checked': true, 'disabled': true });
+            $('#hdRelocationAllowanceYes').val($("input[name=IsRelocationAllowance]:checked").val())
+        }
+    }
+}
+
+function DDLSalaryGrade() {
+    var IsNCR;
+    $('#errorSalarySpan').hide();
+    var transferLocZone = parseInt($('#hdRequestedLocationZone').val());
+    var grade = $('#ddlSalaryGrade option:selected').text().trim();
+    var currentLocZone = parseInt($('#hdCurrentLocationZone').val());
+    var requestTypeVal = parseInt($('#ddlRequestType').val());
+    var selectedRelocationVal = $("input[name=IsRelocationAllowance]:checked").val();
+    //var relocationAmountVal = parseInt($('#hdRelocationAmount').val());
+
+    if (transferLocZone === "") {
+        $('#errorRequestedTransferSpan').show();
+        return false;
+    }
+
+    if (transferLocZone === 1 || transferLocZone === 2) {
+        IsNCR = 'true';
+    } else {
+        IsNCR = 'false';
+    }
+
+    //if (relocationAmountVal !== 0)
+    if ((currentLocZone != transferLocZone) && (requestTypeVal != 2) && selectedRelocationVal != "False")
+    FillRelocationAmount(grade, IsNCR);
+}
+
+function RBRelocationAllowance() {
+    $('#errorRelocationAllowanceSpan').hide();
+    var selectedRelocationVal = $("input[name=IsRelocationAllowance]:checked").val();
+
+    if (selectedRelocationVal === "True") {
+        $('#txtRelocationAmount').val("");
+        $('#hdRelocationAmount').val("");
+        $('#ddlSalaryGrade').val("");
+        $('.emailTransferDiv').show();
+        $('#hdRelocationAllowanceYes').val(selectedRelocationVal);
+    }
+    else {
+        $('#txtRelocationAmount').val(0);
+        $('#hdRelocationAmount').val(0);
+        $('.emailTransferDiv').hide();
+        $('#hdRelocationAllowanceYes').val(selectedRelocationVal);
+    }
+}
+
+function RBCorrectiveActionPlan() {
+    var selectedCAPVal = $("input[name=IsCorrectiveActionPlan]:checked").val();
+
+    if (selectedCAPVal === "True")
+        $('.lblCAP').addClass("cap-select");
+    else
+        $('.lblCAP').removeClass("cap-select");
+}
+
+function CheckITPFormValidation() {
+    var transferLocZone = parseInt($('#hdRequestedLocationZone').val());
+    var selectedRelocationVal = $("input[name=IsRelocationAllowance]:checked").val();
+    $('#hdRelocationAllowanceYes').val(selectedRelocationVal);
+
+    if (transferLocZone != 2) {
+        $("input[name=IsRelocationAllowance]").prop('disabled', true);
+        $('#relocationInfoId').hide();
+    } else {
+        $("input[name=IsRelocationAllowance]").prop('disabled', false);
+        $('#relocationInfoId').show();
+    }
+    SetEffectiveTransferDateFormat();
+    RBCorrectiveActionPlan();
+}
+
+function SetEffectiveTransferDateFormat() {
+    var TenureMonthsInProcess = $('#hdTenureMonthsInProcess').val().split(' ')[0]
+    TenureMonthsInProcess = ChangeDateFormatToName(TenureMonthsInProcess)
+    var TenureMonthsInLocation = $('#hdTenureMonthsInLocation').val().split(' ')[0]
+    TenureMonthsInLocation = ChangeDateFormatToName(TenureMonthsInLocation)
+    var EffectiveTransferDate = $('#hdEffectiveTransferDate').val().split(' ')[0]
+    EffectiveTransferDate = ChangeDateFormatToName(EffectiveTransferDate)
+
+    $('#txtTenureMonthsInProcess').val(TenureMonthsInProcess);
+    $('#txtTenureMonthsInLocation').val(TenureMonthsInLocation);
+    $('#txtEffectiveTransferDate').val(EffectiveTransferDate);
+
+    var transferLocZone = parseInt($('#hdRequestedLocationZone').val());
+    var currentLocZone = $('#hdCurrentLocationZone').val();
+    var requestTypeVal = parseInt($('#ddlRequestType').val());
+    var selectedRelocationVal = $("input[name=IsRelocationAllowance]:checked").val();
+
+    if (transferLocZone === 2 && requestTypeVal === 1 && selectedRelocationVal === "True") {
+        $('.emailTransferDiv').show();
+    } else {
+        $('.emailTransferDiv').hide();
+    }
+}
+
+function CheckRequestValidation(isManager) {
+    var userId = $('#hdEmpNTID').val();
+
+    $.ajax({
+        url: "/Request/GetCountOfRaisedRequest",
+        method: 'post',
+        dataType: 'json',
+        data: { UserId: userId },
+        async: false,
+        success: function (data) {
+            if (!isManager) { // Call while employee logged in 
+                $('#EmployeeAccessHiddenValue').val(data);
+                if (data == 1001)
+                    EmployeeNotAuthroizedMessage();
+                else
+                    if (data > 0)
+                        EmployeeAlertMessage();
+            }
+            else { // Call while manager logged in 
+                $('#ManagerAccessHiddenValue').val(data);
+                if (data == 1001)
+                    ManagerNotAuthroizedMessage();
+                else
+                    if (data > 0)
+                        ManagerAlertMessage();
+            }
+        }
+    });
+}
+
+function CheckIJPFormValidation() {
+    var transferLocZone = parseInt($('#hdPreviousLocationZone').val());
+
+    if (transferLocZone !== 2) {
+        $("input[name=IsRelocationAllowance]").prop('disabled', true);
+        $('#relocationInfoId').hide();
+    } else {
+        $("input[name=IsRelocationAllowance]").prop('disabled', false);
+        $('#relocationInfoId').show();
+    }
+    SetIJPEffectiveTransferDateFormat();
+}
+
+function SetIJPEffectiveTransferDateFormat() {
+    var transferLocZone = parseInt($('#hdPreviousLocationZone').val());
+    var selectVal = $("input[name=IsRelocationAllowance]:checked").val();
+
+    var DateOfTransfer = $('#hdDateOfTransfer').val().split(' ')[0];
+    DateOfTransfer = ChangeDateFormatToName(DateOfTransfer);
+    var RelocationAllowanceEffectiveDate = $('#hdRelocationAllowanceEffectiveDate').val().split(' ')[0];
+    RelocationAllowanceEffectiveDate = ChangeDateFormatToName(RelocationAllowanceEffectiveDate);
+
+    $('#txtDateOfTransfer').val(DateOfTransfer);
+    $('#txtRelocationAllowanceEffectiveDate').val(RelocationAllowanceEffectiveDate);
+
+    if (transferLocZone === 2 && selectVal === "True") {
+        $('.emailTransferDiv').show();
+    } else {
+        $('.emailTransferDiv').hide();
+    }
+}
+
+function EmployeeAlertMessage() {
+    $.alert({
+        title: 'Alert!',
+        content: 'Transfer request is already raised,Please check current status in myrequest details.',
+        buttons: {
+            Ok: function () {
+                window.location.href = '/Home/Index';
+            },
+        }
+    });
+}
+
+function ManagerAlertMessage() {
+    $.alert({
+        title: 'Alert!',
+        content: 'Your request is already raised,Please check current status in my request details.',
+        buttons: {
+            Ok: function () { },
+        }
+    });
+    ClearFormDetails();
+}
+
+function EmployeeNotAuthroizedMessage() {
+    $.alert({
+        title: 'Alert!',
+        content: 'Internal transfer policy is not applicable for contractual employees.',
+        buttons: {
+            Ok: function () {
+                window.location.href = '/Home/Index';
+            },
+        }
+    });
+}
+
+function ManagerNotAuthroizedMessage() {
+    $.alert({
+        title: 'Alert!',
+        content: 'Internal transfer policy is not applicable for contractual employees.',
+        buttons: {
+            Ok: function () { },
+        }
+    });
+}
+
+function DateConversion(jsonDate) {
+    var date = new Date(parseInt(jsonDate.substr(6)));
+    var month = date.getMonth() + 1;
+    var fulldate = month + "/" + date.getDate() + "/" + date.getFullYear();
+    fulldate = ChangeDateFormatToName(fulldate);
+
+    return fulldate;
+}
+
+function ChangeDateFormatToName(inputDate) {
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    var date = inputDate.split('/');
+    date = date[1] + "-" + (monthNames[date[0] - 1]) + "-" + date[2];
+
+    return date;
+}
+
+function GetRequestId(d) {
+    var id = d.getAttribute("data-id");
+    $("#hiddenRequestId").val(id);
+}
+
+function ClearFormDetails() {
+    $('#hdEmpName').val("");
+    $('#EmployeeName').val("");
+    $('#hdEmpNTID').val("");
+    $('#EmployeeNTID').val("");
+    $('#hdEmpEmail').val("");
+    $('#EmployeeEmail').val("");
+    $('#hdEmpEmail').val("");
+    $('#EmployeeId').val("");
+    $('#hdEmpID').val("");
+    $('#hdSupervisorId').val("");
+    $('#SupervisorId').val("");
+    $('#hdSupervisorEmail').val("");
+    $('#SupervisorEmail').val("");
+    $('#hdSupervisorName').val("");
+    $('#SupervisorName').val("");
+    $('#hdSupervisorNTID').val("");
+    $('#SupervisorNTID').val("");
+    $('#hdJobTitle').val("");
+    $('#JobTitle').val("");
+    $('#hdCurrentLocation').val("");
+    $('#CurrentLocation').val("");
+}
+
+function ChangeDateFormatToNumber(inputDate) {
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    var date = inputDate.split('-');
+    date = monthNames.indexOf(date[1]) + "/" + date[0] + "/" + date[2];
+
+    return date;
+}
+
+function SelectPicker() {
+    $('.selectpicker').selectpicker({
+        liveSearch: true,
+    });
+}
+
+function MonthDiff(startDate, effectiveEndDate) {
+    var months;
+    months = (effectiveEndDate.split('/')[2] - startDate.split('/')[2]) * 12;
+    months -= parseInt(startDate.split('/')[0]) + 1;
+    months += parseInt(effectiveEndDate.split('/')[0]);
+
+    return months <= 0 ? 0 : months;
+}
+
+function GetZoneOfTransferLocation(transferLoc) {
+    $.ajax({
+        url: "/Request/GetZoneOfTransferLocation",
+        type: "POST",
+        dataType: "JSON",
+        data: { location: transferLoc },
+        async: false,
+        success: function (data) {
+            if (data.LocationId !== 0) {
+                $('#hdRequestedLocationZone').val(data.ZoneId);
+            }
+            else {
+                alert("Invalid input or record doesn't exist");
+                return false;
+            }
+        }
+    })
+}
+
+function FillDropDownForSG29ApproverDetails(businessId) {
+    var selectedVal = $('#hdSG29Approver').val();
+
+    $.ajax({
+        url: "/Request/GetSG29ApproverDetails",
+        type: "POST",
+        dataType: "JSON",
+        data: { BusinessId: businessId },
+        success: function (data) {
+            $('#ddlSG29Approver').html("");
+            if (data.ApproverNTID !== null) {
+                $("#ddlSG29Approver").append("<option value='0'>--- Select SG29+ approver ---</option>");
+                if (selectedVal === undefined) {
+                    $.each(data, function (i) {
+                        optionhtml = '<option value="' +
+                            data[i].ApproverNTID + '">' + data[i].ApproverName + " (" + data[i].ApproverEmail + ")" + '</option>';
+                        $('#ddlSG29Approver').append(optionhtml);
+                    });
+                    $('.selectpicker').selectpicker('refresh');
+                }
+                else {
+                    $.each(data, function (i) {
+                        optionhtml = '<option value="' +
+                            data[i].ApproverNTID.split('\\')[1] + '">' + data[i].ApproverName + " (" + data[i].ApproverEmail + ")" + '</option>';
+                        $('#ddlSG29Approver').append(optionhtml);
+
+                        $("#ddlSG29Approver option[value='" + selectedVal.split('\\')[1] + "']").prop('selected', 'selected');
+                    });
+                    $('.selectpicker').selectpicker('refresh');
+                }
+            }
+            else {
+                alert("Invalid input or record doesn't exist");
+                return false;
+            }
+        }
+    })
+}
+
+function FillITPTransferLocationDetails(locationCode) {
+    $.ajax({
+        url: "/Request/GetLocationDetails",
+        type: "GET",
+        dataType: "JSON",
+        success: function (data) {
+            $('#ddlRequestedTransferLocation').html("");
+            if (data.GLCode !== null) {
+                $("#ddlRequestedTransferLocation").append("<option value='0'>--- Select transfer location ---</option>");
+                $.each(data, function (i) {
+                    if (data[i].GLCode != locationCode) {
+                        optionhtml = '<option value="' +
+                            data[i].GLCode + '">' + data[i].LocationName + " (" + data[i].GLCode + ")" + '</option>';
+                        $('#ddlRequestedTransferLocation').append(optionhtml);
+                    }
+                });
+            }
+            else {
+                alert("Invalid input or record doesn't exist");
+                return false;
+            }
+        }
+    })
+}
+
+function FillIJPPreviousLocationDetails(locationCode) {
+    $.ajax({
+        url: "/Request/GetLocationDetails",
+        type: "GET",
+        dataType: "JSON",
+        success: function (data) {
+            $('#ddlPreviousLocation').html("");
+            if (data.GLCode !== null) {
+                $("#ddlPreviousLocation").append("<option value='0'>--- Select transfer location ---</option>");
+                $.each(data, function (i) {
+                    if (data[i].GLCode != locationCode) {
+                        optionhtml = '<option value="' +
+                            data[i].GLCode + '">' + data[i].LocationName + " (" + data[i].GLCode + ")" + '</option>';
+                        $('#ddlPreviousLocation').append(optionhtml);
+                    }
+                });
+            }
+            else {
+                alert("Invalid input or record doesn't exist");
+                return false;
+            }
+        }
+    })
+}
+
+function FillRequestFormDetails(data) {
+    $('#ddlRequesteeEmployeeName option:selected').text(data.EmployeeName);
+    $('.selectpicker').selectpicker('refresh');
+    $('#hdEmpName').val(data.EmployeeName);
+    $('#EmployeeName').val(data.EmployeeName);
+    $('#hdEmpNTID').val(data.EmployeeNTID);
+    $('#EmployeeNTID').val(data.EmployeeNTID);
+    $('#hdEmpEmail').val(data.EmployeeEmail);
+    $('#EmployeeEmail').val(data.EmployeeEmail);
+    $('#hdEmpEmail').val(data.EmployeeEmail);
+    $('#EmployeeId').val(data.EmployeeCode);
+    $('#hdEmpID').val(data.EmployeeCode);
+    $('#hdSupervisorId').val(data.ManagerCode);
+    $('#SupervisorId').val(data.ManagerCode);
+    $('#hdSupervisorEmail').val(data.ManagerEmail);
+    $('#SupervisorEmail').val(data.ManagerEmail);
+    $('#hdSupervisorName').val(data.ManagerName);
+    $('#SupervisorName').val(data.ManagerName);
+    $('#hdSupervisorNTID').val(data.ManagerNTID);
+    $('#SupervisorNTID').val(data.ManagerNTID);
+    $('#hdJobTitle').val(data.JobTitle);
+    $('#JobTitle').val(data.JobTitle);
+    $('#hdCurrentLocation').val(data.LocationCode);
+    $('#CurrentLocation').val(data.EmployeeLocation + " (" + data.LocationCode + ")");
+    $('#hdCurrentLocationZone').val(data.CurrentLocationZone);
+    $('#hdBusinessUnit').val(data.BusinessUnit);
+    $('#hdDepartmentId').val(data.DepartmentId);
+    $('#hdOperatingUnit').val(data.OperatingUnit);
+}
+
+function FillRelocationAmount(grade, IsNCR) {
+    $.ajax({
+        url: "/Request/GetRelocationAmountDetail",
+        type: "POST",
+        dataType: "JSON",
+        data: { grade: grade },
+        success: function (data) {
+            if (data.Id !== null) {
+                if (IsNCR == "true") {
+                    $('#txtRelocationAmount').val(data.InSideNCR);
+                    $('#hdRelocationAmount').val(data.InSideNCR);
+                } else {
+                    $('#txtRelocationAmount').val(data.OutSideNCR);
+                    $('#hdRelocationAmount').val(data.OutSideNCR);
+                }
+            }
+            else {
+                alert("Invalid input or record doesn't exist");
+                return false;
+            }
+        }
+    })
+}
+
+function DDLPreviousLocation() {
+    $('#errorLocationSpan').hide();
+    var currentLocZone = parseInt($('#hdCurrentLocationZone').val());
+
+    GetZoneOfIJPTransferLocation($('#ddlPreviousLocation').val());
+    var transferLocZone = parseInt($('#hdPreviousLocationZone').val());
+    if (currentLocZone === transferLocZone) {
+        $('.emailTransferDiv').hide();
+        $('#relocationInfoId').hide();
+        $('#txtRelocationAmount').val(0);
+        $('#hdRelocationAmount').val(0);
+        $("input[name=IsRelocationAllowance]").prop('disabled', true);
+        $("#rbRelocationAllowanceNo").prop({ 'checked': true, 'disabled': true });
+        $('#hdRelocationAllowanceYes').val($("input[name=IsRelocationAllowance]:checked").val());
+    }
+    else if ((currentLocZone === 1 || currentLocZone === 2) && (transferLocZone === 2 || transferLocZone === 1)) {
+        $('#ddlSalaryGrade').val("");
+        $('#txtRelocationAmount').val("");
+        $('#hdRelocationAmount').val("");
+        $("input[name=IsRelocationAllowance]").prop({ 'disabled': false, 'checked': false });
+        $('#relocationInfoId').show();
+    }
+    else {
+        $('#ddlSalaryGrade').val("");
+        $('#txtRelocationAmount').val("");
+        $('#hdRelocationAmount').val("");
+        $('.emailTransferDiv').hide();
+        $('#relocationInfoId').hide();
+        $("input[name=IsRelocationAllowance]").prop({ 'disabled': true });
+        $("#rbRelocationAllowanceYes").prop({ 'checked': true, 'disabled': true });
+        $('#hdRelocationAllowanceYes').val($("input[name=IsRelocationAllowance]:checked").val());
+    }
+}
+
+function DDLIJPSalaryGrade() {
+    var IsNCR;
+
+    $('#errorSalarySpan').hide();
+    var transferLocZone = parseInt($('#hdPreviousLocationZone').val().trim());
+    var grade = $('#ddlSalaryGrade option:selected').text().trim();
+    var currentLocZone = parseInt($('#hdCurrentLocationZone').val());
+    var selectedRelocationVal = $("input[name=IsRelocationAllowance]:checked").val();
+    //var relocationAmountVal = parseInt($('#hdRelocationAmount').val());
+
+    if (transferLocZone === "") {
+        $('#errorLocationSpan').show();
+        return false;
+    }
+    if (transferLocZone === 1 || transferLocZone === 2) {
+        IsNCR = 'true';
+    } else {
+        IsNCR = 'false';
+    }
+    //if (relocationAmountVal !== 0)
+    if ((currentLocZone != transferLocZone) && selectedRelocationVal != "False")
+        FillRelocationAmount(grade, IsNCR);
+}
+
+function RBIJPRelocationAllowance() {
+    $('#errorRelocationAllowanceSpan').hide();
+    var selectedRelocationVal = $("input[name=IsRelocationAllowance]:checked").val();
+    var transferLocZone = $('#hdPreviousLocationZone').val();
+
+    if (selectedRelocationVal === "True") {
+        $('#txtRelocationAmount').val("");
+        $('#hdRelocationAmount').val("");
+        $('#ddlSalaryGrade').val("");
+        //$('#relocationInfoId').show();
+        $('.emailTransferDiv').show();
+        $('#hdRelocationAllowanceYes').val(selectedRelocationVal);
+    }
+    else {
+        $('#txtRelocationAmount').val(0);
+        $('#hdRelocationAmount').val(0);
+        $('.emailTransferDiv').hide();
+        //$('#relocationInfoId').hide();
+        $('#hdRelocationAllowanceYes').val(selectedRelocationVal);
+    }
+}
+
+function FillEmployeeDDL(data, IsSLM) {
+    var optionhtml = "";
+    $('#ddlRequesteeEmployeeName').html("");
+    $("#ddlRequesteeEmployeeName").append("<option value='0'>--- Select employee ---</option>");
+
+    if (!IsSLM) { // Fill Employee's name dropdown list
+        for (var i = 0; i < data.ListOfDirectReportToManager.length; i++) {
+            optionhtml += '<option value="' + data.ListOfDirectReportToManager[i].EmployeeNTID + '">' +
+                data.ListOfDirectReportToManager[i].EmployeeName + '</option>';
+        }
+    }
+    else { // Fill Manager's name dropdown list
+        for (i = 0; i < data.ListOfDirectReportToSLM.length; i++) {
+            optionhtml += '<option value="' + data.ListOfDirectReportToSLM[i].EmployeeNTID + '">' +
+                data.ListOfDirectReportToSLM[i].EmployeeName + '</option>';
+        }
+    }
+    $('#ddlRequesteeEmployeeName').append(optionhtml);
+    $('.selectpicker').selectpicker('refresh');
+}
+
+function FillEmployeeManagerDDL(data) {
+    var optionhtml = "";
+    $('#ddlRequesteeEmployeeName').html("");
+    $("#ddlRequesteeEmployeeName").append("<option value='0'>--- Select employee ---</option>");
+
+    for (var i = 0; i < data.ListOfDirectReportToManager.length; i++) {
+        optionhtml += '<option value="' + data.ListOfDirectReportToManager[i].EmployeeNTID + '">' +
+            data.ListOfDirectReportToManager[i].EmployeeName + '</option>';
+    }
+
+    for (i = 0; i < data.ListOfDirectReportToSLM.length; i++) {
+        optionhtml += '<option value="' + data.ListOfDirectReportToSLM[i].EmployeeNTID + '">' +
+            data.ListOfDirectReportToSLM[i].EmployeeName + '</option>';
+    }
+
+    $('#ddlRequesteeEmployeeName').append(optionhtml);
+    $('.selectpicker').selectpicker('refresh');
+}
+
+function FillManagerDDL(data) {
+    var optionhtml = "";
+
+    $('#ddlRequesteeManager').html("");
+    $("#ddlRequesteeManager").append("<option value='0'>--- Select manager ---</option>");
+
+    for (var i = 0; i < data.ListOfDirectReportToSLM.length; i++) {
+        optionhtml += '<option value="' + data.ListOfDirectReportToSLM[i].EmployeeNTID + '">' +
+            data.ListOfDirectReportToSLM[i].EmployeeName + '</option>';
+    }
+    $('#ddlRequesteeManager').append(optionhtml);
+    $('.selectpicker').selectpicker('refresh');
+}
+
+function FillDropDownForEmployeeDetails(requesterVal) {
+    $.ajax({
+        url: "/Request/GetEmployeeListByManager",
+        type: "POST",
+        dataType: "JSON",
+        data: { searchParameter: requesterVal },
+        success: function (data) {
+            ClearFormDetails();
+            $('#ddlRequesteeEmployeeName').html("");
+            $("#ddlRequesteeEmployeeName").append("<option value='0'>--- Select employee ---</option>");
+
+            if (data.ListOfDirectReportToManager.length > 0) {
+                var optionhtml = "";
+                for (var i = 0; i < data.ListOfDirectReportToManager.length; i++) {
+                    optionhtml += '<option value="' + data.ListOfDirectReportToManager[i].EmployeeNTID + '">' + data.ListOfDirectReportToManager[i].EmployeeName + '</option>';
+                }
+                $('#ddlRequesteeEmployeeName').append(optionhtml);
+                $('.selectpicker').selectpicker('refresh');
+            }
+            else {
+                $('.selectpicker').selectpicker('refresh');
+                alert("This tool can be use for OGS India employees only.");
+                return false;
+            }
+        }
+    });
+}
+
+function GetZoneOfIJPTransferLocation(transferLoc) {
+    $.ajax({
+        url: "/Request/GetZoneOfTransferLocation",
+        type: "POST",
+        dataType: "JSON",
+        data: { location: transferLoc },
+        async: false,
+        success: function (data) {
+            if (data.LocationId !== 0) {
+                $('#hdPreviousLocationZone').val(data.ZoneId);
+            }
+            else {
+                alert("Invalid input or record doesn't exist");
+                return false;
+            }
+        }
+    });
+}
+
+
+----------------------Capabilities.js------------------------------
+$(document).ready(function () {
+    GetCapabilities();
+
+    $("button[type=submit]").click(function () {
+        var BusinessSegment = $('#txtCapabilitie').val().trim().length;
+        if (!BusinessSegment > 0) {
+            $('#errorCapabilitieId').show();
+            return false;
+        }
+    });
+});
+
+function GetCapabilities() {
+    $.ajax({
+        url: "/Admin/GetCapabilities",
+        method: 'post',
+        dataType: 'json',
+        success: function (data) {
+            var datatableInstance = $('#tblManageCapabilities').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                columns: [
+                    { 'data': 'Id' },
+                    { 'data': 'Name' },
+                    { 'data': 'BsName' },
+                    { 'data': 'IsActive' },
+                    { 'data': 'CreatedBy' },
+                    {
+                        'data': 'CreatedOn',
+                        'render': function (jsonDate) {
+                            var date = new Date(parseInt(jsonDate.substr(6)));
+                            var month = date.getMonth() + 1;
+                            return month + "/" + date.getDate() + "/" + date.getFullYear();
+                        }
+                    },
+                    {
+                        'data': 'Id',
+                        'sortable': false,
+                        'visible': true,
+                        'render': function (data, type, full, meta) {
+                            return '<a title="Manage"  href="/Admin/ManageCapabilities?key=' + full.Id + '"><i class="glyphicon glyphicon-edit"></i>&nbsp;Manage</a>';
+                        }
+                    }
+                ],
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+----------------------Busniss senge.js-----------------
+$(document).ready(function () {
+    GetBusinessSegment();
+
+    $("button[type=submit]").click(function () {
+        var BusinessSegment = $('#txtBusinessSegment').val().trim().length;
+        if (!BusinessSegment > 0) {
+            $('#errorBusinessSegmentId').show();
+            return false;
+        }
+    });
+});
+
+function GetBusinessSegment() {
+    $.ajax({
+        url: "/Admin/GetBusinessSegment",
+        method: 'post',
+        dataType: 'json',
+        success: function (data) {
+            var datatableInstance = $('#tblManageBusinessSegment').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                columns: [
+                    { 'data': 'Id' },
+                    { 'data': 'Name' },
+                    { 'data': 'IsActive' },
+                    { 'data': 'CreatedBy' },
+                    {
+                        'data': 'CreatedOn',
+                        'render': function (jsonDate) {
+                            var date = new Date(parseInt(jsonDate.substr(6)));
+                            var month = date.getMonth() + 1;
+                            return month + "/" + date.getDate() + "/" + date.getFullYear();
+                        }
+                    },
+                    {
+                        'data': 'Id',
+                        'sortable': false,
+                        'visible': true,
+                        'render': function (data, type, full, meta) {
+                            return '<a title="Manage"  href="/Admin/ManageBusinessSegment?key=' + full.Id + '"><i class="glyphicon glyphicon-edit"></i>&nbsp;Manage</a>';
+                        }
+                    }
+                ],
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+-----------------Blog.js-------------------
+function LoadPostsAndComment() {
+    $.ajax
+        ({
+            url: "/Home/LoadPostsAndCommentPartialView",
+            contentType: "application/html; charset=utf-8",
+            type: "POST",
+            datatype: "html",
+            success: function (t) {
+                $("#dvHomePostsAndCommentBind").html(t)
+            },
+            error: function () {
+                $("#dvHomePostsAndCommentBind").html("Post Not Found");
+                window.location.href = "/Home/Error";
+            }
+        })
+}
+function LoadDocumentHome() {
+    $.ajax
+        ({
+            url: "/Home/LoadDocumentPartialView",
+            contentType: "application/html; charset=utf-8",
+            type: "POST",
+            datatype: "html",
+            success: function (t) {
+                $("#dvHomeDocumentBind").html(t)
+            },
+            error: function () {
+                $("#dvHomeDocumentBind").html("Document Not Found");
+                window.location.href = "/Home/Error";
+            }
+        })
+}
+function LoadBlogeHome() {
+    $.ajax
+        ({
+            url: "/Home/LoadBlogePartialView",
+            contentType: "application/html; charset=utf-8",
+            type: "POST",
+            datatype: "html",
+            success: function (t) {
+                $("#dvBlogeBind").html(t)
+            },
+            error: function () {
+                $("#dvBlogeBind").html("Blog Not Found");
+                window.location.href = "/Home/Error";
+            }
+        })
+}
+
+
+----------------AssessmentResult.js-------------------
+$(document).ready(function () {
+    GetAssessmentResult();
+});
+
+function GetAssessmentResult() {
+    $.ajax({
+        url: "/Admin/GetAssessmentResult",
+        method: 'post',
+        dataType: 'json',
+        success: function (data) {
+            var datatableInstance = $('#tblAssessmentResult').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                dom: 'Bfrtip',
+                buttons: [
+                    'copyHtml5', 'print', { extend: 'csvHtml5', filename: 'Assessment Result' },
+                    { extend: 'excelHtml5', filename: 'Assessment Result' }
+                ],
+                columns: [
+                    { 'data': 'UserName' },
+                    { 'data': 'QuizName' },
+                    { 'data': 'Marks' },
+                    { 'data': 'status' }                                     
+                ],
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+function GenerateResult() {
+    var QuizText = document.getElementById("ddlQuiz");
+    var QuizNameText = QuizText.options[QuizText.selectedIndex].text;
+    GetSelectAssessmentResult(QuizNameText)
+}
+
+function GetSelectAssessmentResult(QuizNameText) {
+    $.ajax({
+        url: "/Admin/GetSelectAssessmentResult",
+        method: 'post',
+        dataType: 'json',
+        data: { QuizNameText: QuizNameText },
+        success: function (data) {
+            var datatableInstance = $('#tblAssessmentResult').DataTable({
+                destroy: true,
+                paging: true,
+                sort: false,
+                searching: true,
+                data: data,
+                dom: 'Bfrtip',
+                buttons: [
+                    'copyHtml5', 'print', { extend: 'csvHtml5', filename: 'Assessment Result' },
+                    { extend: 'excelHtml5', filename: 'Assessment Result' }
+                ],
+                columns: [
+                    { 'data': 'UserName' },
+                    { 'data': 'QuizName' },
+                    { 'data': 'Marks' },
+                    { 'data': 'status' }
+                ],
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+
+
+-------------------------ApproveUploadDoc.js----------------------
+$(document).ready(function () {
+    GetPendingFeedback();
+    GetCompletedFeedback();
+    GetPagination();
+    $("#chkParent").children().remove();
+});
+
+function GetPendingFeedback() {
+    $.ajax({
+        url: "/Admin/GetApproveUploadDocDetails",
+        type: "POST",
+        dataType: "JSON",
+        data: { Status: '0' },
+        async: false,
+        success: function (data) {
+            if (data.length > 0) {
+                var trHTML = '';
+                $.each(data, function (i, item) {
+                    trHTML += '<tr><td style="width:2%;"><input type="checkbox"/></td><td style="width:28%;"><table class= "custum-grid-table" style="font-size:12px;"><tr><td><b>Uploaded By</b>: ' + data[i].UploadByName + '</td></tr><tr><td><b>File Name</b>: ' + data[i].Name + '</td></tr></table></td><td style="width:33%;">' + data[i].Message + '</td><input type="hidden" id="hdDocId" value=' + data[i].ID + '><td><textarea style="width:100%"/></td></tr>';
+                });
+                $('#tblPendingRequest tbody').append(trHTML);
+            }
+            else {
+                $('.btnUpdate').prop("disabled", true);
+                $('#tblPendingRequest tbody').append('<tr><td></td><td style="color:green;font-size:15px;">No Document Pending For Approval.</td><td></td><td></td></tr>');
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+function GetCompletedFeedback() {
+    $.ajax({
+        url: "/Admin/GetApproveUploadDocDetails",
+        type: "POST",
+        dataType: "JSON",
+        data: { Status: '1' },
+        async: false,
+        success: function (data) {
+            if (data.UploadBy !== "") {
+                var trHTML = '';
+                $.each(data, function (i, item) {
+                    trHTML += '<tr><td style="width:28%;"><table class= "custum-grid-table" style="font-size:12px;"><tr><td style=""><b>Uploaded By</b>: ' + data[i].UploadByName + '</td></tr><tr><td><b>File Name</b>: ' + data[i].Name + '</td></tr></table></td><td>' + data[i].Message + '</td><td>' + data[i].Remarks + '</td></tr>';
+                });
+                $('#tblApprovedRequest tbody').append(trHTML);
+            }
+            else {
+                alert("Invalid input or record doesn't exist");
+                return false;
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+function SubmitApproval() {
+    var checkboxValues = [];
+
+    $('#tblPendingRequest tbody').find('tr').each(function (i) {
+        var row = $(this);
+        if (row.find('input[type="checkbox"]').is(':checked')) {
+            var id = row.find('input[type="hidden"]').val();
+            var Remarks = row.find('textarea').val();
+            if (Remarks === "") {
+                alert("You must fill the text area!")
+                return false;
+            }
+            var val = id + '^' + Remarks;
+            checkboxValues.push(val)
+        }
+        return checkboxValues;
+    });
+
+    if (!$.isEmptyObject(checkboxValues)) {
+        $.ajax({
+            url: "/Admin/ApproveDocument",
+            type: "POST",
+            dataType: "JSON",
+            data: { Id: checkboxValues },
+            success: function (data) {
+                window.location.href = "/admin/ApproveUploadDoc"
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                window.location.href = "/Home/Error";
+            }
+        });
+    }
+}
+
+function GetPagination() {
+    var myTable = "#tblApprovedRequest";
+    var myTableBody = myTable + " tbody";
+    var myTableRows = myTableBody + " tr";
+    var myTableColumn = myTable + " th";
+
+    function initTable() {
+        $(myTableBody).attr("data-pageSize", 50);
+        $(myTableBody).attr("data-firstRecord", 0);
+        $('#previous').hide();
+        $('#next').show();
+
+        paginate(parseInt($(myTableBody).attr("data-firstRecord"), 10),
+            parseInt($(myTableBody).attr("data-pageSize"), 10));
+    }
+    $(myTableColumn).click(function () {
+        paginate(parseInt($(myTableBody).attr("data-firstRecord"), 10),
+            parseInt($(myTableBody).attr("data-pageSize"), 10));
+    });
+
+    $("a.paginate").click(function (e) {
+        e.preventDefault();
+        var tableRows = $(myTableRows);
+        var tmpRec = parseInt($(myTableBody).attr("data-firstRecord"), 10);
+        var pageSize = parseInt($(myTableBody).attr("data-pageSize"), 10);
+
+        if ($(this).attr("id") == "next") {
+            tmpRec += pageSize;
+        } else {
+            tmpRec -= pageSize;
+        }
+        if (tmpRec < 0 || tmpRec > tableRows.length) return
+        $(myTableBody).attr("data-firstRecord", tmpRec);
+
+        paginate(tmpRec, pageSize);
+    });
+
+    var paginate = function (start, size) {
+        var tableRows = $(myTableRows);
+        var end = start + size;
+        tableRows.hide();
+        tableRows.slice(start, end).show();
+        $(".paginate").show();
+        if (tableRows.eq(0).is(":visible")) $('#previous').hide();
+        if (tableRows.eq(tableRows.length - 1).is(":visible")) $('#next').hide();
+    }
+    initTable();
+}
+
+-----------------ApproveProfileImg.js-----------------------
+$(document).ready(function () {
+    GetPendingFeedback();
+    GetCompletedFeedback();
+    GetPagination();
+    $("#chkParent").children().remove();
+});
+
+function GetPendingFeedback() {
+    $.ajax({
+        url: "/Admin/GetApproveImageDetails",
+        type: "POST",
+        dataType: "JSON",
+        data: { Status: '0' },
+        async: false,
+        success: function (data) {
+            if (data.length > 0) {
+                 var trHTML = '';
+                   $.each(data, function (i, item) {
+                    var innerHTML = "<img style='width:100px;' src=" + data[i].image +" alt='hello'/>"; 
+                       trHTML += '<tr><td style="width:2%;"><input type="checkbox"/></td><td style="width:28%;"><table class= "custum-grid-table" style="font-size:12px;"><tr><td><b>UserCode</b>: ' + data[i].UserCode + '</td></tr><tr><td><b>UserName</b>: ' + data[i].UserName + '</td></tr></table></td><td style="width:33%;">' + innerHTML + '</td><input type="hidden" id="hdDocId" value=' + data[i].Id + '><td><textarea style="width:100%"/></td></tr>';
+                });
+                $('#tblPendingRequest tbody').append(trHTML);
+            }
+            else {
+                $('.btnUpdate').prop("disabled", true);
+                $('#tblPendingRequest tbody').append('<tr><td></td><td style="color:red;font-size:15px;">No pending Image is available For Approval.</td><td></td><td></td></tr>');
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+function GetCompletedFeedback() {
+    $.ajax({
+        url: "/Admin/GetApproveImageDetails",
+        type: "POST",
+        dataType: "JSON",
+        data: { Status: '1' },
+        async: false,
+        success: function (data) {
+            if (data.UserCode !== "") {
+                var trHTML = '';
+                $.each(data, function (i, item) {
+                    var innerHTML = "<img style='width:100px;' src=" + data[i].image + " alt='hello'/>";
+                    trHTML += '<tr><td style="width:28%;"><table class= "custum-grid-table" style="font-size:12px;"><tr><td style=""><b>UserCode</b>: ' + data[i].UserCode + '</td></tr><tr><td><b>UserName</b>: ' + data[i].UserName + '</td></tr></table></td><td>' + innerHTML + '</td><td>' + data[i].Remarks + '</td></tr>';
+                });
+                $('#tblApprovedRequest tbody').append(trHTML);
+            }
+            else {
+                alert("Invalid input or record doesn't exist");
+                return false;
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+function SubmitApproval() {
+    var checkboxValues = [];
+
+    $('#tblPendingRequest tbody').find('tr').each(function (i) {
+        var row = $(this);
+        if (row.find('input[type="checkbox"]').is(':checked')) {
+            var id = row.find('input[type="hidden"]').val();
+            var Remarks = row.find('textarea').val();
+            var status = 'A';
+            var val = id + '^' + Remarks + '^' + status;
+            checkboxValues.push(val)
+        }
+        return checkboxValues;
+    });
+
+      if (!$.isEmptyObject(checkboxValues)) {
+        $.ajax({
+            url: "/Admin/ApproveImgStatus",
+            type: "POST",
+            dataType: "JSON",
+            data: { Id: checkboxValues },
+            success: function (data) {
+                window.location.href = "/admin/ApproveImage"
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                window.location.href = "/Home/Error";
+            }
+        });
+    }
+}
+
+function SubmitReject() {
+    var checkboxValues = [];
+    $('#tblPendingRequest tbody').find('tr').each(function (i) {
+        var row = $(this);
+        if (row.find('input[type="checkbox"]').is(':checked')) {
+            var id = row.find('input[type="hidden"]').val();
+            var Remarks = row.find('textarea').val();
+            var status = 'R';
+            if (Remarks === "") {
+                alert("You must fill the text area!")
+                return false;
+            }
+            var val = id + '^' + Remarks + '^' + status;
+            checkboxValues.push(val)
+        }
+        return checkboxValues;
+    });
+
+    if (!$.isEmptyObject(checkboxValues)) {
+        $.ajax({
+            url: "/Admin/ApproveImgStatus",
+            type: "POST",
+            dataType: "JSON",
+            data: { Id: checkboxValues },
+            success: function (data) {
+                window.location.href = "/admin/ApproveImage"
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                window.location.href = "/Home/Error";
+            }
+        });
+    }
+}
+function GetPagination() {
+    var myTable = "#tblApprovedRequest";
+    var myTableBody = myTable + " tbody";
+    var myTableRows = myTableBody + " tr";
+    var myTableColumn = myTable + " th";
+
+    function initTable() {
+        $(myTableBody).attr("data-pageSize", 50);
+        $(myTableBody).attr("data-firstRecord", 0);
+        $('#previous').hide();
+        $('#next').show();
+
+        paginate(parseInt($(myTableBody).attr("data-firstRecord"), 10),
+            parseInt($(myTableBody).attr("data-pageSize"), 10));
+    }
+    $(myTableColumn).click(function () {
+        paginate(parseInt($(myTableBody).attr("data-firstRecord"), 10),
+            parseInt($(myTableBody).attr("data-pageSize"), 10));
+    });
+
+    $("a.paginate").click(function (e) {
+        e.preventDefault();
+        var tableRows = $(myTableRows);
+        var tmpRec = parseInt($(myTableBody).attr("data-firstRecord"), 10);
+        var pageSize = parseInt($(myTableBody).attr("data-pageSize"), 10);
+
+        if ($(this).attr("id") == "next") {
+            tmpRec += pageSize;
+        } else {
+            tmpRec -= pageSize;
+        }
+        if (tmpRec < 0 || tmpRec > tableRows.length) return
+        $(myTableBody).attr("data-firstRecord", tmpRec);
+
+        paginate(tmpRec, pageSize);
+    });
+
+    var paginate = function (start, size) {
+        var tableRows = $(myTableRows);
+        var end = start + size;
+        tableRows.hide();
+        tableRows.slice(start, end).show();
+        $(".paginate").show();
+        if (tableRows.eq(0).is(":visible")) $('#previous').hide();
+        if (tableRows.eq(tableRows.length - 1).is(":visible")) $('#next').hide();
+    }
+    initTable();
+}
+
+
+
+
+
+
+
+-----------------------ApprovePost.js----------------
+$(document).ready(function () {
+    GetPendingFeedback();
+    GetPagination();
+    $("#chkParent").children().remove();
+});
+
+function GetPendingFeedback() {
+    $.ajax({
+        url: "/Admin/GetApprovePostDetails",
+        type: "POST",
+        dataType: "JSON",
+        data: { Status: '0' },
+        async: false,
+        success: function (data) {
+            if (data.length > 0) {
+                var trHTML = '';
+                $.each(data, function (i, item) {
+                    //trHTML += '<tr><td style="width:2%;"><input type="checkbox"/></td><td style="width:28%;"><table class= "custum-grid-table" style="font-size:12px;"><tr><td><b>Flag Count</b>: ' + data[i].FlagCount + '</td></tr><tr><td><b>Post By</b>: ' + data[i].PostedByName + '</td></tr><tr><td><b>Time</b>: ' + data[i].PostedDate + '</td></tr></table></td><td style="width:33%;">' + data[i].Message + '</td><input type="hidden" id="hdDocId" value=' + data[i].PostId + '><td><textarea style="width:100%"/></td></tr>';
+                    trHTML += '<tr><td style="width:2%;"><input type="checkbox"/></td><td style="width:28%;"><table class= "custum-grid-table" style="font-size:12px;"><tr><td><b>Flag Count</b>: ' + data[i].FlagCount + '</td></tr><tr><td><b>Post By</b>: ' + data[i].PostedByName + '</td></tr><tr><td><b>Time</b>: ' + data[i].PostedDate + '</td></tr></table></td><td style="width:33%;">' + data[i].Message + '</td><input type="hidden" id="hdDocId" value=' + data[i].PostId + '></tr>';
+                });
+                $('#tblPendingRequest tbody').append(trHTML);
+            }
+            else {
+                $('.btnUpdate').prop("disabled", true);
+                $('#tblPendingRequest tbody').append('<tr><td></td><td style="color:green;font-size:15px;">No Flagged post.</td><td></td><td></td></tr>');
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+function GetCompletedFeedback() {
+    $.ajax({
+        url: "/Admin/GetApprovePostDetails",
+        type: "POST",
+        dataType: "JSON",
+        data: { Status: '1' },
+        async: false,
+        success: function (data) {
+            if (data.UploadBy !== "") {
+                var trHTML = '';
+                $.each(data, function (i, item) {
+                    trHTML += '<tr><td style="width:28%;"><table class= "custum-grid-table" style="font-size:12px;"><tr><td><b>Flag Count</b>: ' + data[i].FlagCount + '</td></tr><tr><td style=""><b>Post By</b>: ' + data[i].PostedByName + '</td></tr><tr><td><b>Blog Title</b>: ' + data[i].PostedDate + '</td></tr></table></td><td>' + data[i].Message + '</td><td>' + data[i].Remarks + '</td></tr>';
+                });
+                $('#tblApprovedRequest tbody').append(trHTML);
+            }
+            else {
+                alert("Invalid input or record doesn't exist");
+                return false;
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+function UnFlagPost() {
+    var checkboxValues = [];
+
+    $('#tblPendingRequest tbody').find('tr').each(function (i) {
+        var row = $(this);
+        if (row.find('input[type="checkbox"]').is(':checked')) {
+            var id = row.find('input[type="hidden"]').val();
+            var Identifier = "UnFlag";
+            var val = id + '^' + Identifier;
+            checkboxValues.push(val)
+        }
+        return checkboxValues;
+    });
+
+    if (!$.isEmptyObject(checkboxValues)) {
+        $.confirm({
+            title: '',
+            type: 'green',
+            content: '<p style="font-style:italic;">Are you sure you want to Unflag the post?</p>',
+            buttons: {
+                confirm: function () {
+                    $.ajax({
+                        url: "/Admin/UnFlagPost",
+                        type: "POST",
+                        dataType: "JSON",
+                        data: { Id: checkboxValues },
+                        success: function (data) {
+                            window.location.href = "/admin/ApprovePost"
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            window.location.href = "/Home/Error";
+                        }
+                    });
+                },
+                cancel: function () {
+                }
+            }
+        });
+    }
+}
+
+function DeletePost() {
+    var checkboxValues = [];
+
+    $('#tblPendingRequest tbody').find('tr').each(function (i) {
+        var row = $(this);
+        if (row.find('input[type="checkbox"]').is(':checked')) {
+            var id = row.find('input[type="hidden"]').val();
+            var Identifier = "POST";
+            var val = id + '^' + Identifier;
+            checkboxValues.push(val)
+        }
+        return checkboxValues;
+    });
+
+    if (!$.isEmptyObject(checkboxValues)) {
+        $.confirm({
+            title: '',
+            type: 'red',
+            content: '<p style="font-style:italic;">Are you sure you want to Delete Selected Post?</p>',
+            buttons: {
+                confirm: function () {
+                    $.ajax({
+                        url: "/Admin/DeleteFlagPost",
+                        type: "POST",
+                        dataType: "JSON",
+                        data: { Id: checkboxValues },
+                        success: function (data) {
+                            window.location.href = "/admin/ApprovePost"
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            window.location.href = "/Home/Error";
+                        }
+                    });
+                },
+                cancel: function () {
+                }
+            }
+        });
+    }
+}
+
+function GetPagination() {
+    var myTable = "#tblApprovedRequest";
+    var myTableBody = myTable + " tbody";
+    var myTableRows = myTableBody + " tr";
+    var myTableColumn = myTable + " th";
+
+    function initTable() {
+        $(myTableBody).attr("data-pageSize", 50);
+        $(myTableBody).attr("data-firstRecord", 0);
+        $('#previous').hide();
+        $('#next').show();
+
+        paginate(parseInt($(myTableBody).attr("data-firstRecord"), 10),
+            parseInt($(myTableBody).attr("data-pageSize"), 10));
+    }
+    $(myTableColumn).click(function () {
+        paginate(parseInt($(myTableBody).attr("data-firstRecord"), 10),
+            parseInt($(myTableBody).attr("data-pageSize"), 10));
+    });
+
+    $("a.paginate").click(function (e) {
+        e.preventDefault();
+        var tableRows = $(myTableRows);
+        var tmpRec = parseInt($(myTableBody).attr("data-firstRecord"), 10);
+        var pageSize = parseInt($(myTableBody).attr("data-pageSize"), 10);
+
+        if ($(this).attr("id") == "next") {
+            tmpRec += pageSize;
+        } else {
+            tmpRec -= pageSize;
+        }
+        if (tmpRec < 0 || tmpRec > tableRows.length) return
+        $(myTableBody).attr("data-firstRecord", tmpRec);
+
+        paginate(tmpRec, pageSize);
+    });
+
+    var paginate = function (start, size) {
+        var tableRows = $(myTableRows);
+        var end = start + size;
+        tableRows.hide();
+        tableRows.slice(start, end).show();
+        $(".paginate").show();
+        if (tableRows.eq(0).is(":visible")) $('#previous').hide();
+        if (tableRows.eq(tableRows.length - 1).is(":visible")) $('#next').hide();
+    }
+    initTable();
+}
+
+-------------ApproveBlogs.js--------------------
+$(document).ready(function () {
+    GetPendingFeedback();
+    GetCompletedFeedback();
+    GetPagination();
+    $("#chkParent").children().remove();
+});
+
+
+function GetPendingFeedback() {
+    $.ajax({
+        url: "/Admin/GetApproveBlosDetails",
+        type: "POST",
+        dataType: "JSON",
+        data: { Status: '0' },
+        async: false,
+        success: function (data) {
+            if (data.length > 0) {
+                var trHTML = '';
+                $.each(data, function (i, item) {
+                    trHTML += '<tr><td style="width:2%;"><input type="checkbox"/></td><td style="width:28%;"><table class= "custum-grid-table" style="font-size:12px;"><tr><td><b>Blog By</b>: ' + data[i].BlogBy + '</td></tr><tr><td><b>Blog Title</b>: ' + data[i].Title  + '</td></tr></table></td><td style="width:33%;">' + data[i].Message + '</td><input type="hidden" id="hdDocId" value=' + data[i].BlogId + '><td><textarea style="width:100%"/></td></tr>';
+                });
+                $('#tblPendingRequest tbody').append(trHTML);
+            }
+            else {
+                $('.btnUpdate').prop("disabled", true);
+                $('#tblPendingRequest tbody').append('<tr><td></td><td style="color:red;font-size:15px;">No pending Blog is available For Approval.</td><td></td><td></td></tr>');
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+function GetCompletedFeedback() {
+    $.ajax({
+        url: "/Admin/GetApproveBlosDetails",
+        type: "POST",
+        dataType: "JSON",
+        data: { Status: '1' },
+        async: false,
+        success: function (data) {
+            if (data.UploadBy !== "") {
+                var trHTML = '';
+                $.each(data, function (i, item) {
+                    trHTML += '<tr><td style="width:28%;"><table class= "custum-grid-table" style="font-size:12px;"><tr><td style=""><b>Blog By</b>: ' + data[i].BlogBy + '</td></tr><tr><td><b>Blog Title</b>: ' + data[i].Title +  '</td></tr></table></td><td>' + data[i].Message + '</td><td>' + data[i].Remarks + '</td></tr>';
+                });
+                $('#tblApprovedRequest tbody').append(trHTML);
+            }
+            else {
+                alert("Invalid input or record doesn't exist");
+                return false;
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            window.location.href = "/Home/Error";
+        }
+    });
+}
+
+function SubmitApproval() {
+    var checkboxValues = [];
+
+    $('#tblPendingRequest tbody').find('tr').each(function (i) {
+        var row = $(this);
+        if (row.find('input[type="checkbox"]').is(':checked')) {
+            var id = row.find('input[type="hidden"]').val();
+            var Remarks = row.find('textarea').val();
+            if (Remarks === "") {
+                alert("You must fill the text area!")
+                return false;
+            }
+            var val = id + '^' + Remarks;
+            checkboxValues.push(val)
+        }
+        return checkboxValues;
+    });
+
+    if (!$.isEmptyObject(checkboxValues)) {
+        $.ajax({
+            url: "/Admin/ApproveBlosStatus",
+            type: "POST",
+            dataType: "JSON",
+            data: { Id: checkboxValues },
+            success: function (data) {
+                window.location.href = "/admin/ApproveBlogs"
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                window.location.href = "/Home/Error";
+            }
+        });
+    }
+}
+
+function GetPagination() {
+    var myTable = "#tblApprovedRequest";
+    var myTableBody = myTable + " tbody";
+    var myTableRows = myTableBody + " tr";
+    var myTableColumn = myTable + " th";
+
+    function initTable() {
+        $(myTableBody).attr("data-pageSize", 50);
+        $(myTableBody).attr("data-firstRecord", 0);
+        $('#previous').hide();
+        $('#next').show();
+
+        paginate(parseInt($(myTableBody).attr("data-firstRecord"), 10),
+            parseInt($(myTableBody).attr("data-pageSize"), 10));
+    }
+    $(myTableColumn).click(function () {
+        paginate(parseInt($(myTableBody).attr("data-firstRecord"), 10),
+            parseInt($(myTableBody).attr("data-pageSize"), 10));
+    });
+
+    $("a.paginate").click(function (e) {
+        e.preventDefault();
+        var tableRows = $(myTableRows);
+        var tmpRec = parseInt($(myTableBody).attr("data-firstRecord"), 10);
+        var pageSize = parseInt($(myTableBody).attr("data-pageSize"), 10);
+
+        if ($(this).attr("id") == "next") {
+            tmpRec += pageSize;
+        } else {
+            tmpRec -= pageSize;
+        }
+        if (tmpRec < 0 || tmpRec > tableRows.length) return
+        $(myTableBody).attr("data-firstRecord", tmpRec);
+
+        paginate(tmpRec, pageSize);
+    });
+
+    var paginate = function (start, size) {
+        var tableRows = $(myTableRows);
+        var end = start + size;
+        tableRows.hide();
+        tableRows.slice(start, end).show();
+        $(".paginate").show();
+        if (tableRows.eq(0).is(":visible")) $('#previous').hide();
+        if (tableRows.eq(tableRows.length - 1).is(":visible")) $('#next').hide();
+    }
+    initTable();
+}

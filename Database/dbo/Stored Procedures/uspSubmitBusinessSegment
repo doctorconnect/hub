@@ -1,0 +1,37 @@
+
+CREATE  PROCEDURE [dbo].[uspSubmitBusinessSegment]  
+(  	
+ @id  int,		 
+ @Name  VARCHAR(50),
+ @IsActive BIT,
+ @CreatedBy VARCHAR(50),
+ @CreatedOn DATETIME,
+ @ModifiedBy VARCHAR(50),
+ @ModifiedOn  date                         
+)                                                      
+AS                                                      
+BEGIN        
+    BEGIN TRANSACTION;      
+      SAVE TRANSACTION MySavePoint;        
+     BEGIN TRY
+	 if(@id=0)   
+	 BEGIN               
+    INSERT INTO KMTBusinessSegment (NAME,Identifier,IsActive,CreatedBy,CreatedOn,ModifiedBy,ModifiedOn)
+	   values (@Name,'BUSINESS SEGMENT',@IsActive,@CreatedBy,@CreatedOn,@ModifiedBy,@ModifiedOn);	
+		END
+	ELSE if(@id>0)   
+	 BEGIN               
+    update KMTBusinessSegment set NAME = @Name,ModifiedBy=@ModifiedBy,ModifiedOn=@ModifiedOn,IsActive=@IsActive where Id = @id;
+	END          			                    
+     END TRY       
+     BEGIN CATCH      
+        IF @@TRANCOUNT > 0      
+        BEGIN      
+            ROLLBACK TRANSACTION MySavePoint;       
+        END      
+      END CATCH                                                 
+     COMMIT TRANSACTION                                                  
+END
+
+
+GO
