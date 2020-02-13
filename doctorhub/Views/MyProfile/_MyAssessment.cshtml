@@ -1,11 +1,11 @@
-﻿@*@model doctorhubBusinessEntities.viewModels.QuizVM
+﻿@*@model doctorhubBusinessEntities.viewModels.QuizVM*@
     @{
-        List<doctorhubBusinessEntities.viewModels.QuizVM> QuizList = new KMTDataAccess.DirectoryDataAccess().GetQuiz();
-        List<doctorhubBusinessEntities.viewModels.AssessmentAttend> AssessmentAttendList = new KMTDataAccess.DirectoryDataAccess().GetListAssessmentAttend();
+       // List<doctorhubBusinessEntities.viewModels.QuizVM> QuizList = new KMTDataAccess.DirectoryDataAccess().GetQuiz();
+       // List<doctorhubBusinessEntities.viewModels.AssessmentAttend> AssessmentAttendList = new KMTDataAccess.DirectoryDataAccess().GetListAssessmentAttend();
     }
     <h2 class="text-center"> TAKE  ASSESSMENT </h2>
     <hr />
-    @foreach (var item in QuizList.Where(t => t.IsActive == true && (System.DateTime.Today >= t.FromDate && System.DateTime.Today <= t.ToDate)))
+    @*@foreach (var item in QuizList.Where(t => t.IsActive == true && (System.DateTime.Today >= t.FromDate && System.DateTime.Today <= t.ToDate)))
     {
         if ((AssessmentAttendList.Where(t => t.QuizID == item.QuizID).Select(S => S.status).FirstOrDefault() == "PASS") || (AssessmentAttendList.Where(t => t.QuizID == item.QuizID).Select(S => S.AttendCount).FirstOrDefault() >= 2))
         {

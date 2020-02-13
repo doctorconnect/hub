@@ -1,6 +1,5 @@
-﻿@{
-    List<doctorhubBusinessEntities.Points> PonitList = new doctorhubDataAccess.DirectoryDataAccess().GetPoints("HUBshiv");
-    //List<doctorhubBusinessEntities.Points> PonitList = new doctorhubDataAccess.DirectoryDataAccess().GetPoints(HttpContext.Current.Session["UserNTID"].ToString());
+﻿@{   
+    List<doctorhubBusinessEntities.Points> PonitList = new doctorhubDataAccess.DirectoryDataAccess().GetPoints(HttpContext.Current.Session["UserNTID"].ToString());
     List<doctorhubBusinessEntities.BadgeModel> BadgeList = new doctorhubDataAccess.DirectoryDataAccess().GetListOfBadge();
     int RoleId = Convert.ToInt32(HttpContext.Current.Session["RoleId"]);
     int x = 0;
