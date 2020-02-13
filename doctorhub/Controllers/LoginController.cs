@@ -2,6 +2,7 @@
 using doctorhubDataAccess;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -36,20 +37,45 @@ namespace doctorhub.Controllers
         [HttpPost]
         public JsonResult UserRegistration(string name, string email, string password)
         {
-            UserRegistration user = new UserRegistration();
+            UserRegistrationModel user = new UserRegistrationModel();
+            user.RoleId = 1;
+            user.UserCode = RandomDigits(10);
+            user.UserNTID = "HUB"+name;
             user.UserName = name;
-            user.EmailId = email;
-            user.Password = password;
+            user.UserEmail = email;
+            user.ManagerName = "INDIA";
+            user.ManagerNTID = password;
+            user.ManagerCode = password;
+            user.ManagerEmail = email;
+            user.BusinessSegmentId = 1;
+            user.CapabilitiesId = 1;
+            user.LOBId = 1;
+            user.AboutMe = "Describe yourself in 140 characters";
+           
+            
+            var imagPath = Server.MapPath("~/images/logo.jpg");
+            Image img = Image.FromFile(imagPath);
+            byte[] imageDatabytes = (byte[])(new ImageConverter()).ConvertTo(img, typeof(byte[]));
+
             try
             {
                 int msg = 0;
-                msg = objDirectoryDataAccess.SubmitUserRequest(user);
+                msg = objDirectoryDataAccess.SubmitUserRequest(null, imageDatabytes,user);
             }
             catch(Exception ex)
             {
 
             }
             return Json(new { success = true, responseText = " Sucessfully." }, JsonRequestBehavior.AllowGet);
+        }
+
+        public string RandomDigits(int length)
+        {
+            var random = new Random();
+            string s = string.Empty;
+            for (int i = 0; i < length; i++)
+                s = String.Concat(s, random.Next(10).ToString());
+            return s;
         }
     }
 }

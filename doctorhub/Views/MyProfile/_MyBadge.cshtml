@@ -1,0 +1,28 @@
+﻿@{
+    List<doctorhubBusinessEntities.Points> PonitList = new doctorhubDataAccess.DirectoryDataAccess().GetPoints("HUBshiv");
+    //List<doctorhubBusinessEntities.Points> PonitList = new doctorhubDataAccess.DirectoryDataAccess().GetPoints(HttpContext.Current.Session["UserNTID"].ToString());
+    List<doctorhubBusinessEntities.BadgeModel> BadgeList = new doctorhubDataAccess.DirectoryDataAccess().GetListOfBadge();
+    int RoleId = Convert.ToInt32(HttpContext.Current.Session["RoleId"]);
+    int x = 0;
+    int Y = 10;
+    int z = 0;
+}
+
+<div class="badges-icon">
+    @foreach (var cp in PonitList)
+    {
+        foreach (var badge in BadgeList.Where(m => cp.Point <= m.BadgePointTo && cp.Point >= m.BadgePoint))
+        {
+            <ul>
+                @if (@badge.BadgePointTo != 0)
+                {
+                    z = (@cp.Point + @Y);
+                    x = (@badge.BadgePointTo - z);
+                    string badgeName = badge.BadgeName; //+ "-";
+                    <li><img src="data:image/png;base64,@badge.BImage" alt="" title="@badgeName with @z Points. Need @x Points for next level" style="width:30px;font-weight:600" /></li>
+                }
+            </ul>
+        }
+    }
+</div>
+

@@ -1,0 +1,46 @@
+﻿
+<div class="profile-text" id="itemDIv">
+    <strong>About Me </strong> <span id="myBtn" class="fa fa-edit"></span><br>
+    <div>
+        @ViewBag.AboutMe
+        @*<input type="button" class="fa fa-edit" style="z-index:1; width:100px; display:none" />*@
+        @using (Html.BeginForm("AboutMe", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title" id="myModalLabel" style="color:brown">About Me</h4>
+                        </div>
+                        <div class="modal-body">
+                            <textarea type="text" class="form-control" name="info" id="Abouttxt" placeholder="About YourSelf within 140 characters..."></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Save changes</button>
+                            @*<button class="btn btn-success" id="change" onclick="func(this)" data-dismiss="modal" name="change">@Html.Label("Save changes") </button>*@
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#myBtn").click(function () {
+            $('#myModal').modal('show');
+        });
+    });
+
+    $('#Abouttxt').keypress(function () {
+        var maxLength = $(this).val().length;
+        if (maxLength >= 140) {
+            alert('You cannot enter more than ' + maxLength + ' chars');
+            return false;
+        }
+    });
+
+</script>

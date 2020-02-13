@@ -1,0 +1,16 @@
+﻿
+@model doctorhubBusinessEntities.SystemLinkModel
+@{
+    List<doctorhubBusinessEntities.SystemLinkModel> SystemLinkList = new doctorhubDataAccess.DirectoryDataAccess().GetSystemLinkList();
+}
+@*<img src="~/Images/star-icon.jpg" alt="" height="20" />*@ <h2 class="text-center"> SYSTEM LINKS </h2>
+<hr />
+<div class="favorite-links">
+    <ul>
+        @foreach (var url in SystemLinkList.Where(m => m.IsActive == true))
+        {
+            <li><a target="_blank" href="@url.Url">@url.Title</a></li>
+        }
+    </ul>
+</div>
+<!-- end favorite links -->

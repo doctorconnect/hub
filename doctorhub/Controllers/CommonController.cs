@@ -210,44 +210,44 @@ namespace doctorhub.Controllers
             return View();
         }
 
-        //public List<RSSFeed> GetRSSFeedList()
-        //{
-        //    var list = objDirectoryDataAccess.GetRssFeedList().Where(r => r.IsActive == true).Select(l => new { l.Url });
+        public List<RSSFeed> GetRSSFeedList()
+        {
+            var list = objDirectoryDataAccess.GetRssFeedList().Where(r => r.IsActive == true).Select(l => new { l.Url });
 
-        //    List<RSSFeed> feeds = new List<RSSFeed>();
-        //    foreach (var item in list)
-        //    {
-        //        feeds.AddRange(GetRSS(item.Url));
+            List<RSSFeed> feeds = new List<RSSFeed>();
+            foreach (var item in list)
+            {
+                feeds.AddRange(GetRSS(item.Url));
 
-        //    }
-        //    return feeds;
-        //}
+            }
+            return feeds;
+        }
 
-        //private List<RSSFeed> GetRSS(string url)
-        //{
-        //    List<RSSFeed> rssFeeds = new List<RSSFeed>();
-        //    try
-        //    {
+        private List<RSSFeed> GetRSS(string url)
+        {
+            List<RSSFeed> rssFeeds = new List<RSSFeed>();
+            try
+            {
 
-        //        XmlReader reader = XmlReader.Create(url);
-        //        SyndicationFeed feed = SyndicationFeed.Load(reader);
-        //        reader.Close();
-        //        foreach (SyndicationItem feedItem in feed.Items)
-        //        {
-        //            RSSFeed rssFeed = new RSSFeed();
-        //            rssFeed.FeedUrl = feedItem.Links[0].GetAbsoluteUri().ToString();
-        //            rssFeed.FeedTitle = feedItem.Title.Text;
-        //            rssFeeds.Add(rssFeed);
+                XmlReader reader = XmlReader.Create(url);
+               // SyndicationFeed feed = SyndicationFeed.Load(reader);
+                //reader.Close();
+                //foreach (SyndicationItem feedItem in feed.Items)
+                //{
+                //    RSSFeed rssFeed = new RSSFeed();
+                //    rssFeed.FeedUrl = feedItem.Links[0].GetAbsoluteUri().ToString();
+                //    rssFeed.FeedTitle = feedItem.Title.Text;
+                //    rssFeeds.Add(rssFeed);
 
-        //        }
-        //        return rssFeeds;
-        //    }
-        //    catch (Exception)
-        //    {
-        //        // throw ex;
-        //    }
-        //    return rssFeeds;
-        //}
+                //}
+                return rssFeeds;
+            }
+            catch (Exception)
+            {
+                // throw ex;
+            }
+            return rssFeeds;
+        }
 
         /// Bind Dropdownlist of  
         /// </summary>

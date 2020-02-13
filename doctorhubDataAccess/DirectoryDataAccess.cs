@@ -216,7 +216,7 @@ namespace doctorhubDataAccess
                 m_Database.AddInParameter(dbCommand, "@LOBId", DbType.Int32, model.LOBId);
                 m_Database.AddInParameter(dbCommand, "@Status", DbType.Int32, StatusType.Pending);
                 m_Database.AddInParameter(dbCommand, "@IsActive", DbType.Boolean, true);
-                m_Database.AddInParameter(dbCommand, "@CreatedBy", DbType.String, HttpContext.Current.Session["UserNTID"].ToString());
+                m_Database.AddInParameter(dbCommand, "@CreatedBy", DbType.String, "DOCTOR-HUB");
                 m_Database.AddInParameter(dbCommand, "@CreatedOn", DbType.DateTime, DateTime.Now);
                 m_Database.AddInParameter(dbCommand, "@UserPhoto", DbType.Binary, imageData);
                 m_Database.AddInParameter(dbCommand, "@Points", DbType.String, 0);

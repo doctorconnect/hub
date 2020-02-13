@@ -1,0 +1,106 @@
+﻿@model  doctorhubBusinessEntities.Feedback
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h1>FeedBack</h1><hr />
+
+@using (Html.BeginForm("SubmitFeedBack", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="mid">
+        <div class="row">
+            <div class="form-horizontal">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Email Id (Official)</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(model => model.UserEmail, new { @class = "form-control input-sm", disabled = "disabled" })
+                            @Html.HiddenFor(model => model.UserName)
+                            @Html.HiddenFor(model => model.UserNTID)
+                            @Html.HiddenFor(model => model.UserEmail)
+                            @Html.HiddenFor(model => model.UserCode)
+                        </div>
+                    </div>
+                </div>
+
+                @*<div class="col-sm-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4">Line of Business</label>
+                            <div class="col-sm-8">
+                                @Html.TextBoxFor(model => model.UserLobName, new { @class = "form-control input-sm", disabled = "disabled" })
+                                @Html.HiddenFor(model => model.UserLOB)
+                            </div>
+                        </div>
+                    </div>*@
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Enter Feedback</label>
+                        <div class="col-sm-8">
+                            @Html.TextAreaFor(model => model.FeedbackQuestion, new { @class = "form-control input-sm", @id = "txtAreaFeedbackQuestion", @placeholder = "Please enter the feedback (minimum 10 words)." })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 text-center">
+                    <button class="btn btn-primary btn-sm btnSubmit" disabled>Submit</button>
+                    <a href="@Url.Action("SubmitFeedBack", "Home")" class="btn btn-default btn-sm">Reset</a>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.UserFeedBackList != null)
+        {
+            if (Model.UserFeedBackList.Count() > 0)
+            {
+                <h4 style="color:#999; font-size:13px; font-family:arial; border-bottom:solid 1px #999; padding:0 0 5px 0; margin:20px 0 15px 0;">Your Feedback</h4>
+
+                for (int i = 0; i < Model.UserFeedBackList.Count; i++)
+                {
+                    <ul class="media-list">
+                        <li class="media">
+                            <div class="media-left">
+                                <a href="#">
+                                    <img src="~/Images/avatar1.png" class="media-object img-circle" style="width:45px" alt="">
+                                </a>
+                            </div>
+                            <div class="media-body">
+                                <h5 class="media-heading">
+                                    @Html.DisplayFor(model => model.UserFeedBackList[i].UserFeedback, new { @class = "input-sm" })<br />
+                                    <small>on @Html.DisplayFor(model => model.UserFeedBackList[i].FeedbackQuestionDate, new { @class = "input-sm" }) <i class="fa fa-clock-o" aria-hidden="true"></i></small>
+                                </h5>
+                                @if (Model.UserFeedBackList[i].AdminReply.Count() > 0)
+                                {
+                                    <div class="media media-grey-bg">
+                                        <div class="media-left">
+                                            <a href="#">
+                                                <img src="~/Images/avatar2.png" class="media-object img-circle" style="width:45px" alt="">
+                                            </a>
+                                        </div>
+                                        <div class="media-body">
+                                            <h5 class="media-heading">
+                                                Admin Replied<br>
+                                                <small>on @Html.DisplayFor(model => model.UserFeedBackList[i].AdminReplyDate, new { @class = "input-sm" }) </small>
+                                            </h5>
+                                            <h5 class="media-heading">
+                                                @Html.DisplayFor(model => model.UserFeedBackList[i].AdminReply, new { @class = "input-sm" })
+                                            </h5>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </li>
+                    </ul>
+                }
+            }
+        }
+    </div>
+}
+
+<script>
+    $('#txtAreaFeedbackQuestion').keyup(function () {
+        var val = $('#txtAreaFeedbackQuestion').val().trim().length;
+
+        if (val > 10)
+            $('.btnSubmit').prop("disabled", false);
+    });
+</script>

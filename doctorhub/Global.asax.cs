@@ -17,5 +17,13 @@ namespace doctorhub
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
+
+        protected void Session_Start(object sender,EventArgs e)
+        {
+            doctorhubDataAccess.DirectoryDataAccess obj = new doctorhubDataAccess.DirectoryDataAccess();
+            HttpContext.Current.Session["UserNTID"] = "HUBshiv";
+          //  obj.SubmitUserTraffic();
+
+        }
     }
 }

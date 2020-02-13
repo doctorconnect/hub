@@ -1,0 +1,14 @@
+﻿
+@{
+    List<doctorhubBusinessEntities.Training> TrainingList = new doctorhubDataAccess.DirectoryDataAccess().GetTrainingLinkList();
+}
+<h2 class="text-center"> JOIN TRAINING </h2>
+<hr />
+@foreach (var item in TrainingList.Where(t => t.IsActive == true && (System.DateTime.Today >= t.FromDate && System.DateTime.Today <= t.ToDate)))
+{
+    <div class="user-features-links">
+        <ul>
+            <li><a href=@item.Link id="submit_link"><i class="fa fa-group"></i> @item.Title  </a></li>
+        </ul>
+    </div>
+}

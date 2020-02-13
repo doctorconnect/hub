@@ -101,7 +101,7 @@ namespace doctorhubDataAccess
         public const string PROCGETLOB = "uspGetLob";
         public const string PROCSUBMITLOB = "uspSubmitKMTLob";
 
-        //Added by Abhimanyu
+        //Added for poll
         public const string PROCSUBMITMANAEPOLL = "uspCreatePoll";
         public const string PROCGETManagePoll = "uspGetManagePolls";
         public const string PROCDELETEManagePoll = "uspDeleteManagePolls";

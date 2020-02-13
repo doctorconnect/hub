@@ -1,0 +1,47 @@
+﻿@model doctorhubBusinessEntities.Blog
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <style type="text/css">
+        body {
+            font-family: Arial;
+            font-size: 10pt;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    @using (Html.BeginForm("BlogPost", "Home", FormMethod.Post))
+    {
+        <div class="form form-vertical usersection-div">
+            <div class="row">
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <label for="Title">Enter Blog Title</label>
+                        @Html.TextBoxFor(model => model.Title, new { htmlAttributes = new { id = "txttitle" } })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Message)
+                        @Html.TextAreaFor(model => model.Message, new { @class = "form-group" })
+                        @Html.ValidationMessageFor(model => model.Message)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="submit" value="Submit" />
+        <br />
+        @*<span>@Html.Raw(Model.Title)</span>*@
+    }
+</body>
+</html>
+

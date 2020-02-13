@@ -68,6 +68,8 @@ namespace doctorhub.Controllers
             {
                 return RedirectToAction("UserRegistration", "Admin");
             }
+
+            return View();
         }
 
         public JsonResult GetNotificationsDetails()

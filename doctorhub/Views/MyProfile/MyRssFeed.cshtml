@@ -1,0 +1,18 @@
+﻿@{
+    List<doctorhubBusinessEntities.RSSFeed> FeedList = new doctorhub.Controllers.CommonController().GetRSSFeedList();
+}
+
+<h2 class="text-center"> LATEST INDUSTRY UPDATES </h2>
+<hr />
+<marquee behavior="scroll" scrollamount="2" direction="up" onmouseover="this.setAttribute('scrollamount',0);" onmouseout="this.setAttribute('scrollamount',2);">
+    @foreach (var item in FeedList)
+    {
+        <div class="favorite-links">
+            <ul>
+                <li>
+                    <a a target="_blank" href=@item.FeedUrl>@item.FeedTitle</a>
+                </li>
+            </ul>
+        </div>
+    }
+</marquee>

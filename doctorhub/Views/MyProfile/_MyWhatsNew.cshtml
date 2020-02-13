@@ -1,0 +1,118 @@
+﻿@{
+    List<doctorhubBusinessEntities.BulletinBoard> BulletinBoardList = new doctorhubDataAccess.DirectoryDataAccess().GetListOfBulletin();
+    List<doctorhubBusinessEntities.Blog> WhatNewList = new doctorhubDataAccess.DirectoryDataAccess().GetDocblogList();
+    string path = AppDomain.CurrentDomain.BaseDirectory + "SliderImages/";
+    int count = 0;
+}
+
+<div class="slider">
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner" id="divImages">
+            @foreach (var item in BulletinBoardList.Where(m => m.IsActive == true))
+            {
+                if (count == 0)
+                {
+                    <div class='item active'>
+                        <img style="height:200px;width:100%" src="~/SliderImages/@item.Name" />
+                        <div class='carousel-caption'>
+                            <a data-toggle='modal' data-target='#@item.Id'><b>@item.Title</b></a><br />
+                            <a data-toggle='modal' data-target='#@item.Id'>@item.Description</a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class='item'>
+                        <img style="height:200px;width:100%" src="~/SliderImages/@item.Name" />
+                        <div class='carousel-caption'>
+                            <a data-toggle='modal' data-target='#@item.Id'><b>@item.Title</b></a><br />
+                            <a data-toggle='modal' data-target='#@item.Id'>@item.Description</a>
+                        </div>
+                    </div>
+                }
+                count++;
+            }
+        </div>
+        <!-- Left and right controls -->
+        <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+            <span class="glyphicon glyphicon-chevron-left"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="right carousel-control" href="#myCarousel" data-slide="next">
+            <span class="glyphicon glyphicon-chevron-right"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>
+<div id="dialog" title="Basic dialog">
+    @foreach (var item1 in BulletinBoardList)
+    {
+        <div class='modal fade' id='@item1.Id' role='dialog'>
+            <div class='modal-dialog modal-lg'>
+                <div class='modal-content'>
+                    <div class='modal-header'>
+                        <button type='button' class='close' data-dismiss='modal'>&times;</button>
+                        <h5 class='modal-title'><b>@item1.Title</b></h5>
+                    </div>
+                    <div class='modal-body'>
+                        <img style="max-width:50%;float:left; margin-right:20px; margin-bottom:10px; margin-top:5px" src="~/SliderImages/@item1.Name" />
+                        <p>
+                            @item1.Article
+                            <br />
+                            @item1.Article
+                        </p>
+                    </div>
+                    <div class='modal-footer'>
+                        <button type='button' class='btn btn-primary' data-dismiss='modal'>Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (WhatNewList != null)
+{
+    foreach (var item in WhatNewList)
+    {
+        <div class="grey-border">
+            <div class="media">
+                <div class="media-body">
+                    @if (item.Type.Contains("DOC"))
+                    {
+                        <div class='row'>
+                            <div class='col-sm-6'>
+                                <h4 class="media-heading" style="color:coral">
+                                    @item.Title
+                                </h4>
+                            </div>
+                            <div class='col-sm-6 text-right'><button class="btn btn-success" onclick="window.location.href='/Admin/DownLoadDoc?key= @item.Id'"> <i class='fa fa-download'></i> Download </button></div>
+                        </div>
+
+                        <hr />
+                        <p>File Description : @Html.Raw(@item.Message)</p>
+
+                        <h4 class="media-heading" align="right">
+                            <a href="/User/UserProfile?Usercode=@item.UserCode"> @item.UserName</a>
+                            <time class="timeago"><small>@item.Blogdate</small></time>
+                        </h4>
+                    }
+                    else
+                    {
+                        <h4 class="media-heading" style="color:crimson">
+                            @item.Title
+                        </h4>
+                        <hr />
+                        <p> @Html.Raw(@item.Message)</p>
+                        <h4 class="media-heading" align="right">
+                            <a href="/User/UserProfile?Usercode=@item.UserCode"> @item.UserName</a>
+                            <time class="timeago"><small>@item.Blogdate</small></time>
+                        </h4>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
+

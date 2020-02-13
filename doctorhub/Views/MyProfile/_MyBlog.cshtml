@@ -1,0 +1,245 @@
+﻿@using doctorhubDataAccess;
+@{
+    List<doctorhubBusinessEntities.posts> CommentList = new doctorhubDataAccess.DirectoryDataAccess().GetCommentListOnPost("BLOG");
+    List<doctorhubBusinessEntities.posts> LikeList = new doctorhubDataAccess.DirectoryDataAccess().GetLikeCount("BLOG");
+    int RoleId = Convert.ToInt32(HttpContext.Current.Session["RoleId"]);
+    int loggedUserId = Convert.ToInt32(HttpContext.Current.Session["ID"]);
+}
+@model doctorhubBusinessEntities.Blog
+<div class="grey-border">
+    <div class="media">
+        <div class="media-body">
+            @*<button type="button" onclick="CreateBlog();" class="btn btn-sm btn-primary "> Click Here to Create Blog</button>*@
+            <input type="button" value="Click Here to Create Blog" onclick="location.href='@Url.Action("CreateNewBlog", "Admin")'" class="btn btn-sm btn-primary " />
+        </div>
+    </div>
+</div>
+@foreach (var item in (ViewBag.BlogList as ICollection<doctorhubBusinessEntities.Blog>).Where(m => m.Status == 1))
+{
+    <div class="grey-border">
+        <div class="media">
+            <div class="media-body">
+                <h4 class="media-heading" style="color:crimson">
+                    @item.Title
+                </h4>
+
+                <hr />
+                <p>@Html.Raw(@item.Message)</p>
+                <h4 class="media-heading" align="right">
+                    <a href="/User/UserProfile?Usercode=@item.UserCode"> @item.BlogBy</a>
+                    <time class="timeago"><small>@item.Blogdate</small></time>
+                </h4>
+
+                @{
+
+                }
+            </div>
+        </div>
+        @if (CommentList.Where(l => l.PostId == item.BlogId).Count() > 0)
+        {
+            <hr />
+        }
+
+        <div class="actions-icon">
+            <ul>
+                <li> <button class="btn btn-default" title="Like Post" id="@item.BlogId&Identifier=BLOG" onclick="LoadBlogLike(this);"> <i class="fa fa-thumbs-o-up"></i> </button> @LikeList.Where(l => l.PostId == item.BlogId).Count()</li>
+                <li><button class="btn btn-default" title="Comment On Blog" onclick="showhide(@item.BlogId);"> <i class="fa fa-commenting"></i></button>  @CommentList.Where(l => l.PostId == item.BlogId).Count() </li>
+
+                @if (loggedUserId == Convert.ToInt32(item.BlogerId))
+                {
+                    <li><a href="javascript:void(0);" class="anchorDetail" data-id="@item.BlogId"><i class="glyphicon glyphicon-edit"></i></a></li>
+                }
+
+                @if (RoleId == Convert.ToInt32(RoleType.Admin))
+                {
+                    @*<li><a href="javascript:void(0);" class="anchorDetail" data-id="@item.BlogId"><i class="glyphicon glyphicon-edit"></i></a></li>*@
+                    <li><button class="btn btn-default" title="Delete Blog" onclick="DeleteBlog(@item.BlogId)"> <i class="fa fa-trash-o"></i> </button></li>
+                }
+            </ul>
+        </div>
+        <div style="display:none; margin-top:10px;" id="B_@item.BlogId" class="publishComment">
+            @foreach (var cmt in CommentList.Where(l => l.PostId == item.BlogId))
+            {
+                <div class="media" style="align-content:center">
+                    <ul>
+                        <div class="media-left media-top">
+                            <img src="../images/avatar2.png" alt="" class="media-object img-circle" style="width:40px">
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">
+                                @cmt.CommentedByName
+                                <small>@cmt.CommentedDate</small>
+                            </h4>
+                            <p>@cmt.Message</p>
+                        </div>
+                    </ul>
+                </div>
+            }
+
+            <div class="input-group input-group-sm " id="@item.BlogId">
+                <input type="hidden" class="PostId" value="@item.BlogId" />
+                <input type="text" name="txtvale" id="txt_@item.BlogId" class="form-control txtcomment" placeholder="write a comment..." />
+                <div class="input-group-btn"><button id="@item.BlogId" onclick="PostComment(this);" class="btn btn-primary postComment">Comment</button></div>
+            </div>
+
+        </div>
+    </div>
+                    }
+<div>
+    <fieldset>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="modal" id="loginModal">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div id='CreateBlog'>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </fieldset>
+</div>
+<div>
+    <fieldset>
+        <div class="row">
+            <div class="col-xs-12">
+                <div id='myModalblg' class='modal'>
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div id='myModalContent'></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </fieldset>
+</div>
+<link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.css" rel="stylesheet" />
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        var success = '@TempData["success"]';
+        if (success != null && success != undefined && success != '')
+            toasterSuccessMessage(success);
+        function toasterSuccessMessage(message) {
+            new PNotify({
+                title: 'Success',
+                text: message,
+                type: 'success',
+                styling: 'bootstrap3'
+            });
+        }
+    });
+
+    var TeamDetailPostBackURL = '/Admin/MyBlog';
+    $(".anchorDetail").click(function () {
+        var $buttonClicked = $(this);
+        var id = $buttonClicked.attr('data-id');
+        $.ajax({
+            type: "GET",
+            url: TeamDetailPostBackURL,
+            contentType: "application/json; charset=utf-8",
+            data: { "Id": id },
+            success: function (data) {
+                $('#myModalContent').html(data);
+                $('#myModalblg').modal('show');
+            },
+            error: function () {
+                alert("Dynamic content load failed.");
+                window.location.href = "/Home/Error";
+            }
+        });
+    });
+
+    function showhide(id) {
+        var e = document.getElementById('B_'+ id);
+        e.style.display = (e.style.display == 'block') ? 'none' : 'block';
+    }
+
+    function CreateBlog() {
+        $.ajax
+            ({
+                url: "/Admin/CreateNewBlog",
+                contentType: "application/json; charset=utf-8",
+                type: "GET",
+                success: function (t) {
+                    $('#CreateBlog').html(t);
+                    $('#loginModal').modal('show');
+                },
+                error: function () {
+                    $("#CreateBlog").html("Blog Not Found");
+                    window.location.href = "/Home/Error";
+                }
+            })
+    }
+
+    function LoadBlogLike(Id) {
+        $.ajax
+            ({
+                url: "Admin/PostLikes?key=" + Id.id,
+                contentType: "application/html; charset=utf-8",
+                type: "POST",
+                datatype: "html",
+                success: function (t) {
+                    $("#dvBlogeBind").html(t)
+                },
+                error: function () {
+                    $("#dvBlogeBind").html("Blog Not Found");
+                    window.location.href = "/Home/Error";
+                }
+            });
+    }
+
+    function PostComment(Pid) {
+        var controlName = Pid.id;
+        var Comment = $("#txt_" + controlName + "").val();
+        if (Comment != null) {
+            $.ajax({
+                type: "POST",
+                url: "/Home/SaveComment?Identifier=BLOG&txtcomment=" + Comment + "&PostId=" + Pid.id,
+                contentType: "application/html; charset=utf-8",
+                datatype: "html",
+                success: function (t) {
+                    $("#dvBlogeBind").html(t)
+                },
+                error: function () {
+                    $("#dvBlogeBind").html("Document Not Found");
+                    window.location.href = "/Home/Error";
+                }
+            });
+        }
+    }
+
+    function DeleteBlog(key) {
+        $.confirm({
+            title: '',
+            type: 'red',
+            content: '<p style="font-style:italic;">Are you sure, want to Delete This Blog ?</p>',
+            buttons: {
+                confirm: function () {
+                    $.ajax({
+                        url: "/Admin/DeletePost?keyId=" + key + "&Identifier=BLOG",
+                        method: 'post',
+                        datatype: "html",
+                        success: function (t) {
+                            $("#dvBlogeBind").html(t)
+                        },
+                        error: function () {
+                            $("#dvBlogeBind").html("PostsAndComment Not Found");
+                            window.location.href = "/Home/Error";
+                        }
+                    });
+                },
+                cancel: function () {
+                }
+            }
+        });
+    }
+
+</script>
+

@@ -1,44 +1,215 @@
-﻿<!DOCTYPE html>
+﻿@{
+    List<doctorhubBusinessEntities.Menu> menuList = new doctorhubDataAccess.DirectoryDataAccess().GetMenuList(Convert.ToString(HttpContext.Current.Session["UserNTID"]));
+    }
 <html>
+
 <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+    <title>DOCTOR HUB</title>
+    <link href="~/Content/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <link href="~/Content/daterangepicker.css" rel="stylesheet" />
+    @*<link href="~/Content/jquery.dataTables.min.css" rel="stylesheet" />*@
+    <link href="~/Content/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/buttons.dataTables.min.css" rel="stylesheet" />
+    <link href="~/Content/pnotify.custom.min.css" rel="stylesheet" />
+    <link href="~/Content/toastr.css" rel="stylesheet" />
+    <link href="~/Content/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/jquery-confirm.min.css" rel="stylesheet" />
+    <link href="~/Content/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/style.css" rel="stylesheet" />
+    @*<script src="~/Scripts/jquery-1.10.2.js"></script>*@
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="~/Scripts/jquery.min.js"></script>
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script src="~/Scripts/jquery.timeago.js"></script>
+    <script src="~/Scripts/bootstrap.js"></script>
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/dataTables.bootstrap.min.js"></script>
 
+    <script src="~/CustomScripts/UserProfile.js"></script>
+    <script src="~/CustomScripts/PushNotification.js"></script>
+    <script src="~/Scripts/DataTables/dataTables.buttons.min.js"></script>
+    <script src="~/Scripts/jquery-confirm.min.js"></script>
+    <script src="~/Scripts/DataTables/buttons.html5.min.js"></script>
+    <script src="~/Scripts/DataTables/buttons.print.min.js"></script>
+    <script src="~/CustomScripts/CustomLoader.js"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/daterangepicker.js"></script>
+    <script src="~/Scripts/bootstrap-select.min.js"></script>
+    <script src="~/Scripts/bootstrap-datetimepicker.js"></script>
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
-                </ul>
-                @Html.Partial("_LoginPartial")
+    <div class="top-orange">
+        <div class="navbar navbar-inverse navbar-custom">
+            <div class="container">
+                <div class="row">
+                    <div class="navbar-header col-sm-3">
+                        <a class="navbar-brand" href="@Url.Action("Index", "Home")"><img src="~/images/hub-logo.png" alt="" /></a>
+                    </div>
+                    <div class="col-sm-5">
+                        @*@Html.Partial("~/Views/Shared/_search.cshtml")*@
+                    </div>
+                    <div class="col-sm-4 right">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <a href="@Url.Action("FAQ","Common")">
+                                    <img src="~/images/faq-icon.png" alt="" /><br>
+                                    FAQ(S)
+                                </a>
+                            </li>
+                            <li>
+                                <a href="@Url.Action("SubmitFeedBack","Home")">
+                                    <img src="~/images/feedback-icon.png" alt="" /><br>
+                                    Feedback
+                                </a>
+                            </li>
+                            <li class="dropdown">
+                                @*@Html.Partial("~/Views/MyProfile/_GetNotification.cshtml")*@
+                                @*<ul class="dropdown-menu notify-drop" id="notiContent"></ul>*@
+                                <ul class="dropdown-menu notify-drop" style=" font-size: 8pt;font-weight: normal;margin-top:5px;">
+                                    <div class="drop-content" id="notiContent"></div>
+                                    <div class="notify-drop-footer">
+                                        <div class="col-md-9 col-sm-9 col-xs-9 text-right">
+                                            <a href="/Home/AllNotification"><i class="fa fa-eye"></i><b> more notifications</b></a>
+                                        </div>
+                                        <div class="col-md-3 col-sm-3 col-xs-3 text-right"><a class="rIcon allRead closeNoti" data-tooltip="tooltip" data-placement="bottom" title="Close"><i class="fa fa-close"></i></a></div>
+                                    </div>
+                                </ul>
+
+                            </li>
+                            @foreach (var mp in menuList.Where(p => p.ParentId == 0 || p.ParentId == null))
+                            {
+                                var parent = menuList.Where(p => p.ParentId == mp.MenuId).ToList();
+
+                                if (parent.Count > 0)
+                                {
+                                    <li class="dropdown">
+                                        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown"><img src="~/images/self-img-icon.png" /><br />@mp.MenuName<span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            @foreach (var cp in menuList.Where(p => p.ParentId == mp.MenuId))
+                                            {
+                                                <li id="@mp.MenuName"><a href="/@cp.MenuUrl">@cp.MenuName</a></li>
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                                else
+                                {
+                                    @*<li><a href="/@mp.MenuUrl">@mp.MenuName</a></li>*@
+                                }
+                            }
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
-    </div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
+    <div class="container">
+        @RenderSection("featured", required: false)
+
+        @RenderBody()
+        <br />
+        <br />
+    </div>
+    <div class="footer-bg">
+        <div class="container">
+            <p class="pull-left"><a href="#">Contact Us</a></p>
+            <p class="pull-right"><img src="../images/ogs-logo.png" alt="" /></p>
+        </div>
+    </div>
+    <!-- end footer -->
+
+    <script src="~/Scripts/toastr.js"></script>
+    <script src="~/Scripts/pnotify.custom.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            @{
+                string actionName = this.ViewContext.RouteData.Values["action"].ToString();
+                string controllerName= this.ViewContext.RouteData.Values["controller"].ToString();
+            }
+                switch ("@controllerName") {
+                    case "Home": case "home":
+                        $("#mnuHome").addClass('active');
+                        break;
+                    case "Directory": case "directory":
+                        $("#Directory").addClass('active');
+                        break;
+                    case "Admin": case "admin":
+                        $("#Admin").addClass('active');
+                        break;
+                default:
+                        $("#mnuHome").addClass('active');
+                    break;
+            }
+        });
+
+        $('.closeNoti').click(function () {
+            $('.notify-drop').hide();
+        });
+
+        var error = '@TempData["error"]';
+        var success = '@TempData["success"]';
+        var warning = '@TempData["warning"]';
+        var registrationSuccess = '@TempData["registerSuccess"]';
+        var statusPending = '@TempData["statusPending"]';
+        var alreadyRegistration = '@TempData["userExist"]';
+
+        if (error != null && error != undefined && error != '')
+            toasterErrorMessage(error);
+
+        if (success != null && success != undefined && success != '')
+            toasterSuccessMessage(success);
+
+        if (warning != null && warning != undefined && warning != '')
+            toasterWarningMessage(warning);
+
+        if (registrationSuccess != null && registrationSuccess != undefined && registrationSuccess != '')
+            RegistrationSuccess(registrationSuccess);
+
+        if (statusPending != null && statusPending != undefined && statusPending != '')
+            UserActivation(statusPending);
+
+        if (alreadyRegistration != null && alreadyRegistration != undefined && alreadyRegistration != '')
+            UserExist(alreadyRegistration);
+
+        function toasterSuccessMessage(message) {
+            new PNotify({
+                title: 'Success',
+                text: message,
+                type: 'success',
+                styling: 'bootstrap3'
+            });
+        }
+        function toasterErrorMessage(message) {
+            new PNotify({
+                title: 'Error',
+                text: message,
+                type: 'error',
+                styling: 'bootstrap3'
+            });
+        }
+        function toasterWarningMessage(message) {
+            new PNotify({
+                title: 'Warning',
+                text: message,
+                styling: 'bootstrap3'
+            });
+        }
+        function toasterInfoMessage(message) {
+            new PNotify({
+                title: 'Info',
+                text: message,
+                type: 'info',
+                styling: 'bootstrap3'
+            });
+        }
+    </script>
     @RenderSection("scripts", required: false)
 </body>
 </html>

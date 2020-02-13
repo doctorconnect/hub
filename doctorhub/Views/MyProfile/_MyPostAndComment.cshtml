@@ -1,0 +1,242 @@
+﻿@using doctorhubDataAccess;
+@model doctorhubBusinessEntities.posts
+@{
+    List<doctorhubBusinessEntities.posts> CommentList = new doctorhubDataAccess.DirectoryDataAccess().GetCommentListOnPost("POST");
+    List<doctorhubBusinessEntities.posts> LikeList = new doctorhubDataAccess.DirectoryDataAccess().GetLikeCount("POST");
+    int RoleId = Convert.ToInt32(HttpContext.Current.Session["RoleId"]);
+    int loggedUserId = Convert.ToInt32(HttpContext.Current.Session["ID"]);
+}
+<div class="grey-border">
+    <div class="input-post">
+        <textarea id="txtPost" class="form-control input-sm txtPost"></textarea>
+        <div class="row">
+            <div class="col-sm-6 post-icons">
+            </div>
+            <div class="col-sm-6 post-btn text-right">
+                <br />
+                <input type="button" placeholder="Create Post" id="btnPost" class="btn btn-default btn-primary btn-group-lg" value="Post">
+            </div>
+        </div>
+    </div>
+    <!-- end textarea post -->
+</div>
+@foreach (var cp in ViewBag.PostList)
+{
+    <!-- end grey border -->
+    <div class="grey-border">
+        <div class="media">
+            <div class="media-left media-top">
+
+                <img src="../images/avatar1.png" alt="" class="media-object img-circle" style="width:40px">
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">
+                    <a href="/User/UserProfile?Usercode=@cp.UserCode">@cp.PostedByName</a>
+                    <time class="timeago"><small>@cp.PostedDate</small></time>
+                </h4>
+                @{
+                    <p style="font:15px;color:black;">@cp.Message</p>
+                }
+            </div>
+        </div>
+        @if (CommentList.Where(l => l.PostId == cp.PostId).Count() > 0)
+        {
+            <hr />
+        }
+        <div class="actions-icon">
+            <ul>
+                <li> <button class="btn btn-default" title="Like Post" id="@cp.PostId&Identifier=POST" onclick="LoadPostLike(this);"> <i class="fa fa-thumbs-o-up"></i> </button> @LikeList.Where(l => l.PostId == cp.PostId).Count()</li>
+                <li><button class="btn btn-default" title="Comment On Post" onclick="showhide(@cp.PostId);"> <i class="fa fa-commenting"></i> </button> @CommentList.Where(l => l.PostId == cp.PostId).Count()</li>
+                @if (RoleId != Convert.ToInt32(RoleType.Facilitator))
+                {
+                    if (RoleId == Convert.ToInt32(RoleType.Admin))
+                    {
+                        <li><button class="btn btn-default" title="Delete Post" onclick="DeletePost(@cp.PostId)"> <i class="fa fa-trash-o"></i> </button></li>
+                    }
+                    else
+                    {
+                        if (loggedUserId == Convert.ToInt32(cp.PostedBy))
+                        {
+                            <li><button class="btn btn-default" title="Delete  Post" onclick="DeletePost(@cp.PostId)"> <i class="fa fa-trash-o"></i> </button></li>
+                        }
+                    }
+                }
+                <li><button class="btn btn-default" title="Report Post" onclick="FlagPost(@cp.PostId,@cp.UserCode)"><i class="fa fa-flag-o"></i> </button>  </li>
+            </ul>
+        </div>
+
+        <div style="display:none; margin-top:10px;" id="P_@cp.PostId" class="publishComment">
+            @foreach (var cmt in CommentList.Where(l => l.PostId == cp.PostId))
+            {
+                <div class="media" style="align-content:center">
+                    <ul>
+                        <div class="media-left media-top">
+                            <img src="../images/avatar2.png" alt="" class="media-object img-circle" style="width:40px">
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">
+                                <a href="/User/UserProfile?Usercode=@cmt.UserCode">@cmt.CommentedByName</a>
+                                <small>@cmt.CommentedDate</small>
+                            </h4>
+                            <p>@cmt.Message</p>
+                        </div>
+                    </ul>
+                </div>
+            }
+
+            <div class="input-group input-group-sm " id="@cp.PostId">
+                <input type="hidden" class="PostId" value="@cp.PostId" />
+                <input type="text" name="txtvale" id="txt_@cp.PostId" class="form-control txtcomment" placeholder="write a comment..." />
+                <div class="input-group-btn"><button id="@cp.PostId" onclick="PostComment(this);" class="btn btn-primary postComment">Comment</button></div>
+            </div>
+
+        </div>
+        <!-- end action icon -->
+    </div>
+    <!-- end grey border -->
+                    }
+
+
+<script type="text/javascript">
+    function showhide(id) {
+        var e = document.getElementById('P_'+id);
+        e.style.display = (e.style.display == 'block') ? 'none' : 'block';
+    }
+
+    $(document).ready(function () {
+          var success = '@TempData["success"]';
+        if (success != null && success != undefined && success != '')
+            toasterSuccessMessage(success);
+        function toasterSuccessMessage(message) {
+            new PNotify({
+                title: 'Success',
+                text: message,
+                type: 'success',
+                styling: 'bootstrap3'
+            });
+        }
+    });
+
+    function LoadPostLike(Id) {
+        $.ajax
+            ({
+                url: "Admin/PostLikes?key=" + Id.id,
+                contentType: "application/html; charset=utf-8",
+                type: "POST",
+                datatype: "html",
+                success: function (t) {
+                    $("#dvHomePostsAndCommentBind").html(t)
+                },
+                error: function () {
+                    $("#dvHomePostsAndCommentBind").html("PostsAndComment Not Found");
+                    window.location.href = "/Home/Error";
+                }
+            });
+    }
+
+    $(function () {
+        $("#btnPost").click(function () {
+            var msg1 = $('.txtPost').val();
+            var msg = msg1.replace('&', '!!').replace('/', '!!!');
+                  if (msg != null) {
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/SavePost?Message=" + msg,
+                    contentType: "application/html; charset=utf-8",
+                    datatype: "html",
+                    success: function (t) {
+                        $("#dvHomePostsAndCommentBind").html(t)
+                    },
+                    error: function () {
+                        $("#dvHomePostsAndCommentBind").html("PostsAndComment  Not Found");
+                        window.location.href = "/Home/Error";
+                    }
+                });
+            }
+        });
+    });
+
+    function DeletePost(key) {
+        //var Identifier = "POST";
+        $.confirm({
+            title: '',
+            type: 'red',
+            content: '<p style="font-style:italic;">Are you sure you want to Delete post ?</p>',
+            buttons: {
+                confirm: function () {
+                    $.ajax({
+                        url: "/Admin/DeletePost?keyId=" + key +"&Identifier=POST",
+                        method: 'post',
+                        datatype: "html",
+                        success: function (t) {
+                            $("#dvHomePostsAndCommentBind").html(t)
+                        },
+                        error: function () {
+                            $("#dvHomePostsAndCommentBind").html("PostsAndComment Not Found");
+                            window.location.href = "/Home/Error";
+                        }
+                    });
+                },
+                cancel: function () {
+                }
+            }
+        });
+    }
+
+    function FlagPost(key, userId) {
+           $.confirm({
+            title: '',
+            type: 'red',
+            content: '<p style="font-style:italic;">Are you sure, you found this post inappropriate? Once Flagged, it will go to Admin for Review.</p>',
+            buttons: {
+                confirm: function () {
+                    $.ajax({
+                        url: "/Admin/FlagPost?key=" + key + "&Identifier=POST&Id=" + userId +"",
+                        method: 'post',
+                        datatype: "html",
+                        success: function (t) {
+                            $("#dvHomePostsAndCommentBind").html(t)
+                        },
+                        error: function () {
+                            $("#dvHomePostsAndCommentBind").html("PostsAndComment Not Found");
+                            window.location.href = "/Home/Error";
+                        }
+                    });
+                },
+                cancel: function () {
+                }
+            }
+        });
+    }
+
+    function PostComment(Pid) {
+        var controlName = Pid.id;
+        var Comment = $("#txt_" + controlName + "").val();
+                if (Comment != null) {
+                $.ajax({
+                    type: "POST",
+                    url: "/Home/SaveComment?Identifier=POST&txtcomment=" + Comment + "&PostId=" + Pid.id,
+                    contentType: "application/html; charset=utf-8",
+                    datatype: "html",
+                    success: function (t) {
+                        $("#dvHomePostsAndCommentBind").html(t)
+                    },
+                    error: function () {
+                        $("#dvHomePostsAndCommentBind").html("PostsAndComment Not Found");
+                        window.location.href = "/Home/Error";
+                    }
+                });
+            }
+        }
+
+    $('#txtPost').keypress(function () {
+        var maxLength = $(this).val().length;
+        if (maxLength > 1000) {
+            alert('You cannot enter more than 1000 chars');
+            return false;
+        }
+    });
+
+</script>
+
+

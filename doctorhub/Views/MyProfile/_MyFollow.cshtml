@@ -1,0 +1,43 @@
+﻿@{
+    string Id = HttpContext.Current.Session["ID"].ToString();
+    List<doctorhubBusinessEntities.Followers> FollowersList = new doctorhubDataAccess.DirectoryDataAccess().GetListFollower(Id);
+    string Following = "_Following";
+    string Followers = "_Follower";
+}
+<div class="profile-userfollower">
+    <div class="row">
+        <div class="col-sm-6 FollowDetail btn" data-id="@Id@Following"><a style="color:blue"><span> @FollowersList.Where(m => m.status == "Following").Count()</span> Following</a></div>
+        <div class="col-sm-6 FollowDetail btn" data-id="@Id@Followers"><a style="color:blue"><span>@FollowersList.Where(m => m.status == "Follower").Count()</span> Followers</a></div>
+        @*<div class="col-sm-6 FollowDetail" data-id="@Id@Followers"><a style="color:blue"><span>@ViewBag.MyFollowers</span> Followers</a></div>*@
+    </div>
+</div>
+<div id='FollowModal' class='modal'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='FollowModalContent'></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //var TeamDetailPostBackURL = '/Admin/Follower';
+    $(".FollowDetail").click(function () {
+            var $buttonClicked = $(this);
+            var id = $buttonClicked.attr('data-id');
+        $.ajax({
+                url: '/Admin/Follower1',
+                type: "GET",
+                contentType: "application/json; charset=utf-8",
+                data: { "Id": id },
+                datatype: "json",
+            success: function (data) {
+                    $('#FollowModalContent').html(data);
+                    $('#FollowModal').modal('show');
+                },
+                error: function () {
+                    window.location.href = "/Home/Error";
+                }
+            });
+        });
+</script>
+
