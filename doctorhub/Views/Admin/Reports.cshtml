@@ -1,0 +1,97 @@
+﻿@model doctorhubBusinessEntities.Report
+@{
+    ViewBag.Title = "Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h3>Reports</h3><hr />
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+
+    <div class="form form-vertical">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Report Type <b class="text-danger">*</b>:</label>
+                    <div class="col-sm-8">
+                        @Html.DropDownListFor(model => model.ReportType, (IEnumerable<SelectListItem>)ViewBag.ReportsTypeList, new { @id = "ddlReport", @class = "form-control input-sm" })
+                        <small id="errorReportTypeSpanId" style="display: none; color: red">Select Report Type.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label class="control-label col-sm-6">Filter Criteria <b class="text-danger">*</b>:</label>
+                    <div class="col-sm-6">
+                        @Html.DropDownListFor(model => model.FilterCriteria, (IEnumerable<SelectListItem>)ViewBag.FilterCriteriaList, new { @id = "ddlFilterCriteria", @class = "form-control input-sm" })
+                        <small id="errorFilterCriteriaSpanId" style="display: none; color: red">Select Filter Criteria.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <div class="form-group">
+                    <label class="control-label col-sm-4">Select Date Range <b class="text-danger">*</b>:</label>
+                    <div class="col-sm-8 daterange-icon">
+                        @Html.TextBoxFor(model => model.Date, new { @class = "form-control input-sm", id = "txtDate", @placeholder = "Select Date Range", @name = "daterange" })
+                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                        <small id="errorDateRangeSpan" style="display: none; color: red">Select Date Range.</small>
+                    </div>
+                </div>
+            </div>
+        </div><br />
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="control-label col-sm-4"> Capabilities <b class="text-danger">*</b>:</label>
+                    <div class="col-sm-8">
+                        @Html.DropDownListFor(model => model.CapabilitiesId, (IEnumerable<SelectListItem>)ViewBag.CAPList, "-- ALL --", new { @class = "form-control input-sm", id = "ddlCAP" })
+                        <small id="errorReportTypeSpanId" style="display: none; color: red">Select Capabilities.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <div class="form-group">
+                    <br />
+                    <button id="btnViewReport" onclick="GenerateReport();" type="button" class="btn btn-success btn-sm">View Report</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4">
+                <table id="tblTabularReport" class="table table-striped table-bordered grid-table display nowrap">
+                    <thead>
+                        <tr>
+                            <th>Interval</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="col-sm-8">
+                <br />
+                <div class="row" id="myCharts">
+                    <div class="col-sm-12" id="myChartBar">
+                        <canvas id="barcanvas"></canvas>
+                    </div>
+                    <div class="col-sm-12" id="myChartPie">
+                        <canvas id="piecanvas"></canvas>
+                    </div>
+                    <div class="col-sm-12 text-center">
+                        <div class="form-group">
+                            <br />
+                            <button id="btnDownloadCharts" onclick="DownloadCharts();" type="button" class="btn btn-success btn-sm">Download Charts</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/Scripts/jspdf.min.js"></script>
+<script src="~/Scripts/chart.min.js"></script>
+<script src="~/CustomScripts/Reports.js"></script>

@@ -1,0 +1,69 @@
+﻿@model doctorhubBusinessEntities.SystemLinkModel
+@{
+    ViewBag.Title = "ManageSystemLink";
+}
+<h1>Manage System Links</h1><hr />
+
+@using (Html.BeginForm("ManageSystemLink", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    <div class="form form-vertical">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label> Enter Title <b class="text-danger">*</b></label>
+                    @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control", id = "txtTitle", @placeholder = "Enter Title" } })
+                    <small id="errortitleId" style="display: none; color: red">Enter Title .</small>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label> Enter Url <b class="text-danger">*</b></label>
+                    @Html.EditorFor(model => model.Url, new { htmlAttributes = new { @class = "form-control", id = "txtUrl", @placeholder = "Enter Url" } })
+                    <small id="errorUrlId" style="display: none; color: red">Enter Url.</small>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <div class="checkbox">
+                        &nbsp;&nbsp;&nbsp;
+                        <label>@Html.CheckBoxFor(model => model.IsActive, new { @id = "IsActive", @checked = "checked" })Is Active</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <br />
+                <button type="submit" name="submit" class="btn btn-primary btn-sm btnSubmit" id="btnSave">Save</button>
+                <a href="@Url.Action("ManageSystemLink", "Admin")" class="btn btn-default btn-sm">Reset</a>
+            </div>
+        </div>
+        <hr />
+    </div>
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <table id="tblManageSystemLink" class="table table-striped table-bordered grid-table grid-custom display nowrap" style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Url</th>
+                    <th>Is Active</th>
+                    <th>Created By</th>
+                    <th>Date Created</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <br>
+    </div>
+</div>
+
+<script src="~/CustomScripts/ManageSystemLink.js"></script>

@@ -1,0 +1,38 @@
+﻿@model doctorhubBusinessEntities.Blog
+@{
+    ViewBag.Title = "UpdateBlog";
+}
+<h2 style="text-align:center">Update Blog</h2>
+
+<body background="~/Images/registration-bg.png">
+    <div class="modal-body">
+        @using (Html.BeginForm("BlogPost", "Home", FormMethod.Post))
+        {
+            @Html.HiddenFor(m => m.BlogId)
+            <div class="form-group">
+                <div class="col-md-10">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Title)
+                        @Html.EditorFor(model => model.Title, new { htmlAttributes = new { id = "txttitle", @class = "form-control" } })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Message)
+                        @Html.TextAreaFor(model => model.Message, new { @class = "form-control input-sm rich", id = "txtmessage" })
+                        @Html.ValidationMessageFor(model => model.Message)
+                    </div>
+                </div>
+            </div>
+                <div class="modal-footer">
+                    <button type="submit" id="postblog" name="update" class="btn btn-primary button button4">Update</button>
+                    <button type="button" class="btn btn-primary " onclick="location.href='@Url.Action("Index", "Home")'">Cancel</button>
+                </div>
+        }
+    </div>
+</body>
+<script src="~/CustomScripts/Blogs.js"></script>
+
+
+
+
+

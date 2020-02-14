@@ -59,8 +59,8 @@ ul, ol {
 
 /* top orange starts */
 .top-orange {
-    background: url(../images/top-orange.jpg) #0a6dc9 center no-repeat;
-       margin-bottom: 10px;
+    background: url(../images/top-orange.jpg) #0e2cb3 center no-repeat;
+    margin-bottom: 10px;
 }
 
 .navbar {
@@ -1130,5 +1130,3 @@ table.dataTable tbody th, table.dataTable tbody td {
 
 .mid :first-child.media {margin-top:15px;}
 
-
-/*end here*/

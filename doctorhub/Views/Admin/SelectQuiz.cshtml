@@ -1,0 +1,170 @@
+﻿@model doctorhubBusinessEntities.viewModels.QuizVM
+@{
+    //List<KMTBusinessEntities.viewModels.QuizVM> QuizmList = new KMTDataAccess.DirectoryDataAccess().GetQuiz();
+    List<doctorhubBusinessEntities.viewModels.QuestionVM> QuestionList = new doctorhubDataAccess.DirectoryDataAccess().GetQuizQuestions();
+    List<doctorhubBusinessEntities.viewModels.ChoiceVM> ChoiceList = new doctorhubDataAccess.DirectoryDataAccess().GetQuizChoice();
+    List<doctorhubBusinessEntities.viewModels.AssessmentAttend> AssessmentAttendList = new doctorhubDataAccess.DirectoryDataAccess().GetListAssessmentAttend();
+    int count = 1, countR = 0;
+    ViewBag.Title = "User";
+    var rnd = new Random();
+}
+
+<div class="container">
+    <div id="result">
+    </div>
+    <div class="Quiz">
+        <h2 style="margin-top: 4%;"> <span class="label label-info"> @Model.QuizName Assessment</span> </h2>
+        @if (Model != null)
+        {
+            int score = AssessmentAttendList.Where(t => t.QuizID == @Model.QuizID).Select(s => s.Marks).FirstOrDefault();
+            int Attempt = AssessmentAttendList.Where(t => t.QuizID == @Model.QuizID).Select(S => S.AttendCount).FirstOrDefault();
+            int LeftAttmp = 2 - Attempt;
+            string no = "0";
+            string Result = "Your Top Score Of this Assessment is ";
+            string welcome = "";
+            <input type="hidden" id="hdCreatedByQuiz" value="@ViewBag.CreatedByMailId" />
+            <h1 style="margin-top: 2%; padding: 8px;" class="row col-sm-5 label" role="alert">
+                <span aria-hidden="true"></span>
+                @if (@score == 0)
+                {@welcome}
+                else
+                { @Result @score}
+            </h1>
+            <div class="col-sm-2"></div>
+            <h1 style="margin-top: 2%; padding: 8px; text-align:right;" class="row col-sm-2 label label-info" role="alert">
+                <span aria-hidden="true"></span>
+                @if (@LeftAttmp == 0 || @score >= 80)
+                {@no }
+                else
+                {@LeftAttmp} Attempt Left
+            </h1>
+            <br /><br />
+
+            foreach (var question in QuestionList.OrderBy(item => rnd.Next()).Where(l => l.QuizID == Model.QuizID))
+            {
+                <div class="BlockQ" style="border: 1px solid #bdbdbd; width: 75%; border-radius: 4px; margin-top: 40px; background-color: #f0ffff; padding: 8px;">
+                    <div class="Question" style="padding: 2%;">
+                        <span class="label label-warning"> @string.Format("{0}{1}.", "Q", count)</span>
+                        <span id="@string.Format("{0}{1}", "ID_Q", count)" style="display:none;">@question.QuestionID</span>
+                        <p style="display: inline; padding: 2%;" id="@string.Format("{0}{1}", "Q", count)">@question.QuestionText</p>
+                    </div>
+                    <div class="Choices" style="margin-left: 8%;">
+                        @foreach (var choice in ChoiceList.Where(l => l.QuestionID == question.QuestionID))
+                        {
+                            <label class="radio-inline">
+                                <input type="radio" name="@string.Format("{0}{1}", "inlineRadioOptions",count)" id="@string.Format("{0}{1}", "inlineRadio", countR)" value="@choice.ChoiceText" style="margin-left: -16px;"> @choice.ChoiceText
+                            </label><br />
+                            countR++;
+                        }
+                    </div> <!--END Choices-->
+
+                    <div id="@string.Format("{0}{1}{2}", "Ans", "Q", count)">
+                    </div>
+                    <input type="text" id="QuizID" style="display:none;" value="@Model.QuizID" />
+                    <input type="text" id="AssessmentId" style="display:none;" value="@Model.Assessment" />
+                </div> <!-- END BlockQ -->
+                count++;
+            }
+            <span id="countQuections" style="display:none;">@count</span>
+            if ((AssessmentAttendList.Where(t => t.QuizID == @Model.QuizID).Select(S => S.status).FirstOrDefault() == "PASS") || (AssessmentAttendList.Where(t => t.QuizID == @Model.QuizID).Select(S => S.AttendCount).FirstOrDefault() >= 2))
+            {
+                <button type="button" id="SubmitQuiz" style="pointer-events: none; color: grey; margin-top: 10px;" class="btn btn-success"><span class="glyphicon glyphicon-ok"></span> Submit Assessment </button><br />
+            }
+            else
+            {
+                <button type="button" id="SubmitQuiz" class="btn btn-success" style="margin-top: 10px;"><span class="glyphicon glyphicon-ok"></span> Submit Assessment </button>
+            }
+        }
+        <br />
+    </div>
+    <!-- END QUIZ -->
+    <br />
+</div>  <!-- END CONTAINER -->
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        @*var success = '@TempData["error"]';
+        if (success != null && success != undefined && success != '')
+            toasterSuccessMessage(success);
+        function toasterSuccessMessage(message) {
+            new PNotify({
+                title: 'Success',
+                text: message,
+                type: 'success',
+                styling: 'bootstrap3'
+            });
+        }*@
+    });
+
+</script>
+<script type="text/javascript">
+        $(document).ready(function () {
+            $(document).on("click", "#SubmitQuiz", function () {
+                $.confirm({
+                title: '',
+                type: 'green',
+                content: '<p style="font-style:italic;">Are you sure, you want to Submit Assessment ?</p>',
+                buttons: {
+                    confirm: function () {
+                //count Questions
+                var Qizid = $('#AssessmentId').val();
+                var sel = $('#countQuections').text();
+                console.log(sel);
+                var resultQuiz = [], countQuestion = parseInt(sel), question = {}, j = 1;
+                for (var i = 1; i < countQuestion; i++) {
+                    question = {
+                        QuestionID: $('#ID_Q'+ i).text(),
+                        QuestionText: $('#Q' + i).text(),
+                        AnswerQ: $('input[name=inlineRadioOptions' + i + ']:checked').val(),
+                        QuizId: $('#QuizID').val()
+                    }
+                    resultQuiz.push(question);
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("Quiz", "Admin")',
+                    data: { resultQuiz: resultQuiz, mailId: $('#hdCreatedByQuiz').val() },
+                    success: function (response) {
+                        if (response.totalCorrect > 79) {
+                            $('#result').html('<div class="alert alert-success" role="alert"> <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> Congratulations! You are Passed with  <b>' + response.totalCorrect + '</b>%</div>');
+                        }
+                        else {
+                            $('#result').html('<div class="alert alert-danger" role="alert"> <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span> Sorry! You are failed with  <b>' + response.totalCorrect + '</b> % </div>');
+
+                        }
+                        if (response.result.length > 0)
+                        {
+
+                            for(var i = 0; i <response.result.length; i++ )
+                            {
+                                if(response.result[i].isCorrect == true)
+                                {
+                                    $('#AnsQ' + j).html('<div class="alert alert-success" role="alert"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> Correct </div>');
+                                }
+                                else
+                                {
+                                    $('#AnsQ' + j).html('<div class="alert alert-danger" role="alert"> <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span> Incorrect </div>');
+
+                                }
+                                j++;
+                            }
+                        }
+                        else
+                        {
+                            alert("Something Wrong My Be Answer is Not Select");
+                        }                        //console.log(response.result.length);
+                        window.location.href = "/Admin/SelectQuiz?Assessment=" + Qizid
+                    },
+                    error: function (response) {
+                        window.location.href = "/Home/Error";
+                    }
+                });
+                        console.log(resultQuiz);
+                    },
+                    cancel: function () {
+                    }
+                }
+            });
+            });
+    });
+</script>

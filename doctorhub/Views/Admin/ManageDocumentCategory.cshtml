@@ -1,0 +1,61 @@
+﻿@model doctorhubBusinessEntities.UploadDocument
+@{
+    ViewBag.Title = "ManageDocumentCategory";
+}
+<h1>Manage Document Categories</h1><hr />
+@using (Html.BeginForm("ManageDocumentCategory", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(model => model.ID)
+
+    <div class="form-vertical">
+        <div class="row">
+            <div class="col-sm-4">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    <label> Category <b class="text-danger">*</b></label>
+                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control", id = "txtDocumentCategory", @placeholder = "Enter Document Category" })
+                    <small id="errorDocumentCategoryId" style="display: none; color: red">Enter Document Category.</small>
+                </div>
+            </div>
+
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <div class="checkbox">
+                        &nbsp;&nbsp;&nbsp;
+                        <label>@Html.CheckBoxFor(model => model.IsActive, new { @id = "IsActive", @checked = "checked" })Is Active</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <br />
+                <button type="submit" name="submit" class="btn btn-primary btn-sm btnSubmit" id="btnSave">Save</button>
+                <a href="@Url.Action("ManageDocumentCategory", "Admin")" class="btn btn-default btn-sm">Reset</a>
+            </div>
+        </div>
+        <hr />
+    </div>
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <table id="tblDocumentCategory" class="table table-striped table-bordered grid-table display nowrap" style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Category Name</th>
+                    <th>Is Active</th>
+                    <th>Created By</th>
+                    <th>Date Created</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <br>
+    </div>
+</div>
+
+<script src="~/CustomScripts/DocumentCategory.js"></script>

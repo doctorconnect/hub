@@ -1,0 +1,38 @@
+﻿@model doctorhubBusinessEntities.viewModels.AssessmentAttend
+@{
+    ViewBag.Title = "AssessmentResult";
+}
+<h1>Assessment Result</h1><hr />
+
+<div class="row">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <label>Assessment <b class="text-danger">*</b></label>
+            @Html.DropDownListFor(model => model.QuizID, (IEnumerable<SelectListItem>)ViewBag.BSList, "- All -", new { @class = "form-control ddlValidation", id = "ddlQuiz" })
+            <input type="hidden" value="@ViewBag.KeyId" id="hdKeyId" />
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <br />
+            <button type="submit" name="submit" class="btn btn-primary btn-group-lg btnSubmit" onclick="GenerateResult();" id="btnShow">Show</button>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <table id="tblAssessmentResult" class="table table-striped table-bordered grid-table display nowrap">
+            <thead>
+                <tr>
+                    <th>UserName</th>
+                    <th>QuizName</th>
+                    <th>Marks</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+<script src="~/CustomScripts/AssessmentResult.js"></script>

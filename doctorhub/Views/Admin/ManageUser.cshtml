@@ -1,0 +1,95 @@
+﻿@model doctorhubBusinessEntities.UserRegistrationModel
+@{
+    ViewBag.Title = "ManageUser";
+}
+<h1>Manage Users</h1><hr />
+
+<link href="~/Content/dataTables.bootstrap.min.css" rel="stylesheet" />
+@using (Html.BeginForm("UserRegistration", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="form form-vertical usersection-div">
+
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>Employee Name <b class="text-danger">*</b></label>
+                    <input type="text" class="form-control input-sm" value="@ViewBag.UserName" disabled="disabled" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>Role <b class="text-danger">*</b></label>
+                    @Html.DropDownListFor(model => model.RoleId, (IEnumerable<SelectListItem>)ViewBag.roleList, "--- Select Role ---", new { @id = "ddlRole", @class = "form-control input-sm" })
+                    @Html.HiddenFor(model => model.Id)
+                    @Html.HiddenFor(model => model.UserCode)
+                    @Html.HiddenFor(model => model.UserName)
+                    @Html.HiddenFor(model => model.UserEmail)
+                    <input type="hidden" value="@ViewBag.KeyId" id="hdKeyId" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>Business Segment <b class="text-danger">*</b></label>
+                    @Html.DropDownListFor(model => model.BusinessSegmentId, (IEnumerable<SelectListItem>)ViewBag.BSList, "--- Select Business ---", new { @class = "form-control input-sm", id = "ddlBS" })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>Capabilities <b class="text-danger">*</b></label>
+                    @Html.DropDownListFor(model => model.CapabilitiesId, (IEnumerable<SelectListItem>)ViewBag.CAPList, "--- Select Capabilities ---", new { @class = "form-control input-sm", id = "ddlCAP" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>LOB <b class="text-danger">*</b></label>
+                    @Html.DropDownListFor(model => model.LOBId, (IEnumerable<SelectListItem>)ViewBag.lobList, "--- Select LOB ---", new { @id = "ddlLob", @class = "form-control input-sm" })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <div class="checkbox">
+                        <label>@Html.CheckBoxFor(model => model.IsActive, new { @id = "IsActive", @checked = "checked" })Is Active</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <br />
+                <button type="submit" class="btn btn-success btn-sm ">Save</button>&nbsp;
+                <a href="@Url.Action("ManageUser", "Admin")" class="btn btn-default btn-sm">Reset</a>
+            </div>
+        </div>
+    </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <table id="tblManageUser" class="table table-striped table-bordered grid-table display nowrap">
+                    <thead>
+                        <tr>
+                            <th id="chkAll"></th>
+                            <th>Employee Name</th>
+                            <th>Manager Name</th>
+                            <th>Role</th>
+                            <th>Business Segment</th>
+                            <th>Capability</th>
+                            <th>LOB</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="form-group text-center">
+                    <button type="button" onclick="ApproveAllRequests();" class="btn btn-primary btn-sm btnApprove">Approve Selected Requests</button>
+                    <button type="button" onclick="RejectAllRequests();" class="btn btn-danger btn-sm btnReject">Reject Selected Requests</button>
+                </div>
+            </div>
+        </div>
+}
+
+<script src="~/Scripts/dataTables.checkboxes.min.js"></script>
+<script src="~/CustomScripts/ManageUser.js"></script>

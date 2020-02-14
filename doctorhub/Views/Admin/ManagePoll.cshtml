@@ -1,0 +1,97 @@
+﻿@model doctorhubBusinessEntities.ManagePoll
+@{
+    ViewBag.Title = "Manage Poll";
+}
+<h1>Manage Polls</h1><hr />
+
+@using (Html.BeginForm("ManagePoll", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div class="form form-vertical usersection-div">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="Question">Question <b class="text-danger">*</b></label>
+                    @Html.TextAreaFor(model => model.Questions, new { @class = "form-control", @id = "txtQuestion", @placeholder = "Enter Question" })
+                    @Html.HiddenFor(model => model.Questions, new { @id = "Question" })
+                    @Html.HiddenFor(model => model.PollID, new { @id = "PollID" })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group" style="height:100px;">
+                    <label for="email">Options <b class="text-danger">*</b></label>
+                    @Html.TextAreaFor(model => model.Options, new { @class = "form-control", @id = "txtOptions", @placeholder = "Enter Options (Separated by one Enter)" })
+                    @Html.HiddenFor(model => model.Options, new { @id = "Options" })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="email">From Date <b class="text-danger">*</b></label>
+                    @Html.TextBoxFor(model => model.FromDate, new { @class = "form-control", @id = "txtFromDate", @placeholder = "Enter From Date" })
+                    @Html.HiddenFor(model => model.FromDate, new { @id = "txtFromDate" })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="email">To Date <b class="text-danger">*</b></label>
+                    @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control", @id = "txtToDate", @placeholder = "Enter To Date" })
+                    @Html.HiddenFor(model => model.ToDate, new { @id = "txtToDate" })
+                </div>
+            </div>
+
+            @*<div class="col-sm-5">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">Select Date Range <b class="text-danger">*</b>:</label>
+                        <div class="col-sm-8 daterange-icon">
+                            @Html.TextBoxFor(model => model.FromDate, new { @class = "form-control input-sm", id = "txtDate", @placeholder = "Select Date Range", @name = "daterange" })
+                            <i class="fa fa-calendar" aria-hidden="true"></i>
+                            <small id="errorDateRangeSpan" style="display: none; color: red">Select Date Range.</small>
+                        </div>
+                    </div>
+                </div>*@
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <div class="checkbox">
+                        &nbsp;&nbsp;&nbsp;
+                        <label>@Html.CheckBoxFor(model => model.IsActive, new { @id = "IsActive", @checked = "checked" })Is Active</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 text-center">
+                    <br />
+                    <button type="submit" class="btn btn-success btn-sm regstrBtn" onclick="return ValidateManagePoll();">Save</button>&nbsp;
+                    <a href="@Url.Action("ManagePoll", "Admin")" class="btn btn-default btn-sm">Reset</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="form form-vertical">
+        <div class="row">
+            <div class="col-sm-12">
+                <table id="tblManagePoll" class="table table-striped table-bordered grid-table display nowrap">
+                    <thead>
+                        <tr>
+                            <th>Question</th>
+                            <th>Options</th>
+                            <th>From Date</th>
+                            <th>To Date</th>
+                            <th>Is Active</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+@if (TempData["message"] != null)
+{
+    <script type="text/javascript">
+    alert(@Html.Raw(Json.Encode(TempData["message"])));
+    </script>
+}
+<script src="~/Scripts/dataTables.checkboxes.min.js"></script>
+<script src="~/CustomScripts/ManagePoll.js"></script>

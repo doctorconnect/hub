@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "ApprovePost";
+}
+<h1>Manage Flagged Posts</h1><hr />
+
+@using (Html.BeginForm())
+{
+    <div class="form form-horizontal">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#tabPending" data-toggle="tab">Flagged Posts</a></li>
+            <li><a href="#tabApproved" data-toggle="tab">UnFlagged Posts</a></li>
+        </ul>
+        <div class="tab-content tab-content-custom">
+            <div id="tabPending" class="tab-pane fade in active">
+                <table id="tblPendingRequest" class="table table-striped table-bordered grid-table nowrap" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th id="chkParent"></th>
+                            <th>Post Detail</th>
+                            <th>Post Content </th>
+                            @*<th>Approval Remarks</th>*@
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button type="button" onclick="UnFlagPost()" class="btn btn-primary btnUpdate">Un-Flag</button>
+                <button type="button" onclick="DeletePost();" class="btn btn-danger btnUpdate">Delete</button>
+            </div>
+            <div id="tabApproved" class="tab-pane fade">
+                <table id="tblApprovedRequest" class="table table-striped table-bordered grid-table nowrap" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th>Post Detail</th>
+                            <th>Post Content </th>
+                            <th>Approval Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <a href="#" class="paginate" id="previous">Previous</a> |
+                <a href="#" class="paginate" id="next">Next</a>
+            </div>
+        </div>
+    </div><br />
+}
+<script src="~/CustomScripts/ApprovePost.js"></script>
+

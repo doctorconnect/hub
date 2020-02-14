@@ -1,0 +1,57 @@
+﻿@{
+    ViewBag.Title = "ManageFeedback";
+}
+<h1>Manage Feedbacks</h1><hr />
+
+@using (Html.BeginForm())
+{
+    <div class="form form-horizontal">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#tabPending" data-toggle="tab">Pending</a></li>
+            <li><a href="#tabApproved" data-toggle="tab">Approved</a></li>
+        </ul>
+        <div class="tab-content tab-content-custom">
+            <div id="tabPending" class="tab-pane fade in active">
+                <table id="tblPendingRequest" class="table table-striped table-bordered grid-table nowrap tblCustom" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th id="chkParent"></th>
+                            <th>User Details</th>
+                            <th>User Feedback</th>
+                            <th>Admin Reply</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button type="button" onclick="SubmitAdminReply();" class="btn btn-primary btnUpdate">Reply</button>
+
+                @*<div class="panel-footer row">
+                        <div class="col-xs-6 text-left">
+                            <button type="button" onclick="SubmitAdminReply();" class="btn btn-primary btnUpdate">Reply</button>
+                        </div>
+                        <div class="col-xs-6 text-right">
+                            <a href="#" class="paginate" id="previous">Previous</a> |
+                            <a href="#" class="paginate" id="next">Next</a>
+                        </div>
+                    </div>*@
+
+            </div>
+            <div id="tabApproved" class="tab-pane fade">
+                <table id="tblApprovedRequest" class="table table-striped table-bordered grid-table nowrap tblCustom" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th>User Details</th>
+                            <th>User Feedback</th>
+                            <th>Admin Reply</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <a href="#" class="paginate" id="previous">Previous</a> |
+                <a href="#" class="paginate" id="next">Next</a>
+            </div>
+        </div>
+    </div><br />
+}
+
+<script src="~/CustomScripts/ManageFeedback.js"></script>

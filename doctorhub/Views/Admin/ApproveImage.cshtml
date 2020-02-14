@@ -1,0 +1,50 @@
+﻿
+@{
+    ViewBag.Title = "ApproveImage";
+}
+
+<h1>Manage Display Pictures</h1><hr />
+
+@using (Html.BeginForm())
+{
+    <div class="form form-horizontal">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#tabPending" data-toggle="tab">Pending</a></li>
+            <li><a href="#tabApproved" data-toggle="tab">Approved</a></li>
+        </ul>
+        <div class="tab-content tab-content-custom">
+            <div id="tabPending" class="tab-pane fade in active">
+                <table id="tblPendingRequest" class="table table-striped table-bordered grid-table nowrap" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th id="chkParent"></th>
+                            <th>User Detail</th>
+                            <th>User Image </th>
+                            <th>Approval Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="text-center">
+                    <button type="button" onclick="SubmitApproval();" class="btn btn-primary btnUpdate btn-sm">Approve</button>
+                    <button type="button" onclick="SubmitReject();" class="btn btn-danger btnUpdate btn-sm">Reject</button>
+                </div>
+            </div>
+            <div id="tabApproved" class="tab-pane fade">
+                <table id="tblApprovedRequest" class="table table-striped table-bordered grid-table nowrap" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th>User Detail</th>
+                            <th>User Image </th>
+                            <th>Approval Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <a href="#" class="paginate" id="previous">Previous</a> |
+                <a href="#" class="paginate" id="next">Next</a>
+            </div>
+        </div>
+    </div><br />
+}
+<script src="~/CustomScripts/ApproveProfileImg.js"></script>

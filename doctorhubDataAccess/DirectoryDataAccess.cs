@@ -11,6 +11,7 @@ using System.Data.Common;
 using System.Web;
 using System.IO;
 using System.Security.Cryptography;
+using doctorhubBusinessEntities.viewModels;
 
 namespace doctorhubDataAccess
 {
@@ -1866,43 +1867,43 @@ namespace doctorhubDataAccess
             return objBlog;
         }
 
-        //public List<QuizVM> GetQuiz()
-        //{
-        //    List<QuizVM> ObjLob = new List<QuizVM>();
-        //    using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETQUIZ))
-        //    {
-        //        m_Database.AddInParameter(dbCommand, "@CapabilitiesId", DbType.String, HttpContext.Current.Session["CapabilitiesId"].ToString());
-        //        m_Database.AddInParameter(dbCommand, "@IsAdmin", DbType.Boolean, HttpContext.Current.Session["Adminstrator"].ToString());
+        public List<QuizVM> GetQuiz()
+        {
+            List<QuizVM> ObjLob = new List<QuizVM>();
+            using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETQUIZ))
+            {
+                m_Database.AddInParameter(dbCommand, "@CapabilitiesId", DbType.String, HttpContext.Current.Session["CapabilitiesId"].ToString());
+                m_Database.AddInParameter(dbCommand, "@IsAdmin", DbType.Boolean, HttpContext.Current.Session["Adminstrator"].ToString());
 
-        //        using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
-        //        {
-        //            while (dataReader.Read())
-        //            {
-        //                ObjLob.Add(GetQuizFromDataReader(dataReader));
-        //            }
-        //        }
-        //    }
-        //    return ObjLob;
-        //}
+                using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
+                {
+                    while (dataReader.Read())
+                    {
+                        ObjLob.Add(GetQuizFromDataReader(dataReader));
+                    }
+                }
+            }
+            return ObjLob;
+        }
 
-        //public List<QuestionVM> GetQuizQuestions()
-        //{
-        //    List<QuestionVM> ObjQuestionVM = new List<QuestionVM>();
-        //    using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETQUIZQUESTIONS))
-        //    {
-        //        m_Database.AddInParameter(dbCommand, "@CapabilitiesId", DbType.String, HttpContext.Current.Session["CapabilitiesId"].ToString());
-        //        m_Database.AddInParameter(dbCommand, "@IsAdmin", DbType.Boolean, HttpContext.Current.Session["Adminstrator"].ToString());
+        public List<QuestionVM> GetQuizQuestions()
+        {
+            List<QuestionVM> ObjQuestionVM = new List<QuestionVM>();
+            using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETQUIZQUESTIONS))
+            {
+                m_Database.AddInParameter(dbCommand, "@CapabilitiesId", DbType.String, HttpContext.Current.Session["CapabilitiesId"].ToString());
+                m_Database.AddInParameter(dbCommand, "@IsAdmin", DbType.Boolean, HttpContext.Current.Session["Adminstrator"].ToString());
 
-        //        using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
-        //        {
-        //            while (dataReader.Read())
-        //            {
-        //                ObjQuestionVM.Add(GetQuizQuestionsFromDataReader(dataReader));
-        //            }
-        //        }
-        //    }
-        //    return ObjQuestionVM;
-        //}
+                using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
+                {
+                    while (dataReader.Read())
+                    {
+                        ObjQuestionVM.Add(GetQuizQuestionsFromDataReader(dataReader));
+                    }
+                }
+            }
+            return ObjQuestionVM;
+        }
 
         //public int SubmitQuiz(QuizVM model)
         //{
@@ -2112,22 +2113,22 @@ namespace doctorhubDataAccess
             return success;
         }
 
-        //public List<AssessmentAttend> GetListAssessmentAttend()
-        //{
-        //    List<AssessmentAttend> objAssessmentAttend = new List<AssessmentAttend>();
-        //    using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETLISTASSESSMENTATTEND))
-        //    {
-        //        m_Database.AddInParameter(dbCommand, "@CreatedBy", DbType.String, HttpContext.Current.Session["UserNTID"].ToString());
-        //        using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
-        //        {
-        //            while (dataReader.Read())
-        //            {
-        //                objAssessmentAttend.Add(GetListAssessmentAttendFromDataReader(dataReader));
-        //            }
-        //        }
-        //    }
-        //    return objAssessmentAttend;
-        //}
+        public List<AssessmentAttend> GetListAssessmentAttend()
+        {
+            List<AssessmentAttend> objAssessmentAttend = new List<AssessmentAttend>();
+            using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETLISTASSESSMENTATTEND))
+            {
+                m_Database.AddInParameter(dbCommand, "@CreatedBy", DbType.String, HttpContext.Current.Session["UserNTID"].ToString());
+                using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
+                {
+                    while (dataReader.Read())
+                    {
+                        objAssessmentAttend.Add(GetListAssessmentAttendFromDataReader(dataReader));
+                    }
+                }
+            }
+            return objAssessmentAttend;
+        }
 
         public int SubmitAssessment(int QuizId, int Marks)
         {
@@ -2185,56 +2186,56 @@ namespace doctorhubDataAccess
             return success;
         }
 
-        //public List<ChoiceVM> GetQuizChoice()
-        //{
-        //    List<ChoiceVM> ObjChoiceVM = new List<ChoiceVM>();
-        //    using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETQUIZCHOICE))
-        //    {
-        //        using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
-        //        {
-        //            while (dataReader.Read())
-        //            {
-        //                ObjChoiceVM.Add(GetQuizChoiceFromDataReader(dataReader));
-        //            }
-        //        }
-        //    }
-        //    return ObjChoiceVM;
-        //}
+        public List<ChoiceVM> GetQuizChoice()
+        {
+            List<ChoiceVM> ObjChoiceVM = new List<ChoiceVM>();
+            using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETQUIZCHOICE))
+            {
+                using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
+                {
+                    while (dataReader.Read())
+                    {
+                        ObjChoiceVM.Add(GetQuizChoiceFromDataReader(dataReader));
+                    }
+                }
+            }
+            return ObjChoiceVM;
+        }
 
-        //public List<ReportModel> GetUtilizationReport(int ReportId, string StartDate, string EndDate, string Criteria, string Capabilities, string CapText)
-        //{
-        //    if (CapText == "-- ALL --")
-        //    { CapText = "ALL"; }
-        //    else
-        //    { CapText = null; }
+        public List<ReportModel> GetUtilizationReport(int ReportId, string StartDate, string EndDate, string Criteria, string Capabilities, string CapText)
+        {
+            if (CapText == "-- ALL --")
+            { CapText = "ALL"; }
+            else
+            { CapText = null; }
 
-        //    string strProc = string.Empty;
-        //    if (ReportId == Convert.ToInt32(ReportType.RegisteredUsers)) { strProc = DBConstant.PROCGETREGISTEREDUSERS; }
-        //    else if (ReportId == Convert.ToInt32(ReportType.UserTraffic)) { strProc = DBConstant.PROCGETUSERTRAFFIC; }
-        //    else if (ReportId == Convert.ToInt32(ReportType.Interactions)) { strProc = DBConstant.PROCGETINTERACTIONS; }
-        //    else if (ReportId == Convert.ToInt32(ReportType.DocumentsUploaded)) { strProc = DBConstant.PROCGETDOCUMENTSUPLOADED; }
-        //    else if (ReportId == Convert.ToInt32(ReportType.Blogs)) { strProc = DBConstant.PROCGETBLOGS; }
-        //    else if (ReportId == Convert.ToInt32(ReportType.Posts)) { strProc = DBConstant.PROCGETPOSTS; }
-        //    else if (ReportId == Convert.ToInt32(ReportType.FlaggedPosts)) { strProc = DBConstant.PROCGETFLAGGEDPOSTS; }
-        //    List<ReportModel> objReport = new List<ReportModel>();
-        //    using (DbCommand dbCommand = m_Database.GetStoredProcCommand(strProc))
-        //    {
-        //        m_Database.AddInParameter(dbCommand, "@StartDate", DbType.DateTime, SafeTypeHandling.ConvertToDateTime(StartDate));
-        //        m_Database.AddInParameter(dbCommand, "@EndDate", DbType.String, SafeTypeHandling.ConvertToDateTime(EndDate));
-        //        //m_Database.AddInParameter(dbCommand, "@ReportId", DbType.Int32, ReportId);
-        //        m_Database.AddInParameter(dbCommand, "@Criteria", DbType.String, Criteria);
-        //        m_Database.AddInParameter(dbCommand, "@CapText", DbType.String, CapText);
-        //        m_Database.AddInParameter(dbCommand, "@Capid", DbType.String, Capabilities);
-        //        using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
-        //        {
-        //            while (dataReader.Read())
-        //            {
-        //                objReport.Add(GetUtilizationReportFromDataReader(dataReader));
-        //            }
-        //        }
-        //    }
-        //    return objReport;
-        //}
+            string strProc = string.Empty;
+            if (ReportId == Convert.ToInt32(ReportType.RegisteredUsers)) { strProc = DBConstant.PROCGETREGISTEREDUSERS; }
+            else if (ReportId == Convert.ToInt32(ReportType.UserTraffic)) { strProc = DBConstant.PROCGETUSERTRAFFIC; }
+            else if (ReportId == Convert.ToInt32(ReportType.Interactions)) { strProc = DBConstant.PROCGETINTERACTIONS; }
+            else if (ReportId == Convert.ToInt32(ReportType.DocumentsUploaded)) { strProc = DBConstant.PROCGETDOCUMENTSUPLOADED; }
+            else if (ReportId == Convert.ToInt32(ReportType.Blogs)) { strProc = DBConstant.PROCGETBLOGS; }
+            else if (ReportId == Convert.ToInt32(ReportType.Posts)) { strProc = DBConstant.PROCGETPOSTS; }
+            else if (ReportId == Convert.ToInt32(ReportType.FlaggedPosts)) { strProc = DBConstant.PROCGETFLAGGEDPOSTS; }
+            List<ReportModel> objReport = new List<ReportModel>();
+            using (DbCommand dbCommand = m_Database.GetStoredProcCommand(strProc))
+            {
+                m_Database.AddInParameter(dbCommand, "@StartDate", DbType.DateTime, SafeTypeHandling.ConvertToDateTime(StartDate));
+                m_Database.AddInParameter(dbCommand, "@EndDate", DbType.String, SafeTypeHandling.ConvertToDateTime(EndDate));
+                //m_Database.AddInParameter(dbCommand, "@ReportId", DbType.Int32, ReportId);
+                m_Database.AddInParameter(dbCommand, "@Criteria", DbType.String, Criteria);
+                m_Database.AddInParameter(dbCommand, "@CapText", DbType.String, CapText);
+                m_Database.AddInParameter(dbCommand, "@Capid", DbType.String, Capabilities);
+                using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
+                {
+                    while (dataReader.Read())
+                    {
+                        objReport.Add(GetUtilizationReportFromDataReader(dataReader));
+                    }
+                }
+            }
+            return objReport;
+        }
 
         public int SubmitUserTraffic()
         {
@@ -3015,47 +3016,47 @@ namespace doctorhubDataAccess
         //    return objKT;
         //}
 
-        //private QuizVM GetQuizFromDataReader(IDataReader datareader)
-        //{
-        //    QuizVM ObjQuiz = new QuizVM();
-        //    ObjQuiz.QuizID = Convert.ToInt32(datareader["QuizID"]);
-        //    ObjQuiz.QuizName = SafeTypeHandling.ConvertToString(datareader["QuizName"]);
-        //    ObjQuiz.FromDate = SafeTypeHandling.ConvertToDateTime(datareader["FromDate"]);
-        //    ObjQuiz.ToDate = SafeTypeHandling.ConvertToDateTime(datareader["ToDate"]);
-        //    ObjQuiz.IsActive = SafeTypeHandling.ConvertStringToBoolean(datareader["IsActive"]);
-        //    ObjQuiz.CreatedBy = SafeTypeHandling.ConvertToString(datareader["CreatedBy"]);
-        //    ObjQuiz.CreatedByMailId = SafeTypeHandling.ConvertToString(datareader["CreatedEmail"]);
-        //    ObjQuiz.Assessment = SafeTypeHandling.ConvertToString(encrypt(datareader["QuizID"].ToString()));
+        private QuizVM GetQuizFromDataReader(IDataReader datareader)
+        {
+            QuizVM ObjQuiz = new QuizVM();
+            ObjQuiz.QuizID = Convert.ToInt32(datareader["QuizID"]);
+            ObjQuiz.QuizName = SafeTypeHandling.ConvertToString(datareader["QuizName"]);
+            ObjQuiz.FromDate = SafeTypeHandling.ConvertToDateTime(datareader["FromDate"]);
+            ObjQuiz.ToDate = SafeTypeHandling.ConvertToDateTime(datareader["ToDate"]);
+            ObjQuiz.IsActive = SafeTypeHandling.ConvertStringToBoolean(datareader["IsActive"]);
+            ObjQuiz.CreatedBy = SafeTypeHandling.ConvertToString(datareader["CreatedBy"]);
+            ObjQuiz.CreatedByMailId = SafeTypeHandling.ConvertToString(datareader["CreatedEmail"]);
+            ObjQuiz.Assessment = SafeTypeHandling.ConvertToString(encrypt(datareader["QuizID"].ToString()));
 
-        //    return ObjQuiz;
-        //}
+            return ObjQuiz;
+        }
 
-        //private QuestionVM GetQuizQuestionsFromDataReader(IDataReader datareader)
-        //{
-        //    QuestionVM ObjQuestionVM = new QuestionVM();
-        //    ObjQuestionVM.QuizID = Convert.ToInt32(datareader["QuizID"]);
-        //    ObjQuestionVM.QuestionID = Convert.ToInt32(datareader["QuestionID"]);
-        //    ObjQuestionVM.QuestionText = SafeTypeHandling.ConvertToString(datareader["QuestionText"]);
-        //    ObjQuestionVM.QuizName = SafeTypeHandling.ConvertToString(datareader["QuizName"]);
-        //    ObjQuestionVM.AnswerText = SafeTypeHandling.ConvertToString(datareader["AnswerText"]);
-        //    ObjQuestionVM.ChoiceText = SafeTypeHandling.ConvertToString(datareader["ChoiceText"]);
-        //    ObjQuestionVM.ChoicestringID = SafeTypeHandling.ConvertToString(datareader["ChoiceID"]);
+        private QuestionVM GetQuizQuestionsFromDataReader(IDataReader datareader)
+        {
+            QuestionVM ObjQuestionVM = new QuestionVM();
+            ObjQuestionVM.QuizID = Convert.ToInt32(datareader["QuizID"]);
+            ObjQuestionVM.QuestionID = Convert.ToInt32(datareader["QuestionID"]);
+            ObjQuestionVM.QuestionText = SafeTypeHandling.ConvertToString(datareader["QuestionText"]);
+            ObjQuestionVM.QuizName = SafeTypeHandling.ConvertToString(datareader["QuizName"]);
+            ObjQuestionVM.AnswerText = SafeTypeHandling.ConvertToString(datareader["AnswerText"]);
+            ObjQuestionVM.ChoiceText = SafeTypeHandling.ConvertToString(datareader["ChoiceText"]);
+            ObjQuestionVM.ChoicestringID = SafeTypeHandling.ConvertToString(datareader["ChoiceID"]);
 
-        //    return ObjQuestionVM;
-        //}
+            return ObjQuestionVM;
+        }
 
-        //private ChoiceVM GetQuizChoiceFromDataReader(IDataReader datareader)
-        //{
-        //    Random rnd = new Random();
-        //    ChoiceVM ObjChoiceVM = new ChoiceVM();
-        //    ObjChoiceVM.QuestionID = Convert.ToInt32(datareader["QuestionID"]);
-        //    ObjChoiceVM.QuestionText = SafeTypeHandling.ConvertToString(datareader["QuestionText"]);
-        //    int index = rnd.Next(Convert.ToInt32(datareader["ChoiceID"]));
-        //    ObjChoiceVM.ChoiceID = index;// Convert.ToInt32(datareader["ChoiceID"]);
-        //    ObjChoiceVM.ChoiceText = SafeTypeHandling.ConvertToString(datareader["ChoiceText"]);
+        private ChoiceVM GetQuizChoiceFromDataReader(IDataReader datareader)
+        {
+            Random rnd = new Random();
+            ChoiceVM ObjChoiceVM = new ChoiceVM();
+            ObjChoiceVM.QuestionID = Convert.ToInt32(datareader["QuestionID"]);
+            ObjChoiceVM.QuestionText = SafeTypeHandling.ConvertToString(datareader["QuestionText"]);
+            int index = rnd.Next(Convert.ToInt32(datareader["ChoiceID"]));
+            ObjChoiceVM.ChoiceID = index;// Convert.ToInt32(datareader["ChoiceID"]);
+            ObjChoiceVM.ChoiceText = SafeTypeHandling.ConvertToString(datareader["ChoiceText"]);
 
-        //    return ObjChoiceVM;
-        //}
+            return ObjChoiceVM;
+        }
 
         //private QuizAnswersVM GetQuizAnswerFromDataReader(IDataReader datareader)
         //{
@@ -3109,16 +3110,16 @@ namespace doctorhubDataAccess
             return objPointList;
         }
 
-        //private AssessmentAttend GetListAssessmentAttendFromDataReader(IDataReader datareader)
-        //{
-        //    AssessmentAttend objAssessmentAttend = new AssessmentAttend();
-        //    objAssessmentAttend.status = SafeTypeHandling.ConvertToString(datareader["status"]);
-        //    objAssessmentAttend.QuizID = SafeTypeHandling.ConvertStringToInt32(datareader["QuizId"]);
-        //    objAssessmentAttend.AttendCount = SafeTypeHandling.ConvertStringToInt32(datareader["Attend"]);
-        //    objAssessmentAttend.Marks = SafeTypeHandling.ConvertStringToInt32(datareader["Marks"]);
+        private AssessmentAttend GetListAssessmentAttendFromDataReader(IDataReader datareader)
+        {
+            AssessmentAttend objAssessmentAttend = new AssessmentAttend();
+            objAssessmentAttend.status = SafeTypeHandling.ConvertToString(datareader["status"]);
+            objAssessmentAttend.QuizID = SafeTypeHandling.ConvertStringToInt32(datareader["QuizId"]);
+            objAssessmentAttend.AttendCount = SafeTypeHandling.ConvertStringToInt32(datareader["Attend"]);
+            objAssessmentAttend.Marks = SafeTypeHandling.ConvertStringToInt32(datareader["Marks"]);
 
-        //    return objAssessmentAttend;
-        //}
+            return objAssessmentAttend;
+        }
 
         private ReportModel GetUtilizationReportFromDataReader(IDataReader datareader)
         {

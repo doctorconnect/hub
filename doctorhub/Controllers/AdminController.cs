@@ -1,4 +1,5 @@
 ﻿using doctorhubBusinessEntities;
+using doctorhubBusinessEntities.viewModels;
 using doctorhubDataAccess;
 using System;
 using System.Collections.Generic;
@@ -672,7 +673,7 @@ namespace doctorhub.Controllers
             return RedirectToAction("ManageLineofBusiness");
         }
 
-        #region Code written by Abhimanyu
+        #region Code written by shivnandan update
         public ActionResult ManagePoll()
         {
             try
@@ -1223,66 +1224,66 @@ namespace doctorhub.Controllers
             return RedirectToAction("ManageRSS");
         }
 
-        //[HttpGet]
-        //public ActionResult SelectQuiz(QuizVM quiz)
-        //{
-        //    string QuizDId = objDirectoryDataAccess.Decrypt(quiz.Assessment);
-        //    var QuizList = objDirectoryDataAccess.GetQuiz().Where(q => q.QuizID == int.Parse(QuizDId)).FirstOrDefault();
-        //    quiz.QuizID = QuizList.QuizID;
-        //    quiz.QuizName = QuizList.QuizName;
-        //    ViewBag.CreatedByMailId = QuizList.CreatedByMailId;
-        //    return View(quiz);
+        [HttpGet]
+        public ActionResult SelectQuiz(QuizVM quiz)
+        {
+            string QuizDId = objDirectoryDataAccess.Decrypt(quiz.Assessment);
+            var QuizList = objDirectoryDataAccess.GetQuiz().Where(q => q.QuizID == int.Parse(QuizDId)).FirstOrDefault();
+            quiz.QuizID = QuizList.QuizID;
+            quiz.QuizName = QuizList.QuizName;
+            ViewBag.CreatedByMailId = QuizList.CreatedByMailId;
+            return View(quiz);
 
-        //}
+        }
 
-       // [HttpPost]
-        //public ActionResult Quiz(List<QuizAnswersVM> resultQuiz, string mailId)
-        //{
-        //    List<QuizAnswersVM> finalResultQuiz = new List<QuizAnswersVM>();
-        //    if (resultQuiz != null)
-        //    {
-        //        foreach (QuizAnswersVM answser in resultQuiz)
-        //        {
-        //            if (answser.AnswerQ != null)
-        //            {
-        //                QuizAnswersVM result = objDirectoryDataAccess.GetQuizAnswer().Where(x => x.QuestionID == answser.QuestionID).Select(a => new QuizAnswersVM
-        //                {
-        //                    QuestionID = a.QuestionID,
-        //                    AnswerQ = a.AnswerText,
-        //                    isCorrect = (answser.AnswerQ.ToLower().Equals(a.AnswerText.ToLower()))
-        //                }).FirstOrDefault();
-        //                finalResultQuiz.Add(result);
-        //            }
-        //            else
-        //            {
-        //                TempData["error"] = "Some Error Occured. Please Contact Admin";
-        //                return RedirectToAction("Admin", "SelectQuiz");
-        //            }
-        //        }
-        //        int correct = finalResultQuiz.Where(a => a.isCorrect == true).Count();
-        //        int totalCorrect = (correct * 100) / finalResultQuiz.Count();
+            // [HttpPost]
+            //public ActionResult Quiz(List<QuizAnswersVM> resultQuiz, string mailId)
+            //{
+            //    List<QuizAnswersVM> finalResultQuiz = new List<QuizAnswersVM>();
+            //    if (resultQuiz != null)
+            //    {
+            //        foreach (QuizAnswersVM answser in resultQuiz)
+            //        {
+            //            if (answser.AnswerQ != null)
+            //            {
+            //                QuizAnswersVM result = objDirectoryDataAccess.GetQuizAnswer().Where(x => x.QuestionID == answser.QuestionID).Select(a => new QuizAnswersVM
+            //                {
+            //                    QuestionID = a.QuestionID,
+            //                    AnswerQ = a.AnswerText,
+            //                    isCorrect = (answser.AnswerQ.ToLower().Equals(a.AnswerText.ToLower()))
+            //                }).FirstOrDefault();
+            //                finalResultQuiz.Add(result);
+            //            }
+            //            else
+            //            {
+            //                TempData["error"] = "Some Error Occured. Please Contact Admin";
+            //                return RedirectToAction("Admin", "SelectQuiz");
+            //            }
+            //        }
+            //        int correct = finalResultQuiz.Where(a => a.isCorrect == true).Count();
+            //        int totalCorrect = (correct * 100) / finalResultQuiz.Count();
 
-        //        int msg = objDirectoryDataAccess.SubmitAssessment(resultQuiz[0].QuizID, totalCorrect);
+            //        int msg = objDirectoryDataAccess.SubmitAssessment(resultQuiz[0].QuizID, totalCorrect);
 
-        //        if (msg > 0)
-        //        {
-        //            UserRegistrationModel model = objDirectoryDataAccess.GetListOfRegisteredUser().Where(x => x.UserCode == Convert.ToString(HttpContext.Session["UserEmployeeId"])).FirstOrDefault();
-        //            objDirectoryDataAccess.SendEmail(model, totalCorrect.ToString(), "KMT15");
-        //            objDirectoryDataAccess.SendEmail(model, mailId, "KMT16");
-        //        }
+            //        if (msg > 0)
+            //        {
+            //            UserRegistrationModel model = objDirectoryDataAccess.GetListOfRegisteredUser().Where(x => x.UserCode == Convert.ToString(HttpContext.Session["UserEmployeeId"])).FirstOrDefault();
+            //            objDirectoryDataAccess.SendEmail(model, totalCorrect.ToString(), "KMT15");
+            //            objDirectoryDataAccess.SendEmail(model, mailId, "KMT16");
+            //        }
 
-        //        return Json(new { result = finalResultQuiz, totalCorrect }, JsonRequestBehavior.AllowGet);
-        //    }
-        //    else
-        //    {
-        //        return RedirectToAction("Admin", "SelectQuiz");
-        //    }
-        //}
+            //        return Json(new { result = finalResultQuiz, totalCorrect }, JsonRequestBehavior.AllowGet);
+            //    }
+            //    else
+            //    {
+            //        return RedirectToAction("Admin", "SelectQuiz");
+            //    }
+            //}
 
-        /// <summary>
-        /// Manage BulletinBoard
-        /// </summary>
-        /// <returns></returns>
+            /// <summary>
+            /// Manage BulletinBoard
+            /// </summary>
+            /// <returns></returns>
         public JsonResult GetBadge()
         {
             return Json(objDirectoryDataAccess.GetListOfBadge(), JsonRequestBehavior.AllowGet);
@@ -1476,31 +1477,31 @@ namespace doctorhub.Controllers
             return new JsonResult { Data = isMailSent, MaxJsonLength = Int32.MaxValue };
         }
 
-        //public ActionResult AssessmentResult()
-        //{
-        //    try
-        //    {
-        //        ViewBag.CAPList = objCommonController.BindCAPDropDownList();
-        //        List<SelectListItem> Quiz = new List<SelectListItem>();
-        //        var QuizList = objDirectoryDataAccess.GetQuiz().Select(l => new { l.QuizID, l.QuizName });
-        //        foreach (var item in QuizList)
-        //        {
-        //            Quiz.Add(new SelectListItem
-        //            {
-        //                Text = item.QuizName,
-        //                Value = item.QuizID.ToString(),
-        //            });
-        //        }
-        //        ViewBag.BSList = Quiz.ToList();
+        public ActionResult AssessmentResult()
+        {
+            try
+            {
+                ViewBag.CAPList = objCommonController.BindCAPDropDownList();
+                List<SelectListItem> Quiz = new List<SelectListItem>();
+                var QuizList = objDirectoryDataAccess.GetQuiz().Select(l => new { l.QuizID, l.QuizName });
+                foreach (var item in QuizList)
+                {
+                    Quiz.Add(new SelectListItem
+                    {
+                        Text = item.QuizName,
+                        Value = item.QuizID.ToString(),
+                    });
+                }
+                ViewBag.BSList = Quiz.ToList();
 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        TempData["error"] = ex.ToString() + " Error Occured. Please Contact Admin";
-        //        objDirectoryDataAccess.SaveErrorLog(this.GetType().Name + " - " + MethodBase.GetCurrentMethod().Name, Server.GetLastError().ToString(), HttpContext.Session["UserNTID"].ToString());
-        //    }
-        //    return View();
-        //}
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = ex.ToString() + " Error Occured. Please Contact Admin";
+                objDirectoryDataAccess.SaveErrorLog(this.GetType().Name + " - " + MethodBase.GetCurrentMethod().Name, Server.GetLastError().ToString(), HttpContext.Session["UserNTID"].ToString());
+            }
+            return View();
+        }
 
         //public JsonResult GetAssessmentResult()
         //{

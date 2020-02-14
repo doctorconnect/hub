@@ -1,0 +1,98 @@
+﻿
+
+
+
+
+@model doctorhubBusinessEntities.Training
+@{
+    ViewBag.Title = "ManageTraining";
+    List<doctorhubBusinessEntities.Training> GetTraining = new doctorhubDataAccess.DirectoryDataAccess().GetTrainingLinkList();
+    string FromDate = Convert.ToDateTime(GetTraining.Select(x => x.FromDate).FirstOrDefault()).ToString("MM/dd/yyyy");
+    string ToDate = Convert.ToDateTime(GetTraining.Select(x => x.ToDate).FirstOrDefault()).ToString("MM/dd/yyyy");
+}
+<h1>Manage Trainings</h1><hr />
+
+@using (Html.BeginForm("SubmitTraining", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(model => model.TrainingId)
+    <div class="form form-vertical usersection-div">
+        <div class="row">
+            <div class="col-sm-3" style="display:none;">
+                <div class="form-group">
+                    <label for="Question">Training Id</label>
+                    <label> Line of Business <b class="text-danger">*</b></label>
+                    @Html.TextAreaFor(model => model.TrainingId, new { @class = "form-control", @id = "txtTrainingId" })
+                    @Html.HiddenFor(model => model.TrainingId, new { @id = "TrainingId" })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="Question">Title</label>
+                    @Html.TextAreaFor(model => model.Title, new { @class = "form-control", @id = "txtTitle", @placeholder = "Training Title" })
+                    @Html.HiddenFor(model => model.Title, new { @id = "Question" })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group" style="height:100px;">
+                    <label for="email">Link</label>
+                    @Html.TextAreaFor(model => model.Link, new { @class = "form-control", @id = "txtLink", @placeholder = "Training Link" })
+                    @Html.HiddenFor(model => model.Link, new { @id = "Link" })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="email">From Date</label>
+                    @Html.TextBoxFor(model => model.FromDate, new { @class = "form-control", @id = "txtFromDate" })
+                    @Html.HiddenFor(model => model.FromDate, new { @id = "FromDate" })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label for="email">To Date</label>
+                    @Html.TextBoxFor(model => model.ToDate, new { @class = "form-control", @id = "txtToDate" })
+                    @Html.HiddenFor(model => model.ToDate, new { @id = "ToDate" })
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <div class="checkbox">
+                        <label>@Html.CheckBoxFor(model => model.IsActive, new { @id = "IsActive", @checked = "checked" })Is Active</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12 text-center">
+                    <br />
+                    <button type="submit" class="btn btn-success btn-sm ">Save</button>&nbsp;
+                    <a href="@Url.Action("ManageTraining", "Admin")" class="btn btn-default btn-sm">Reset</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="form form-vertical">
+        <div class="row">
+            <div class="col-sm-12">
+                <table id="tblManageTraining" class="table table-striped table-bordered grid-table display" style="width:100%;white-space:normal;">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th style="word-wrap:break-word; word-break:break-all !important;">Url Link</th>
+                            <th>From Date</th>
+                            <th>To Date</th>
+                            <th>IsActive</th>
+                            <th>Created By</th>
+                            @*<th>Created Date</th>*@
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+<script src="~/Scripts/dataTables.checkboxes.min.js"></script>
+<script src="~/CustomScripts/ManageTraining.js"></script>

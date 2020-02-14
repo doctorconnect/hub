@@ -1,0 +1,71 @@
+﻿@model doctorhubBusinessEntities.FaqModel
+@{
+    ViewBag.Title = "ManageFaq";
+}
+<style type="text/css">
+</style>
+<h1>Manage FAQs</h1><hr />
+
+@using (Html.BeginForm("ManageFaq", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    <div class=" form form-vertical">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label> Question <b class="text-danger">*</b></label>
+                    @Html.TextAreaFor(model => model.FaqQuestion, new { @class = "form-control", id = "txtQuestion", @placeholder = "Enter Question" })
+                    <small id="errorFaqQueId" style="display: none; color: red">Enter Question For FAQ.</small>
+                </div>
+            </div>
+            <div class="col-sm-7">
+                <div class="form-group">
+                    <label> Answer <b class="text-danger">*</b></label>
+                    @Html.TextAreaFor(model => model.FaqAnswer, new { @class = "form-control", id = "txtAnswer", @placeholder = "Please Enter Answer" })
+                    <small id="errorFaqAnsId" style="display: none; color: red">Enter Answer For FAQ.</small>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <div class="checkbox">
+                        &nbsp;&nbsp;&nbsp;
+                        <label>@Html.CheckBoxFor(model => model.IsActive, new { @id = "IsActive", @checked = "checked" })Is Active</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <br />
+                <button type="submit" name="submit" class="btn btn-primary btn-sm btnSubmit" id="btnSave">Save</button>
+                <a href="@Url.Action("ManageFaq", "Admin")" class="btn btn-default btn-sm">Reset</a>
+            </div>
+        </div>
+        <hr />
+    </div>
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <table id="tblManageFAQ" class="table table-striped table-bordered grid-table grid-custom display">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th style="width:150px;">FAQ Question</th>
+                    <th>FAQ Answer</th>
+                    <th style="width:60px;">Is Active</th>
+                    <th style="width:100px;">Created By</th>
+                    <th style="width:80px;">Date Created</th>
+                    <th style="width:60px;">Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script src="~/CustomScripts/ManageFAQ.js"></script>

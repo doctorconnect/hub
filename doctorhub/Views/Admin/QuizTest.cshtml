@@ -1,0 +1,115 @@
+﻿@model doctorhubBusinessEntities.viewModels.QuestionVM
+@{
+    //List<KMTBusinessEntities.viewModels.QuestionVM> QuestionList = new KMTDataAccess.DirectoryDataAccess().GetQuizQuestions();
+    //List<KMTBusinessEntities.viewModels.ChoiceVM> ChoiceList = new KMTDataAccess.DirectoryDataAccess().GetQuizChoice();
+    int count = 1, countR = 0;
+}
+
+<div class="container">
+    <!-- User Info -->
+    <div class="userConnected" style="border:2px dashed #cecaca; border-radius: 10px; margin-top: 3%;">
+        <div class="row">
+            <div class="col-md-4">
+                <img id="myImg" src="@ViewBag.Base64String" class="img-thumbnail img-circle" alt="" style="width: 12%;">
+                <span> <b>Welcome :</b> @ViewBag.UserName<br></span>
+            </div>
+            <div class="col-md-4" style="margin-top: 15px;">
+                @if (@Convert.ToString(Session["Department"]) != null && !string.IsNullOrEmpty(@ViewBag.BusinessSegment))
+                {
+                    @*<span> <b>Quiz Selected :</b> @quizSelected.QuizName</span>*@
+                }
+                else
+                {
+                    <span> <b>Please Select your Quiz </b></span>
+                }
+            </div>
+            <div class="col-md-4" style="margin-top: 15px;">
+                <span> <b>Date :</b> @DateTime.Now</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="Quiz">
+        <h4 style="margin-top: 4%;"> <span class="label label-info">Questions :</span> </h4>
+        @if (Model != null)
+        {
+            foreach (var question in ViewBag.Questions)
+            {
+                <div class="BlockQ" style="border: 1px solid #bdbdbd; width: 75%; border-radius: 4px; margin-top: 40px; background-color: #f0ffff; padding: 8px;">
+                    <div class="Question" style="padding: 2%;">
+                        <span class="label label-warning"> @string.Format("{0}{1}.", "Q", count)</span>
+                        <span id="@string.Format("{0}{1}", "ID_Q", count)" style="display:none;">@question.QuestionID</span>
+                        <p style="display: inline; padding: 2%;" id="@string.Format("{0}{1}", "Q", count)">@question.QuestionText</p>
+                    </div>
+
+                    <div class="Choices" style="margin-left: 8%;">
+                        @foreach (var choice in ViewBag.Choice)
+                        {
+                            <label class="radio-inline">
+                                <input type="radio" name="@string.Format("{0}{1}", "inlineRadioOptions",count)" id="@string.Format("{0}{1}", "inlineRadio", countR)" value="@choice.ChoiceText" style="margin-left: -16px;"> @choice.ChoiceText
+                            </label><br />
+                            countR++;
+                        }
+                    </div> <!--END Choices-->
+                    <div id="@string.Format("{0}{1}{2}", "Ans","Q", count)">
+                    </div>
+                </div> <!-- END BlockQ -->
+                count++;
+            }
+            <span id="countQuections" style="display:none;">@count</span>
+            <button type="button" id="SubmitQuiz" class="btn btn-default" style="margin-top: 10px;"><span class="glyphicon glyphicon-ok"></span>   Submit Quiz </button>
+        }
+
+    </div> <!-- END QUIZ -->
+
+</div> <!-- END CONTAINER -->
+
+<script type="text/javascript">
+        $(document).ready(function () {
+            $('#SubmitQuiz').on('click', function () {
+                //count Questions
+                var sel = $('#countQuections').text();
+                console.log(sel);
+                var resultQuiz = [], countQuestion = parseInt(sel), question = {}, j = 1;
+                for (var i = 1; i < countQuestion; i++) {
+                    question = {
+                        QuestionID: $('#ID_Q'+ i).text(),
+                        QuestionText: $('#Q' + i).text(),
+                        AnswerQ: $('input[name=inlineRadioOptions' + i + ']:checked').val()
+                    }
+                    resultQuiz.push(question);
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("QuizTest", "Admin")',
+                    data: { resultQuiz },
+                    success: function (response) {
+                        if (response.result.length > 0)
+                        {
+                            for(var i = 0; i <response.result.length; i++ )
+                            {
+                                if(response.result[i].isCorrect == true)
+                                {
+                                    $('#AnsQ' + j).html('<div class="alert alert-success" role="alert"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> Correct answer</div>');
+                                }
+                                else
+                                {
+                                    $('#AnsQ' + j).html('<div class="alert alert-danger" role="alert"> <span class="glyphicon glyphicon-thumbs-down" aria-hidden="true"></span> Incorrect answer - The Good Answer is <b>' + response.result[i].AnswerQ + '</b></div>');
+                                }
+                                j++;
+                            }
+                        }
+                        else
+                        {
+                            alert("Something Wrong");
+                        }
+                        //console.log(response.result.length);
+                    },
+                    error: function (response) {
+                        window.location.href = "/Home/Error";
+                    }
+                });
+                console.log(resultQuiz);
+            });
+        });
+</script>

@@ -1,0 +1,150 @@
+﻿@model doctorhubBusinessEntities.BadgeModel
+@{
+    ViewBag.Title = "ManageBadge";
+}
+<h1>Manage Badges</h1><hr />
+
+@using (Html.BeginForm("ManageBadge", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    <div class="form-vertical">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label>Badge Name <b class="text-danger">*</b></label>
+                    @Html.TextBoxFor(model => model.BadgeName, new { @class = "form-control", id = "txtBadgeName", @placeholder = "Enter Badge Name" })
+                    <small id="errorBadgeNameId" style="display: none; color: red">Enter Badge Name.</small>
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label> Badge Point <b class="text-danger">*</b></label>
+                    @Html.TextBoxFor(model => model.BadgePoint, new { @class = "form-control", id = "txtBadgePoint", @placeholder = "Enter Start Point Range(Numeric Value)" })
+                    <small id="errorBadgePointId" style="display: none; color: red">Enter Start Point Range.</small>
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <label> Badge Point <b class="text-danger">*</b></label>
+                    @Html.TextBoxFor(model => model.BadgePointTo, new { @class = "form-control", id = "txtBadgePointTo", @placeholder = "Enter End Point Range(Numeric Value)" })
+                    <small id="errorBadgePointToId" style="display: none; color: red">Enter End Point Range.</small>
+                </div>
+            </div>
+
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <label>&nbsp;</label>
+                    <div class="checkbox">
+                        &nbsp;&nbsp;&nbsp;
+                        <label>@Html.CheckBoxFor(model => model.IsActive, new { @id = "IsActive", @checked = "checked" })Is Active</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <a class='btn btn-primary' href='javascript:;'>
+                        Select Badge Image...
+                        <input type="file" name="BadgeImage" id="fileUpload" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;' size="40" onchange='$("#upload-file-info").html($(this).val());'>
+                    </a>
+                    &nbsp;
+                    <span class='label label-info' id="upload-file-info"></span>
+                    <span id="errorBannerSpan" style="display: none; color: red">Upload Badge Image.</span>
+                    <span id="errorBannerLength" style="display: none; color: red">Image size should not be more than 2 MB.</span>
+                    <span id="errorBannerExtension" style="display: none; color: red">Only .jpeg and .png extension image is allowed.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12 text-center">
+                <br />
+                <button type="submit" name="submit" class="btn btn-primary btn-sm btnSubmit" id="btnSave">Save</button>
+                <a href="@Url.Action("ManageBadge", "Admin")" class="btn btn-default btn-sm">Reset</a>
+            </div>
+        </div>
+        <hr />
+    </div>
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        <table id="tblManageBadge" class="table table-striped table-bordered grid-table grid-custom display nowrap" style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Badge</th>
+                    <th>BadgeName</th>
+                    <th>Badge Points </th>
+                    <th>Is Active</th>
+                    <th>Created By</th>
+                    <th>Date Created</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <br>
+    </div>
+</div>
+
+<script src="~/CustomScripts/ManageBadge.js"></script>
+<script type="text/javascript">
+    $('#txtBadgePoint').keypress(function () {
+        var charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode >= 48 && charCode <= 57) { return true; }
+        else { return false;
+
+        }
+    });
+
+    $('#txtBadgePointTo').keypress(function () {
+        var charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode >= 48 && charCode <= 57) { return true; }
+        else {
+            return false;
+        }
+    });
+
+    $('#txtBadgePoint').keypress(function () {
+        var maxLength = $(this).val().length;
+        if (maxLength >= 4) {
+              return false;
+        }
+    });
+
+    $('#txtBadgePointTo').keypress(function () {
+        var maxLength = $(this).val().length;
+        if (maxLength >= 4) {
+            return false;
+        }
+    });
+
+    $('#fileUpload').bind('change', function () {
+        $('#errorBannerLength').hide();
+        $('#errorBannerExtension').hide();
+
+        var fileExt = $('#fileUpload').val().split('.').pop().toLowerCase();
+        if ($.inArray(fileExt, ['jpeg', 'jpg', 'png']) === -1) {
+            $('#errorBannerExtension').show();
+            $('.btnSubmit').prop("disabled", true);
+            return false;
+        }
+        else
+            $('.btnSubmit').prop("disabled", false);
+
+        if (this.files[0].size / (1024 * 1024) > 2) {
+            $('#errorBannerLength').show();
+            $('.btnSubmit').prop("disabled", true);
+            return false;
+        }
+        else
+            $('.btnSubmit').prop("disabled", false);
+    });
+</script>
