@@ -46,7 +46,7 @@
         <div class="actions-icon">
             <ul>
                 <li> <button class="btn btn-default" title="Like Post" id="@cp.PostId&Identifier=POST" onclick="LoadPostLike(this);"> <i class="fa fa-thumbs-o-up"></i> </button> @LikeList.Where(l => l.PostId == cp.PostId).Count()</li>
-                <li><button class="btn btn-default" title="Comment On Post" onclick="showhide(@cp.PostId);"> <i class="fa fa-commenting"></i> </button> @CommentList.Where(l => l.PostId == cp.PostId).Count()</li>
+                <li><button class="btn btn-default" title="Comment On Post" onclick="showhide(@cp.PostId);"> <i class="fa fa-comment"></i> </button> @CommentList.Where(l => l.PostId == cp.PostId).Count()</li>
                 @if (RoleId != Convert.ToInt32(RoleType.Facilitator))
                 {
                     if (RoleId == Convert.ToInt32(RoleType.Admin))
