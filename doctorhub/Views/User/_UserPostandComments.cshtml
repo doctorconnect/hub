@@ -1,0 +1,135 @@
+﻿@using doctorhubDataAccess;
+@model doctorhubBusinessEntities.posts
+@{
+    List<doctorhubBusinessEntities.posts> PostList = new doctorhubDataAccess.DirectoryDataAccess().GetPost();
+    List<doctorhubBusinessEntities.posts> CommentList = new doctorhubDataAccess.DirectoryDataAccess().GetCommentListOnPost("POST");
+    List<doctorhubBusinessEntities.posts> LikeList = new doctorhubDataAccess.DirectoryDataAccess().GetLikeCount("POST");
+    int RoleId = Convert.ToInt32(HttpContext.Current.Session["RoleId"]);
+    int loggedUserId = Convert.ToInt32(HttpContext.Current.Session["ID"]);
+}
+
+@foreach (var cp in PostList.Where(m => m.PostedBy.Trim() == Session["Serchid"].ToString().Trim()))
+{
+    <!-- end grey border -->
+    <div class="grey-border">
+        <div class="media">
+            <div class="media-left media-top">
+
+                <img src="../images/avatar1.png" alt="" class="media-object img-circle" style="width:40px">
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">
+                    <a href="/User/UserProfile?Usercode=@cp.UserCode">@cp.PostedByName</a>
+                    <time class="timeago"><small>@cp.PostedDate</small></time>
+                </h4>
+                @{
+                    <p style="font:15px;color:black;">@cp.Message</p>
+                }
+            </div>
+        </div>
+        @if (CommentList.Where(l => l.PostId == cp.PostId).Count() > 0)
+        {
+            <hr />
+        }
+        <div class="actions-icon">
+            <ul>
+                <li> <button class="btn btn-default" title="Like Post" onclick="window.location.href='/User/PostLikes?key=@cp.PostId&Identifier=POST'"> <i class="fa fa-thumbs-o-up"></i> </button> @LikeList.Where(l => l.PostId == cp.PostId).Count()</li>
+                <li><button class="btn btn-default" title="Comment On Post" onclick="window.location.href='javascript:showhide(@cp.PostId)'"> <i class="fa fa-commenting"></i> </button> @CommentList.Where(l => l.PostId == cp.PostId).Count()</li>
+                @if (RoleId != Convert.ToInt32(RoleType.Facilitator))
+                {
+                    if (RoleId == Convert.ToInt32(RoleType.Admin))
+                    {
+                        <li><button class="btn btn-default" title="Delete Post" onclick="DeletePost(@cp.PostId)"> <i class="fa fa-trash-o"></i> </button></li>
+                    }
+                    else
+                    {
+                        if (loggedUserId == Convert.ToInt32(cp.PostedBy))
+                        {
+                            <li><button class="btn btn-default" title="Delete  Post" onclick="DeletePost(@cp.PostId)"> <i class="fa fa-trash-o"></i> </button></li>
+                        }
+                    }
+                }
+                <li><button class="btn btn-default" title="Report Post" onclick="window.location.href='/User/FlagPost?key=@cp.PostId&Id=@cp.UserCode'"><i class="fa fa-flag-o"></i> </button>  </li>
+            </ul>
+        </div>
+
+        <div style="display:none; margin-top:10px;" id="@cp.PostId" class="publishComment">
+            @foreach (var cmt in CommentList.Where(l => l.PostId == cp.PostId))
+            {
+                <div class="media" style="align-content:center">
+                    <ul>
+                        <div class="media-left media-top">
+                            <img src="../images/avatar2.png" alt="" class="media-object img-circle" style="width:40px">
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">
+                                <a href="/User/UserProfile?Usercode=@cmt.UserCode">@cmt.CommentedByName</a>
+                                <small>@cmt.CommentedDate</small>
+                            </h4>
+                            <p>@cmt.Message</p>
+                        </div>
+                    </ul>
+                </div>
+            }
+
+            @using (Html.BeginForm("SaveComment", "User", FormMethod.Post))
+            {
+                <div class="input-group input-group-sm">
+                    <input type="hidden" name="PostId" id="@cp.PostId" value="@cp.PostId" />
+                    <input type="hidden" name="Identifier" value="POST" />
+                    <input type="text" name="txtcomment" id="txtcomment" class="form-control" placeholder="write a comment..." />
+                    <div class="input-group-btn"><button type="submit" id="postComment" class="btn btn-primary">Comment</button></div>
+                </div>
+            }
+        </div>
+        <!-- end action icon -->
+    </div>
+    <!-- end grey border -->
+                    }
+
+
+<script type="text/javascript">
+    function showhide(id) {
+        var e = document.getElementById(id);
+        e.style.display = (e.style.display == 'block') ? 'none' : 'block';
+    }
+
+    function DeletePost(key) {
+        var Identifier = "POST";
+        $.confirm({
+            title: '',
+            type: 'red',
+            content: '<p style="font-style:italic;">Are you sure, want to Delete post ?</p>',
+            buttons: {
+                confirm: function () {
+                    $.ajax({
+                        url: "/User/DeletePost",
+                        method: 'post',
+                        dataType: 'json',
+                        data: { keyId: key, Identifier: Identifier },
+                        success: function (data) {
+                            location.reload();
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            window.location.href = "/Home/Error";
+                        }
+                    });
+                },
+                cancel: function () {
+                }
+            }
+        });
+    }
+
+    $('#txtPost').keypress(function () {
+        var maxLength = $(this).val().length;
+        if (maxLength > 1000) {
+            alert('You cannot enter more than 1000 chars');
+            return false;
+        }
+    });
+
+</script>
+
+
+

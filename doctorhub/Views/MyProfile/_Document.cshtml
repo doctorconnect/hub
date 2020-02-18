@@ -1,47 +1,282 @@
-﻿@model doctorhubBusinessEntities.Blog
+﻿@using doctorhubDataAccess
+@model doctorhubBusinessEntities.UploadDocument
+@{
+    List<doctorhubBusinessEntities.posts> CommentList = new doctorhubDataAccess.DirectoryDataAccess().GetCommentListOnPost("DOC");
+    List<doctorhubBusinessEntities.posts> LikeList = new doctorhubDataAccess.DirectoryDataAccess().GetLikeCount("DOC");
+    int RoleId = Convert.ToInt32(HttpContext.Current.Session["RoleId"]);
+}
+<div align="right"><a href="@Url.Action("KnowledgeTree", "KnowledgeTree")" class="btn btn-group-vertical btn-sm">Knowledge Tree</a></div>
+@if (RoleId != Convert.ToInt32(RoleType.User))
+{
+    <div class="grey-border">
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
-    <style type="text/css">
-        body {
-            font-family: Arial;
-            font-size: 10pt;
-        }
-
-        .error {
-            color: red;
-        }
-    </style>
-</head>
-<body>
-    @using (Html.BeginForm("BlogPost", "Home", FormMethod.Post))
-    {
-        <div class="form form-vertical usersection-div">
-            <div class="row">
-                <div class="col-sm-3">
-                    <div class="form-group">
-                        <label for="Title">Enter Blog Title</label>
-                        @Html.TextBoxFor(model => model.Title, new { htmlAttributes = new { id = "txttitle" } })
-                    </div>
+        <div class="textarea-post">
+            <div>
+                <label> Title <b class="text-danger">*</b></label>
+                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control", name = "title", id = "txtTitle", @placeholder = "Please Enter Title .." } })
+                <small id="errorTitleId" style="display: none; color: red">Please Enter Title </small>
+            </div><br />
+            <div>
+                <label> Category <b class="text-danger">*</b></label>
+                @Html.DropDownListFor(model => model.Category, (IEnumerable<SelectListItem>)ViewBag.DocList, "-Select File Category-", new { @class = "form-control  ddlValidation", id = "ddlCAT" })
+                <small id="errorCategoryId" style="display: none; color: red">Please Select Category </small>
+            </div>
+            <br />
+            <div>
+                <label> Relevant Tags <b class="text-danger">*</b></label>
+                @Html.EditorFor(model => model.Message, new { htmlAttributes = new { @class = "form-control", name = "message", id = "filemessage", @placeholder = "Add Relevant Tags... .." } })
+                <small id="errorTagsId" style="display: none; color: red">Please Enter Relevant Tags.</small>
+            </div>
+            <br />
+            <div style="position:relative;">
+                <a class='btn btn-primary' href='javascript:;'>
+                    Choose File <span class="glyphicon glyphicon-upload"></span>
+                    <input type="file" name="fileUpload" class="clsfileUpload" id="DocUpload" style='position:absolute;z-index:2;top:0;left:0;filter: alpha(opacity=0);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";opacity:0;background-color:transparent;color:transparent;' size="40" onchange='$("#upload-file-info").html($(this).val());'>
+                </a>
+                <span class='label label-info' id="upload-file-info"></span>
+                <div class="col-sm-12">
+                    <span id="errorBannerSpan" style="display: none; color: red">Please Select Document .</span>
+                    <span id="errorBannerLength" style="display: none; color: red">File size should not be more than 5 MB.</span>
+                    <span id="errorBannerExtension" style="display: none; color: red">Please upload only ['jpeg', 'jpg', 'png', 'doc', 'docx', 'xls', 'xlsx', 'pdf'] extension image.</span>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.Message)
-                        @Html.TextAreaFor(model => model.Message, new { @class = "form-group" })
-                        @Html.ValidationMessageFor(model => model.Message)
-                    </div>
+                <div class="col-sm-6 post-btn text-right">
+                    <button type="submit" name="submit" class="btn btn-success btn-sm btnSubmit" disabled id="btnSave">Upload</button>
                 </div>
+            </div>
+
+        </div>
+        <!-- end textarea post -->
+    </div>
+}
+@if (ViewBag.UpladDocBlogList_detail != null)
+{
+    foreach (var item in (ViewBag.UpladDocBlogList_detail as ICollection<doctorhubBusinessEntities.UploadDocument>).Where(m => m.Status == 1))
+    {
+        <div class="grey-border">
+            <div class="media">
+                <div class="media-body">
+                    <div class='row'>
+                        <div class='col-sm-6'>
+                            <h4 class="media-heading" style="color:coral">
+                                @item.Title
+                            </h4>
+                        </div>
+                        <div class='col-sm-6 text-right'><button class="btn btn-success" onclick="window.location.href='/Admin/DownLoadDoc?key= @item.ID'"> <i class='fa fa-download'></i> Download </button></div>
+                    </div>
+                    @*<h4 class="media-heading" style="color:coral">  @item.Title  </h4>*@
+                    <hr />
+                    <h4 class="media-heading"> Category:  @item.Category </h4>
+                    @*<div><button class="btn btn-success" onclick="window.location.href='/Admin/DownLoadDoc?key= @item.ID'"> <i class="fa fa-download"></i> </button></div>*@
+
+                    <h4 class="media-heading" align="right">
+                        <a href="/User/UserProfile?Usercode=@item.UserCode"> @item.UploadByName</a>
+                        <time class="timeago"><small>@item.UploadDate</small></time>
+                    </h4>
+                </div>
+            </div>
+            @if (CommentList.Where(l => l.PostId == item.ID).Count() > 0)
+            {
+                <hr />
+            }
+            <div class="actions-icon">
+                <ul>
+                    <li> <button class="btn btn-default" title="Like Document" id="@item.ID&Identifier=DOC" onclick="LoadDocLike(this);"> <i class="fa fa-thumbs-o-up"></i> </button> @LikeList.Where(l => l.PostId == item.ID).Count()</li>
+                    <li><button class="btn btn-default" title="Comment on  Document" onclick="showhideDoc(@item.ID);"> <i class="fa fa-commenting"></i> </button>  @CommentList.Where(l => l.PostId == item.ID).Count()</li>
+                    @*     <li><button class="btn btn-default" title="Download Document" onclick="window.location.href='/Admin/DownLoadDoc?key=@item.ID'"> <i class="fa fa-download"></i> </button></li>*@
+                    @if (RoleId == Convert.ToInt32(RoleType.Admin))
+                    {
+                        <li><button class="btn btn-default" title="Delete  Document" onclick="DeleteDoc(@item.ID)"> <i class="fa fa-trash-o"></i> </button></li>
+                            @*<li><button class="btn btn-default" title="Delete Document" onclick="window.location.href='/Admin/DeletePost?key=@item.ID&Identifier=DOC'"> <i class="fa fa-trash-o"></i> </button></li>*@
+                    }
+                </ul>
+            </div>
+            <div style="display:none;margin-top:10px;" id="D_@item.ID" class="publishComment">
+                @foreach (var cmt in CommentList.Where(l => l.PostId == item.ID))
+                {
+                    <div class="media" style="align-content:center">
+                        <ul>
+                            <div class="media-left media-top">
+                                <img src="../images/avatar2.png" alt="" class="media-object img-circle" style="width:40px">
+                            </div>
+                            <div class="media-body">
+                                <h4 class="media-heading">
+                                    @cmt.CommentedByName
+                                    <small>@cmt.CommentedDate</small>
+                                </h4>
+                                <p>@cmt.Message</p>
+                            </div>
+                        </ul>
+                    </div>
+                }
+                <hr />
+
+                <div class="input-group input-group-sm " id="@item.ID">
+                    <input type="hidden" class="PostId" value="@item.ID" />
+                    <input type="text" name="txtvale" id="txt_@item.ID" class="form-control txtcomment" placeholder="write a comment..." />
+                    <div class="input-group-btn"><button id="@item.ID" onclick="PostComment(this);" class="btn btn-primary postComment">Comment</button></div>
+                </div>
+
             </div>
         </div>
-        <input type="submit" value="Submit" />
-        <br />
-        @*<span>@Html.Raw(Model.Title)</span>*@
     }
-</body>
-</html>
+}
 
+<script src="~/CustomScripts/DocumentUpload.js"></script>
+<script type="text/javascript">
+	    function showhideDoc(id) {
+	        var e = document.getElementById('D_' + id);
+	        e.style.display = (e.style.display == 'block') ? 'none' : 'block';
+	    }
+
+	    function LoadDocLike(Id) {
+	        $.ajax
+	            ({
+	                url: "Admin/PostLikes?key=" + Id.id,
+	                contentType: "application/html; charset=utf-8",
+	                type: "POST",
+	                datatype: "html",
+	                success: function (t) {
+	                    $("#dvHomeDocumentBind").html(t)
+	                },
+	                error: function () {
+	                    $("#dvHomeDocumentBind").html("Document Not Found");
+	                    window.location.href = "/Home/Error";
+	                }
+	            });
+	    }
+
+	    function PostComment(Pid) {
+	        var controlName = Pid.id;
+	        var Comment = $("#txt_" + controlName + "").val();
+	        if (Comment != null) {
+	            $.ajax({
+	                type: "POST",
+	                url: "/Home/SaveComment?Identifier=DOC&txtcomment=" + Comment + "&PostId=" + Pid.id,
+	                contentType: "application/html; charset=utf-8",
+	                datatype: "html",
+	                success: function (t) {
+	                    $("#dvHomeDocumentBind").html(t)
+	                },
+	                error: function () {
+	                    $("#dvHomeDocumentBind").html("Document Not Found");
+	                    window.location.href = "/Home/Error";
+	                }
+	            });
+	        }
+	    }
+
+	    function DeleteDoc(key) {
+	        $.confirm({
+	            title: '',
+	            type: 'red',
+	            content: '<p style="font-style:italic;">Are you sure, want to Delete document ?</p>',
+	            buttons: {
+	                confirm: function () {
+	                    $.ajax({
+	                        url: "/Admin/DeletePost?keyId=" + key + "&Identifier=DOC",
+	                        method: 'post',
+	                        datatype: "html",
+	                        success: function (t) {
+	                            $("#dvHomeDocumentBind").html(t)
+	                        },
+	                        error: function () {
+	                            $("#dvHomeDocumentBind").html("Document Not Found");
+	                            window.location.href = "/Home/Error";
+	                        }
+	                    });
+	                },
+	                cancel: function () {
+	                }
+	            }
+	        });
+	    }
+
+	    $('.clsfileUpload').bind('change', function () {
+	        $('#errorBannerLength').hide();
+	        var fileExt = $('.clsfileUpload').val().split('.').pop().toLowerCase();
+	        if ($.inArray(fileExt, ['jpeg', 'jpg', 'png', 'doc', 'docx', 'xls', 'xlsx', 'pdf']) === -1) {
+	            $('#errorBannerExtension').show();
+	            $('#errorBannerSpan').hide();
+	            $('.btnSubmit').prop("disabled", true);
+	            return false;
+	        }
+	        else {
+	            $('.btnSubmit').prop("disabled", false);
+	            $('#errorBannerExtension').hide();
+	        }
+
+	        if (this.files[0].size / (1024 * 1024) > 5) {
+	            $('#errorBannerLength').show();
+	            $('#errorBannerSpan').hide();
+	            $('.btnSubmit').prop("disabled", true);
+	            return false;
+	        }
+	        else {
+	            $('.btnSubmit').prop("disabled", false);
+	        }
+	    });
+
+	    $(document).ready(function () {
+	        $('.btnSubmit').click(function () {
+	            // Checking whether FormData is available in browser
+	            var Title = $('#txtTitle').val().trim().length;
+	            var filemessage = $('#filemessage').val().trim().length;
+	            var UploadF = $("#DocUpload").get(0);
+	            var CatId = parseInt($('#ddlCAT').val()) || 0;
+	            if (!Title > 0) { $('#errorTitleId').show(); return false;}
+	            else { $('#errorTitleId').hide(); }
+	            if (CatId == 0) { $('#errorCategoryId').show(); return false; }
+	            else { $('#errorCategoryId').hide(); }
+	            if (!filemessage > 0) { $('#errorTagsId').show(); return false; }
+	            else { $('#errorTagsId').hide(); }
+	            if (UploadF.files[0] == null) { $('#errorBannerSpan').show(); return false; }
+	            else { $('#errorBannerSpan').hide(); }
+
+	            if (window.FormData !== undefined) {
+	                var fileUpload = $("#DocUpload").get(0);
+	              //  var files = fileUpload.files[0];
+	                // Create FormData object
+	                var fileData = new FormData();
+	                fileData.append("Title", $("#txtTitle").val());
+	                fileData.append("Category", $("#ddlCAT").val());
+	                fileData.append("Message", $("#filemessage").val());
+	                // Looping over all files and add it to FormData object
+	                fileData.append("fileUpload", fileUpload.files[0]);
+
+	                $.ajax({
+	                    url: "/Admin/UploadDoc",
+	                    type: "POST",
+	                    contentType: false, // Not to set any content header
+	                    processData: false, // Not to process data
+	                    data: fileData,
+	                    success: function (result) {
+	                        $("#dvHomeDocumentBind").html(result)
+	                       // alert("Your File Upload successful. You’ll receive a confirmation email once the Approval has been granted By Admin.");
+	                        //$('#txtTitle').val('');
+	                        //$('#ddlCAT').val('');
+	                        //$('#filemessage').val('');
+	                    },
+	                    error: function (err) {
+	                        alert(err.statusText);
+	                    }
+	                });
+	            } else {
+	                alert("FormData is not supported.");
+	            }
+	        });
+
+	        var success = '@TempData["success"]';
+	        if (success != null && success != undefined && success != '')
+	            toasterSuccessMessage(success);
+	        function toasterSuccessMessage(message) {
+	            new PNotify({
+	                title: 'Success',
+	                text: message,
+	                type: 'success',
+	                styling: 'bootstrap3'
+	            });
+	        }
+	    });
+</script>

@@ -11,7 +11,7 @@
  * Project: https://github.com/CodeSeven/toastr
  */
 /* global define */
-(function (define) {
+; (function (define) {
     define(['jquery'], function ($) {
         return (function () {
             var $container;
@@ -33,7 +33,7 @@
                 options: {},
                 subscribe: subscribe,
                 success: success,
-                version: '2.1.4',
+                version: '2.1.1',
                 warning: warning
             };
 
@@ -144,7 +144,9 @@
             function createContainer(options) {
                 $container = $('<div/>')
                     .attr('id', options.containerId)
-                    .addClass(options.positionClass);
+                    .addClass(options.positionClass)
+                    .attr('aria-live', 'polite')
+                    .attr('role', 'alert');
 
                 $container.appendTo($(options.target));
                 return $container;
@@ -165,10 +167,6 @@
                     hideDuration: 1000,
                     hideEasing: 'swing',
                     onHidden: undefined,
-                    closeMethod: false,
-                    closeDuration: false,
-                    closeEasing: false,
-                    closeOnHover: true,
 
                     extendedTimeOut: 1000,
                     iconClasses: {
@@ -182,15 +180,11 @@
                     timeOut: 5000, // Set timeOut and extendedTimeOut to 0 to make it sticky
                     titleClass: 'toast-title',
                     messageClass: 'toast-message',
-                    escapeHtml: false,
                     target: 'body',
                     closeHtml: '<button type="button">&times;</button>',
-                    closeClass: 'toast-close-button',
                     newestOnTop: true,
                     preventDuplicates: false,
-                    progressBar: false,
-                    progressClass: 'toast-progress',
-                    rtl: false
+                    progressBar: false
                 };
             }
 
@@ -247,48 +241,17 @@
 
                 return $toastElement;
 
-                function escapeHtml(source) {
-                    if (source == null) {
-                        source = '';
-                    }
-
-                    return source
-                        .replace(/&/g, '&amp;')
-                        .replace(/"/g, '&quot;')
-                        .replace(/'/g, '&#39;')
-                        .replace(/</g, '&lt;')
-                        .replace(/>/g, '&gt;');
-                }
-
                 function personalizeToast() {
                     setIcon();
                     setTitle();
                     setMessage();
                     setCloseButton();
                     setProgressBar();
-                    setRTL();
                     setSequence();
-                    setAria();
-                }
-
-                function setAria() {
-                    var ariaValue = '';
-                    switch (map.iconClass) {
-                        case 'toast-success':
-                        case 'toast-info':
-                            ariaValue =  'polite';
-                            break;
-                        default:
-                            ariaValue = 'assertive';
-                    }
-                    $toastElement.attr('aria-live', ariaValue);
                 }
 
                 function handleEvents() {
-                    if (options.closeOnHover) {
-                        $toastElement.hover(stickAround, delayedHideToast);
-                    }
-
+                    $toastElement.hover(stickAround, delayedHideToast);
                     if (!options.onclick && options.tapToDismiss) {
                         $toastElement.click(hideToast);
                     }
@@ -300,18 +263,13 @@
                             } else if (event.cancelBubble !== undefined && event.cancelBubble !== true) {
                                 event.cancelBubble = true;
                             }
-
-                            if (options.onCloseClick) {
-                                options.onCloseClick(event);
-                            }
-
                             hideToast(true);
                         });
                     }
 
                     if (options.onclick) {
-                        $toastElement.click(function (event) {
-                            options.onclick(event);
+                        $toastElement.click(function () {
+                            options.onclick();
                             hideToast();
                         });
                     }
@@ -350,43 +308,29 @@
 
                 function setTitle() {
                     if (map.title) {
-                        var suffix = map.title;
-                        if (options.escapeHtml) {
-                            suffix = escapeHtml(map.title);
-                        }
-                        $titleElement.append(suffix).addClass(options.titleClass);
+                        $titleElement.append(map.title).addClass(options.titleClass);
                         $toastElement.append($titleElement);
                     }
                 }
 
                 function setMessage() {
                     if (map.message) {
-                        var suffix = map.message;
-                        if (options.escapeHtml) {
-                            suffix = escapeHtml(map.message);
-                        }
-                        $messageElement.append(suffix).addClass(options.messageClass);
+                        $messageElement.append(map.message).addClass(options.messageClass);
                         $toastElement.append($messageElement);
                     }
                 }
 
                 function setCloseButton() {
                     if (options.closeButton) {
-                        $closeElement.addClass(options.closeClass).attr('role', 'button');
+                        $closeElement.addClass('toast-close-button').attr('role', 'button');
                         $toastElement.prepend($closeElement);
                     }
                 }
 
                 function setProgressBar() {
                     if (options.progressBar) {
-                        $progressElement.addClass(options.progressClass);
+                        $progressElement.addClass('toast-progress');
                         $toastElement.prepend($progressElement);
-                    }
-                }
-
-                function setRTL() {
-                    if (options.rtl) {
-                        $toastElement.addClass('rtl');
                     }
                 }
 
@@ -402,20 +346,15 @@
                 }
 
                 function hideToast(override) {
-                    var method = override && options.closeMethod !== false ? options.closeMethod : options.hideMethod;
-                    var duration = override && options.closeDuration !== false ?
-                        options.closeDuration : options.hideDuration;
-                    var easing = override && options.closeEasing !== false ? options.closeEasing : options.hideEasing;
                     if ($(':focus', $toastElement).length && !override) {
                         return;
                     }
                     clearTimeout(progressBar.intervalId);
-                    return $toastElement[method]({
-                        duration: duration,
-                        easing: easing,
+                    return $toastElement[options.hideMethod]({
+                        duration: options.hideDuration,
+                        easing: options.hideEasing,
                         complete: function () {
                             removeToast($toastElement);
-                            clearTimeout(intervalId);
                             if (options.onHidden && response.state !== 'hidden') {
                                 options.onHidden();
                             }
@@ -471,6 +410,6 @@
     if (typeof module !== 'undefined' && module.exports) { //Node
         module.exports = factory(require('jquery'));
     } else {
-        window.toastr = factory(window.jQuery);
+        window['toastr'] = factory(window['jQuery']);
     }
 }));

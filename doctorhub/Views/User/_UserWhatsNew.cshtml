@@ -1,0 +1,27 @@
+﻿
+@{
+    List<doctorhubBusinessEntities.Blog> BlogList = new doctorhubDataAccess.DirectoryDataAccess().GetDocblogList();
+}
+@foreach (var item in BlogList)
+{
+    <div class="grey-border">
+        <div class="media">
+            <div class="media-body">
+                @if (item.Type.Contains("DOC"))
+                {<h4 class="media-heading">
+                    File Name :  @item.Title
+                </h4>
+                    <p>File Description : @Html.Raw(@item.Message)</p>
+                    <button class="btn btn-success" onclick="window.location.href='/Admin/DownLoadDoc?key= @item.Id'"> <i class="fa fa-download"></i> </button>
+                }
+                else
+                {
+                    <h4 class="media-heading">
+                        Blog Title :  @item.Title
+                    </h4>
+                    <p>Blog Body @Html.Raw(@item.Message)</p>
+                }
+            </div>
+        </div>
+    </div>
+}

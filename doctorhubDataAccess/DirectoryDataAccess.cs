@@ -12,6 +12,8 @@ using System.Web;
 using System.IO;
 using System.Security.Cryptography;
 using doctorhubBusinessEntities.viewModels;
+using System.Net;
+using System.Net.Mail;
 
 namespace doctorhubDataAccess
 {
@@ -766,6 +768,7 @@ namespace doctorhubDataAccess
                     if (item.InteractionType == "UploadDoc")
                     {
                         m_Database.AddInParameter(dbCommand, "@Points", DbType.String, item.Point);
+                        break;
                     }
                 }
                 success = m_Database.ExecuteNonQuery(dbCommand);
@@ -1832,21 +1835,21 @@ namespace doctorhubDataAccess
             return objPost;
         }
 
-        //public List<KnowledgeTreemModel> GetKnowledgeTree()
-        //{
-        //    List<KnowledgeTreemModel> objKT = new List<KnowledgeTreemModel>();
-        //    using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETKTLIST))
-        //    {
-        //        using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
-        //        {
-        //            while (dataReader.Read())
-        //            {
-        //                objKT.Add(GetKnowledgeTreeFromDataReader(dataReader));
-        //            }
-        //        }
-        //    }
-        //    return objKT;
-        //}
+        public List<KnowledgeTreemModel> GetKnowledgeTree()
+        {
+            List<KnowledgeTreemModel> objKT = new List<KnowledgeTreemModel>();
+            using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETKTLIST))
+            {
+                using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
+                {
+                    while (dataReader.Read())
+                    {
+                        objKT.Add(GetKnowledgeTreeFromDataReader(dataReader));
+                    }
+                }
+            }
+            return objKT;
+        }
 
         public List<Blog> GetpopularBlog()
         {
@@ -1905,68 +1908,68 @@ namespace doctorhubDataAccess
             return ObjQuestionVM;
         }
 
-        //public int SubmitQuiz(QuizVM model)
-        //{
-        //    int success = 0;
-        //    using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCSUBMITQUIZ))
-        //    {
-        //        m_Database.AddInParameter(dbCommand, "@QuizID", DbType.String, model.QuizID);
-        //        m_Database.AddInParameter(dbCommand, "@QuizName", DbType.String, model.QuizName);
-        //        m_Database.AddInParameter(dbCommand, "@IsActive", DbType.String, model.IsActive);
-        //        m_Database.AddInParameter(dbCommand, "@FromDate", DbType.DateTime, model.FromDate);
-        //        m_Database.AddInParameter(dbCommand, "@ToDate", DbType.DateTime, model.ToDate);
-        //        m_Database.AddInParameter(dbCommand, "@CapId", DbType.String, HttpContext.Current.Session["CapabilitiesId"].ToString());
-        //        m_Database.AddInParameter(dbCommand, "@CreatedBy", DbType.String, HttpContext.Current.Session["UserNTID"].ToString());
-        //        m_Database.AddInParameter(dbCommand, "@CreatedOn", DbType.DateTime, DateTime.Now);
-        //        m_Database.AddInParameter(dbCommand, "@ModifiedBy", DbType.String, HttpContext.Current.Session["UserNTID"].ToString());
-        //        m_Database.AddInParameter(dbCommand, "@ModifiedOn", DbType.DateTime, DateTime.Now);
-        //        foreach (var item in GetPointList())
-        //        {
-        //            if (item.InteractionType == "CreatePKT")
-        //            {
-        //                m_Database.AddInParameter(dbCommand, "@Points", DbType.String, item.Point);
-        //            }
-        //        }
-        //        success = m_Database.ExecuteNonQuery(dbCommand);
-        //    }
-        //    return success;
-        //}
+        public int SubmitQuiz(QuizVM model)
+        {
+            int success = 0;
+            using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCSUBMITQUIZ))
+            {
+                m_Database.AddInParameter(dbCommand, "@QuizID", DbType.String, model.QuizID);
+                m_Database.AddInParameter(dbCommand, "@QuizName", DbType.String, model.QuizName);
+                m_Database.AddInParameter(dbCommand, "@IsActive", DbType.String, model.IsActive);
+                m_Database.AddInParameter(dbCommand, "@FromDate", DbType.DateTime, model.FromDate);
+                m_Database.AddInParameter(dbCommand, "@ToDate", DbType.DateTime, model.ToDate);
+                m_Database.AddInParameter(dbCommand, "@CapId", DbType.String, HttpContext.Current.Session["CapabilitiesId"].ToString());
+                m_Database.AddInParameter(dbCommand, "@CreatedBy", DbType.String, HttpContext.Current.Session["UserNTID"].ToString());
+                m_Database.AddInParameter(dbCommand, "@CreatedOn", DbType.DateTime, DateTime.Now);
+                m_Database.AddInParameter(dbCommand, "@ModifiedBy", DbType.String, HttpContext.Current.Session["UserNTID"].ToString());
+                m_Database.AddInParameter(dbCommand, "@ModifiedOn", DbType.DateTime, DateTime.Now);
+                foreach (var item in GetPointList())
+                {
+                    if (item.InteractionType == "CreatePKT")
+                    {
+                        m_Database.AddInParameter(dbCommand, "@Points", DbType.String, item.Point);
+                    }
+                }
+                success = m_Database.ExecuteNonQuery(dbCommand);
+            }
+            return success;
+        }
 
-        //public int SubmitQuestion(QuestionVM model)
-        //{
-        //    int success = 0;
-        //    using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCSUBMITQUESTION))
-        //    {
-        //        m_Database.AddInParameter(dbCommand, "@QuizID", DbType.String, model.QuizID);
-        //        m_Database.AddInParameter(dbCommand, "@QuestionID", DbType.String, model.QuestionID);
-        //        m_Database.AddInParameter(dbCommand, "@QuestionText", DbType.String, model.QuestionText);
-        //        m_Database.AddInParameter(dbCommand, "@ChoiceText1", DbType.String, model.ChoiceText1);
-        //        m_Database.AddInParameter(dbCommand, "@ChoiceText2", DbType.String, model.ChoiceText2);
-        //        if (model.ChoiceText3 != null)
-        //        {
-        //            m_Database.AddInParameter(dbCommand, "@ChoiceText3", DbType.String, model.ChoiceText3);
-        //        }
-        //        else
-        //        {
-        //            m_Database.AddInParameter(dbCommand, "@ChoiceText3", DbType.String, "!X");
-        //        }
-        //        if (model.ChoiceText4 != null)
-        //        {
-        //            m_Database.AddInParameter(dbCommand, "@ChoiceText4", DbType.String, model.ChoiceText4);
-        //        }
-        //        else
-        //        {
-        //            m_Database.AddInParameter(dbCommand, "@ChoiceText4", DbType.String, "!X");
-        //        }
-        //        m_Database.AddInParameter(dbCommand, "@ChoiceID1", DbType.String, model.ChoiceID1);
-        //        m_Database.AddInParameter(dbCommand, "@ChoiceID2", DbType.String, model.ChoiceID2);
-        //        m_Database.AddInParameter(dbCommand, "@ChoiceID3", DbType.String, model.ChoiceID3);
-        //        m_Database.AddInParameter(dbCommand, "@ChoiceID4", DbType.String, model.ChoiceID4);
-        //        m_Database.AddInParameter(dbCommand, "@AnswerText", DbType.String, model.AnswerText);
-        //        success = m_Database.ExecuteNonQuery(dbCommand);
-        //    }
-        //    return success;
-        //}
+        public int SubmitQuestion(QuestionVM model)
+        {
+            int success = 0;
+            using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCSUBMITQUESTION))
+            {
+                m_Database.AddInParameter(dbCommand, "@QuizID", DbType.String, model.QuizID);
+                m_Database.AddInParameter(dbCommand, "@QuestionID", DbType.String, model.QuestionID);
+                m_Database.AddInParameter(dbCommand, "@QuestionText", DbType.String, model.QuestionText);
+                m_Database.AddInParameter(dbCommand, "@ChoiceText1", DbType.String, model.ChoiceText1);
+                m_Database.AddInParameter(dbCommand, "@ChoiceText2", DbType.String, model.ChoiceText2);
+                if (model.ChoiceText3 != null)
+                {
+                    m_Database.AddInParameter(dbCommand, "@ChoiceText3", DbType.String, model.ChoiceText3);
+                }
+                else
+                {
+                    m_Database.AddInParameter(dbCommand, "@ChoiceText3", DbType.String, "!X");
+                }
+                if (model.ChoiceText4 != null)
+                {
+                    m_Database.AddInParameter(dbCommand, "@ChoiceText4", DbType.String, model.ChoiceText4);
+                }
+                else
+                {
+                    m_Database.AddInParameter(dbCommand, "@ChoiceText4", DbType.String, "!X");
+                }
+                m_Database.AddInParameter(dbCommand, "@ChoiceID1", DbType.String, model.ChoiceID1);
+                m_Database.AddInParameter(dbCommand, "@ChoiceID2", DbType.String, model.ChoiceID2);
+                m_Database.AddInParameter(dbCommand, "@ChoiceID3", DbType.String, model.ChoiceID3);
+                m_Database.AddInParameter(dbCommand, "@ChoiceID4", DbType.String, model.ChoiceID4);
+                m_Database.AddInParameter(dbCommand, "@AnswerText", DbType.String, model.AnswerText);
+                success = m_Database.ExecuteNonQuery(dbCommand);
+            }
+            return success;
+        }
 
         public int SubmitQuesAnswer(int AnswerID, int QuestionID, string AnswerText)
         {
@@ -1981,31 +1984,31 @@ namespace doctorhubDataAccess
             return success;
         }
 
-        //public int SubmitAnswer(QuizAnswersVM model)
-        //{
-        //    int success = 0;
-        //    using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCSUBMITANSWER))
-        //    {
-        //        m_Database.AddInParameter(dbCommand, "@AnswerID", DbType.String, model.AnswerID);
-        //        m_Database.AddInParameter(dbCommand, "@QuestionID", DbType.String, model.QuestionID);
-        //        m_Database.AddInParameter(dbCommand, "@AnswerText", DbType.String, model.AnswerText);
-        //        success = m_Database.ExecuteNonQuery(dbCommand);
-        //    }
-        //    return success;
-        //}
+        public int SubmitAnswer(QuizAnswersVM model)
+        {
+            int success = 0;
+            using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCSUBMITANSWER))
+            {
+                m_Database.AddInParameter(dbCommand, "@AnswerID", DbType.String, model.AnswerID);
+                m_Database.AddInParameter(dbCommand, "@QuestionID", DbType.String, model.QuestionID);
+                m_Database.AddInParameter(dbCommand, "@AnswerText", DbType.String, model.AnswerText);
+                success = m_Database.ExecuteNonQuery(dbCommand);
+            }
+            return success;
+        }
 
-        //public int SubmitChoice(ChoiceVM model)
-        //{
-        //    int success = 0;
-        //    using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCSUBMITCHOICES))
-        //    {
-        //        m_Database.AddInParameter(dbCommand, "@ChoiceID", DbType.String, model.ChoiceID);
-        //        m_Database.AddInParameter(dbCommand, "@QuestionID", DbType.String, model.QuestionID);
-        //        m_Database.AddInParameter(dbCommand, "@ChoiceText", DbType.String, model.ChoiceText);
-        //        success = m_Database.ExecuteNonQuery(dbCommand);
-        //    }
-        //    return success;
-        //}
+        public int SubmitChoice(ChoiceVM model)
+        {
+            int success = 0;
+            using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCSUBMITCHOICES))
+            {
+                m_Database.AddInParameter(dbCommand, "@ChoiceID", DbType.String, model.ChoiceID);
+                m_Database.AddInParameter(dbCommand, "@QuestionID", DbType.String, model.QuestionID);
+                m_Database.AddInParameter(dbCommand, "@ChoiceText", DbType.String, model.ChoiceText);
+                success = m_Database.ExecuteNonQuery(dbCommand);
+            }
+            return success;
+        }
 
         public int SubmitBadge(BadgeModel Badge, byte[] imageData)
         {
@@ -2048,22 +2051,22 @@ namespace doctorhubDataAccess
             return objBadge;
         }
 
-        //public List<QuizAnswersVM> GetQuizAnswer()
-        //{
-        //    List<QuizAnswersVM> ObjAnswerVM = new List<QuizAnswersVM>();
-        //    using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETQUIZANSWER))
-        //    {
+        public List<QuizAnswersVM> GetQuizAnswer()
+        {
+            List<QuizAnswersVM> ObjAnswerVM = new List<QuizAnswersVM>();
+            using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETQUIZANSWER))
+            {
 
-        //        using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
-        //        {
-        //            while (dataReader.Read())
-        //            {
-        //                ObjAnswerVM.Add(GetQuizAnswerFromDataReader(dataReader));
-        //            }
-        //        }
-        //    }
-        //    return ObjAnswerVM;
-        //}
+                using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
+                {
+                    while (dataReader.Read())
+                    {
+                        ObjAnswerVM.Add(GetQuizAnswerFromDataReader(dataReader));
+                    }
+                }
+            }
+            return ObjAnswerVM;
+        }
 
         public List<Followers> GetListFollower(string id)
         {
@@ -2298,26 +2301,26 @@ namespace doctorhubDataAccess
             return cipherText;
         }
 
-        //public List<AssessmentAttend> GetAssessmentResult()
-        //{
-        //    List<AssessmentAttend> ObjAssessmentResult = new List<AssessmentAttend>();
-        //    using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETASSESSMENTRESULT))
+        public List<AssessmentAttend> GetAssessmentResult()
+        {
+            List<AssessmentAttend> ObjAssessmentResult = new List<AssessmentAttend>();
+            using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETASSESSMENTRESULT))
 
-        //    {
-        //        m_Database.AddInParameter(dbCommand, "@CapabilitiesId", DbType.String, HttpContext.Current.Session["CapabilitiesId"].ToString());
-        //        m_Database.AddInParameter(dbCommand, "@IsAdmin", DbType.Boolean, HttpContext.Current.Session["Adminstrator"].ToString());
+            {
+                m_Database.AddInParameter(dbCommand, "@CapabilitiesId", DbType.String, HttpContext.Current.Session["CapabilitiesId"].ToString());
+                m_Database.AddInParameter(dbCommand, "@IsAdmin", DbType.Boolean, HttpContext.Current.Session["Adminstrator"].ToString());
 
-        //        using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
-        //        {
-        //            while (dataReader.Read())
-        //            {
-        //                ObjAssessmentResult.Add(GetListAssessmentResultFromDataReader(dataReader));
-        //            }
-        //        }
-        //    }
+                using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
+                {
+                    while (dataReader.Read())
+                    {
+                        ObjAssessmentResult.Add(GetListAssessmentResultFromDataReader(dataReader));
+                    }
+                }
+            }
 
-        //    return ObjAssessmentResult;
-        //}
+            return ObjAssessmentResult;
+        }
 
         public bool SendEmail(UserRegistrationModel objUser, string EmailCode)
         {
@@ -2359,7 +2362,7 @@ namespace doctorhubDataAccess
             mailBody = mailBody.Replace("[ManageFeedback]", siteURL + "/Admin/ManageFeedBack");
             mailBody = mailBody.Replace("[ManageFlagPost]", siteURL + "/Admin/ApprovePost");
 
-            mailSent = true;//SendMail.SendEmail(mailTo, mailCC, mailSubject, mailBody);
+            mailSent = SendToEmail(mailTo, mailCC, mailSubject, mailBody);
             return mailSent;
         }
 
@@ -2389,7 +2392,7 @@ namespace doctorhubDataAccess
                 mailCC = mailCC.Replace("OtherAdmin/Facilitator", mailListCC);
             }
             mailBody = EmailBodyHTML.Replace("[CreatedBy]", Convert.ToString(HttpContext.Current.Session["UserLastName"] + ", " + HttpContext.Current.Session["UserFirstName"]));
-            mailSent = true;// SendMail.SendEmail(mailTo, mailCC, mailSubject, mailBody);
+            mailSent = SendToEmail(mailTo, mailCC, mailSubject, mailBody);
 
             return mailSent;
         }
@@ -2415,8 +2418,30 @@ namespace doctorhubDataAccess
             mailBody = mailBody.Replace("[Employee]", model.UserName);
             mailBody = mailBody.Replace("[TotalScore]", total + "%");
 
-            mailSent = true;//SendMail.SendEmail(mailTo, mailCC, mailSubject, mailBody);
+            mailSent = SendToEmail(mailTo, mailCC, mailSubject, mailBody);
             return mailSent;
+        }
+
+        public bool SendToEmail(string mailTo, string mailCC, string mailSubject, string  mailBody)
+        {
+            using (var message = new MailMessage("shiva.chauhan@gmail.com", "doctorhub4u@gmail.com"))
+            {
+                message.Subject = "Message Subject test";
+                message.Body = "Message body test at " + DateTime.Now;
+                //message.Subject = mailSubject;
+                //message.Body = mailBody;
+                using (SmtpClient client = new SmtpClient
+                {
+                    EnableSsl = true,
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    Credentials = new NetworkCredential("doctorhub4u@gmail.com", "hub@1234")
+                })
+                {
+                    client.Send(message);
+                }
+            }
+            return true;
         }
 
         public bool SendEmail(string UserEmail, string UserCode, string UserName, string EmailCode, String Bodytxt, int capid)
@@ -3000,21 +3025,21 @@ namespace doctorhubDataAccess
             return objBlog;
         }
 
-        //private KnowledgeTreemModel GetKnowledgeTreeFromDataReader(IDataReader datareader)
-        //{
-        //    KnowledgeTreemModel objKT = new KnowledgeTreemModel();
-        //    objKT.DOCMENTID = SafeTypeHandling.ConvertStringToInt32(datareader["DOCMENTID"]);
-        //    objKT.IMAGENAME = SafeTypeHandling.ConvertToString(datareader["IMAGENAME"]);
-        //    objKT.DOCUTYPE = SafeTypeHandling.ConvertToString(datareader["DOCUTYPE"]);
-        //    objKT.CATEGORYNAME = SafeTypeHandling.ConvertToString(datareader["CATEGORYNAME"]);
-        //    objKT.LOBName = SafeTypeHandling.ConvertToString(datareader["LOBName"]);
-        //    objKT.UserName = SafeTypeHandling.ConvertToString(datareader["UserName"]);
-        //    objKT.UserCode = SafeTypeHandling.ConvertToString(datareader["UserCode"]);
-        //    objKT.TITLE = SafeTypeHandling.ConvertToString(datareader["TITLE"]);
-        //    objKT.Tags = SafeTypeHandling.ConvertToString(datareader["Tag"]);
+        private KnowledgeTreemModel GetKnowledgeTreeFromDataReader(IDataReader datareader)
+        {
+            KnowledgeTreemModel objKT = new KnowledgeTreemModel();
+            objKT.DOCMENTID = SafeTypeHandling.ConvertStringToInt32(datareader["DOCMENTID"]);
+            objKT.IMAGENAME = SafeTypeHandling.ConvertToString(datareader["IMAGENAME"]);
+            objKT.DOCUTYPE = SafeTypeHandling.ConvertToString(datareader["DOCUTYPE"]);
+            objKT.CATEGORYNAME = SafeTypeHandling.ConvertToString(datareader["CATEGORYNAME"]);
+            objKT.LOBName = SafeTypeHandling.ConvertToString(datareader["LOBName"]);
+            objKT.UserName = SafeTypeHandling.ConvertToString(datareader["UserName"]);
+            objKT.UserCode = SafeTypeHandling.ConvertToString(datareader["UserCode"]);
+            objKT.TITLE = SafeTypeHandling.ConvertToString(datareader["TITLE"]);
+            objKT.Tags = SafeTypeHandling.ConvertToString(datareader["Tag"]);
 
-        //    return objKT;
-        //}
+            return objKT;
+        }
 
         private QuizVM GetQuizFromDataReader(IDataReader datareader)
         {
@@ -3058,16 +3083,16 @@ namespace doctorhubDataAccess
             return ObjChoiceVM;
         }
 
-        //private QuizAnswersVM GetQuizAnswerFromDataReader(IDataReader datareader)
-        //{
-        //    objQuizAnswers = new QuizAnswersVM();
-        //    objQuizAnswers.QuestionID = Convert.ToInt32(datareader["QuestionID"]);
-        //    objQuizAnswers.AnswerID = Convert.ToInt32(datareader["AnswerID"]);
-        //    objQuizAnswers.AnswerText = SafeTypeHandling.ConvertToString(datareader["AnswerText"]);
-        //    objQuizAnswers.QuestionText = SafeTypeHandling.ConvertToString(datareader["QuestionText"]);
+        private QuizAnswersVM GetQuizAnswerFromDataReader(IDataReader datareader)
+        {
+            objQuizAnswers = new QuizAnswersVM();
+            objQuizAnswers.QuestionID = Convert.ToInt32(datareader["QuestionID"]);
+            objQuizAnswers.AnswerID = Convert.ToInt32(datareader["AnswerID"]);
+            objQuizAnswers.AnswerText = SafeTypeHandling.ConvertToString(datareader["AnswerText"]);
+            objQuizAnswers.QuestionText = SafeTypeHandling.ConvertToString(datareader["QuestionText"]);
 
-        //    return objQuizAnswers;
-        //}
+            return objQuizAnswers;
+        }
 
         private BadgeModel GetListOfBadgeinFromDataReader(IDataReader datareader)
         {
@@ -3130,16 +3155,16 @@ namespace doctorhubDataAccess
             return objReport;
         }
 
-        //private AssessmentAttend GetListAssessmentResultFromDataReader(IDataReader datareader)
-        //{
-        //    AssessmentAttend objAssessmentResult = new AssessmentAttend();
-        //    objAssessmentResult.UserName = SafeTypeHandling.ConvertToString(datareader["UserName"]);
-        //    objAssessmentResult.QuizName = SafeTypeHandling.ConvertToString(datareader["QuizName"]);
-        //    objAssessmentResult.Marks = SafeTypeHandling.ConvertStringToInt32(datareader["Marks"]);
-        //    objAssessmentResult.status = SafeTypeHandling.ConvertToString(datareader["status"]);
+        private AssessmentAttend GetListAssessmentResultFromDataReader(IDataReader datareader)
+        {
+            AssessmentAttend objAssessmentResult = new AssessmentAttend();
+            objAssessmentResult.UserName = SafeTypeHandling.ConvertToString(datareader["UserName"]);
+            objAssessmentResult.QuizName = SafeTypeHandling.ConvertToString(datareader["QuizName"]);
+            objAssessmentResult.Marks = SafeTypeHandling.ConvertStringToInt32(datareader["Marks"]);
+            objAssessmentResult.status = SafeTypeHandling.ConvertToString(datareader["status"]);
 
-        //    return objAssessmentResult;
-        //}
+            return objAssessmentResult;
+        }
 
         #endregion
     }

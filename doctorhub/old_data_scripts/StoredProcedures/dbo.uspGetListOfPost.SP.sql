@@ -1,8 +1,0 @@
-USE [KMT]
-GO
-CREATE PROCEDURE [dbo].[uspGetListOfPost]
-AS
-BEGIN
-SELECT PostId,PostedBy FROM Posts
-END
-GO

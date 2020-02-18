@@ -1,0 +1,125 @@
+﻿@{
+    ViewBag.Title = "UserProfile";
+    int status = ((int)ViewBag.UserPhotoStatus);
+    string BLOG = ""; string POST = ""; string DOC = ""; string Wnew = "in active";
+}
+<div class="container">
+    @if (TempData["Success"] != null)
+    {
+        if (TempData["Success"].ToString() == "Comment Submit on POST successfully" || TempData["Success"].ToString() == "POST Like")
+        { POST = "in active"; Wnew = ""; }
+        else if (TempData["Success"].ToString() == "Comment Submit on BLOG successfully" || TempData["Success"].ToString() == "BLOG Like" || TempData["Success"].ToString() == "User Blog submitted successfully.")
+        { BLOG = "in active"; Wnew = ""; }
+        else if (TempData["Success"].ToString() == "Comment Submit on DOC successfully" || TempData["Success"].ToString() == "DOC Like")
+        { DOC = "in active"; Wnew = ""; }
+    }
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="grey-border">
+                <div class="profile-sidebar">
+                    <div class="profile-userpic text-center">
+                        @if (status == 1)
+                        {
+                            <img src="@ViewBag.UserPhoto" class="img-thumbnail img-circle" alt="" style="width:150px">
+                        }
+                        else
+                        {
+                            <img src="~/Images/avatar1.png" class="img-thumbnail img-circle" alt="" style="width:150px">
+                        }
+                    </div>
+                    <!-- end sidebar profile-userpic -->
+                    <div class="profile-usertitle">
+                        <div class="profile-usertitle-name">
+                            @ViewBag.UserName<br>
+                            @Convert.ToString(Session["Department"])
+                        </div>
+                        <div class="profile-usertitle-job">@ViewBag.LOBName</div>
+                    </div>
+                    <!-- end sidebar profile-usertitle -->
+                    <div class="profile-userbuttons">
+                        <div class="row">
+
+                            <div class="col-sm-6">
+                                @if (int.Parse(Convert.ToString(Session["status"])) > 0)
+                                {
+                                    <a href="@Url.Action("Following", "User",new {type = "UnFollow"})" class="btn btn-default btn-sm">UnFollow</a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("Following", "User",new {type = "Follow"})" class="btn btn-default btn-sm">Follow</a>
+                                }
+                            </div>
+                            <div>
+                                @Html.Partial("~/Views/User/_UserBadge.cshtml")
+                                @*<img src="~/Images/UserBadge/Member.png" alt="" style="width:30px;" />*@
+                                <!-- end badges sidebar -->
+                            </div>
+                            @*<div class="col-sm-6 text-center"><a href="#"><span class="glyphicon glyphicon-thumbs-up"></span></a></div>*@
+                        </div>
+                    </div>
+                    <!-- end sidebar profile-userbuttons -->
+
+                    @Html.Partial("~/Views/User/_Follow.cshtml")
+                    <!-- end sidebar profile-followers -->
+                    <hr>
+                    <div class="profile-text">
+                        <strong>About Me </strong><br>
+                        @ViewBag.AboutMe
+                    </div>
+                    <!-- end sidebar profile-text -->
+                </div>
+                <!-- end profile sidebar -->
+            </div>
+
+
+            <!-- end grey border -->
+            @*<div class="grey-border">
+                    <div class="badges-sidebar">
+                        <h2 class="text-center">BADGES</h2>
+                        <hr>
+                        <div class="badges-icon">
+                            <ul>
+                                <li><img src="~/images/badge1.jpg" alt="" /></li>
+                                <li><img src="~/images/badge2.jpg" alt="" /></li>
+                                <li><img src="~/images/badge3.jpg" alt="" /></li>
+                            </ul>
+                        </div>
+                        <!-- end badge icon -->
+                    </div>
+                    <!-- end badges sidebar -->
+                </div>*@
+            <!-- end grey border -->
+            <!-- end grey border -->
+        </div>
+        <!-- end right section -->
+
+        <div class="col-sm-6">
+            <div class="nav-custom">
+                <ul class="nav nav-tabs nav-justified">
+                    <li><a data-toggle="tab" id="W" href="#new">What's New</a></li>
+                    <li><a data-toggle="tab" id="P" href="#post">Post</a></li>
+                    <li><a data-toggle="tab" id="B" href="#blog">Blog</a></li>
+                    <li><a data-toggle="tab" id="D" href="#doc">Documents</a></li>
+                </ul>
+
+                <div class="tab-content tab-custom">
+                    <div id="new" class="tab-pane fade @Wnew ">
+                        @Html.Partial("~/Views/User/_UserWhatsNew.cshtml")
+                    </div>
+                    <div id="post" class="tab-pane fade @POST">
+                        @Html.Partial("~/Views/User/_UserPostAndComments.cshtml")
+                    </div>
+                    <!-- end grey border -->
+                    <div id="blog" class="tab-pane fade @BLOG">
+                        @Html.Partial("~/Views/User/_UserBlog.cshtml")
+                    </div>
+                    <div id="doc" class="tab-pane fade @DOC">
+                        @Html.Partial("~/Views/User/_UserDocument.cshtml")
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- end mid section -->
+        <!-- end left section -->
+    </div>

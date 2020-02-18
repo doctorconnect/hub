@@ -57,6 +57,7 @@
     <Compile Include="Feedback.cs" />
     <Compile Include="Followers.cs" />
     <Compile Include="GenericModel.cs" />
+    <Compile Include="KnowledgeTreemModel.cs" />
     <Compile Include="LobModel.cs" />
     <Compile Include="ManagePoll.cs" />
     <Compile Include="Menu.cs" />

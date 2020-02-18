@@ -1,0 +1,103 @@
+﻿
+@{
+    /**/
+    List<doctorhubBusinessEntities.UploadDocument> DocList = new doctorhubDataAccess.DirectoryDataAccess().GetListOfUploadDoc();
+    List<doctorhubBusinessEntities.posts> CommentList = new doctorhubDataAccess.DirectoryDataAccess().GetCommentListOnPost("DOC");
+    List<doctorhubBusinessEntities.posts> LikeList = new doctorhubDataAccess.DirectoryDataAccess().GetLikeCount("DOC");
+    int RoleId = Convert.ToInt32(HttpContext.Current.Session["RoleId"]);
+}
+@model doctorhubBusinessEntities.UploadDocument
+@if (DocList != null)
+{
+    foreach (var item in DocList.Where(m => m.Status == 1).Where(m => m.UploadBy == Session["Serchid"].ToString()))
+    {<div class="grey-border">
+        <div class="media">
+            <div class="media-body">
+                <h4 class="media-heading"> Title :  @item.Title  </h4>
+                <h4 class="media-heading"> Category:  @item.Category </h4>
+                <h4 class="media-heading"> Tags  : @Html.Raw(@item.Message)  </h4>
+                <h4 class="media-heading" align="right"> <a href="/User/UserProfile?Usercode=@item.UserCode"> @item.UploadByName</a></h4>
+            </div>
+        </div>
+        @if (CommentList.Where(l => l.PostId == item.ID).Count() > 0)
+        {
+            <hr />
+        }
+
+        <div class="actions-icon">
+            <ul>
+                <li><button class="btn btn-default" title="Like Document" onclick="window.location.href='/User/PostLikes?key=@item.ID&Identifier=DOC'"> <i class="fa fa-thumbs-o-up"></i></button> @LikeList.Where(l => l.PostId == item.ID).Count() </li>
+                <li><button class="btn btn-default" title="Comment on  Document" onclick="window.location.href='javascript:showhide(@item.ID)'"> <i class="fa fa-commenting"></i> </button>  @CommentList.Where(l => l.PostId == item.ID).Count()</li>
+                <li><button class="btn btn-default" title="Download Document" onclick="window.location.href='/User/DownLoadDoc?key=@item.ID'"> <i class="fa fa-download"></i> </button></li>
+                @if (RoleId == 1) // Role: Admin = 1
+                    {
+                    <li><button class="btn btn-default" title="Delete  Document" onclick="DeletePost(@item.ID)"> <i class="fa fa-trash-o"></i> </button></li>
+                        @*<li><button class="btn btn-default" title="Delete Document" onclick="window.location.href='/User/DeletePost?key=@item.ID&Identifier=DOC'"> <i class="fa fa-trash-o"></i> </button></li>*@
+                }
+            </ul>
+        </div>
+        <div style="display:none;margin-top:10px;" id="@item.ID" class="publishComment">
+            @foreach (var cmt in CommentList.Where(l => l.PostId == item.ID))
+            {
+                <div class="media" style="align-content:center">
+                    <ul>
+                        <div class="media-left media-top">
+                            <img src="../images/avatar2.png" alt="" class="media-object img-circle" style="width:40px">
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">
+                                @cmt.CommentedByName
+                                <small>@cmt.CommentedDate</small>
+                            </h4>
+                            <p>@cmt.Message</p>
+                        </div>
+                    </ul>
+                </div>
+            }
+            <hr />
+
+            @using (Html.BeginForm("SaveComment", "User", FormMethod.Post))
+            {
+                <div class="input-group input-group-sm">
+                    <input type="hidden" name="PostId" id="@item.ID" value="@item.ID" />
+                    <input type="hidden" name="Identifier" value="DOC" />
+                    <input type="text" name="txtcomment" id="txtcomment" class="form-control" placeholder="write a comment..." />
+                    <div class="input-group-btn">
+                        <button type="submit" id="postComment" class="btn btn-primary button button4">Comment</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    }
+}
+
+<script type="text/javascript">
+          function DeletePost(key) {
+             var Identifier = "DOC";
+             $.confirm({
+                 title: '',
+                 type: 'red',
+                 content: '<p style="font-style:italic;">Are you sure, want to delete post ?</p>',
+                 buttons: {
+                     confirm: function () {
+                         $.ajax({
+                             url: "/User/DeletePost",
+                             method: 'post',
+                             dataType: 'json',
+                             data: { keyId: key, Identifier: Identifier },
+                             success: function (data) {
+                                 location.reload();
+                                 //window.location.href = '/Home/Index';
+                             },
+                             error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                 window.location.href = "/Home/Error";
+                             }
+                         });
+                     },
+                     cancel: function () {
+                     }
+                 }
+             });
+         }
+</script>

@@ -1,0 +1,52 @@
+﻿
+@{
+    List<doctorhubBusinessEntities.KnowledgeTreemModel> KTList = new doctorhubDataAccess.DirectoryDataAccess().GetKnowledgeTree();
+    List<doctorhubBusinessEntities.posts> LikeList = new doctorhubDataAccess.DirectoryDataAccess().GetLikeCount("DOC");
+    List<doctorhubBusinessEntities.posts> CommentList = new doctorhubDataAccess.DirectoryDataAccess().GetCommentListOnPost("DOC");
+}
+<div class="treeview-info-list">
+    @if (ViewBag.listOfKtdata != null)
+    {
+        foreach (var item in ViewBag.listOfKtdata)
+        {
+            <div class="info-card">
+                <div class="row">
+                    <div class="col-sm-6 title">@item.TITLE</div>
+                    <div class="col-sm-6 text-right"><a class="btn btn-success" href="/Admin/DownLoadDoc?key= @item.DOCMENTID"><i class="fa fa-download"></i> Download</a></div>
+                    <div class="clearfix"></div>
+                    <div class="col-sm-6">Category: <small>@item.CATEGORYNAME</small></div>
+                    <div class="col-sm-6">Line of Business: <small>Line of Business</small></div>
+                    <div class="col-sm-12 tags"><span><a href="#">Tags 1</a></span> <span><a href="#">Tags 2</a></span></div>
+                    <div class="col-sm-6">Document Type: <small>application.pdf</small></div>
+                    <div class="col-sm-6 text-right"><a href="/User/UserProfile?Usercode=@item.UserCode"> @item.UserName</a></div>
+                    <div class="col-sm-6">
+                        <i class="fa fa-thumbs-o-up"></i> @LikeList.Where(l => l.PostId == item.DOCMENTID).Count() &nbsp;&nbsp;
+                        <i class="fa fa-commenting"></i> @CommentList.Where(l => l.PostId == item.DOCMENTID).Count()
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        foreach (var item in KTList)
+        {
+            <div class="info-card">
+                <div class="row">
+                    <div class="col-sm-6 title"><a href="/Admin/DownLoadDoc?key= @item.DOCMENTID">@item.TITLE</a></div>
+                    <div class="col-sm-6 text-right"><a class="btn btn-success" href="/Admin/DownLoadDoc?key= @item.DOCMENTID"><i class="fa fa-download"></i> Download</a></div>
+                    <div class="clearfix"></div>
+                    <div class="col-sm-6">Category: <small>@item.CATEGORYNAME</small></div>
+                    <div class="col-sm-6">Line of Business: <small>Line of Business</small></div>
+                    <div class="col-sm-12 tags"><span><a href="#">Tags 1</a></span> <span><a href="#">Tags 2</a></span></div>
+                    <div class="col-sm-6">Document Type: <small>application.pdf</small></div>
+                    <div class="col-sm-6 text-right"><a href="/User/UserProfile?Usercode=@item.UserCode"> @item.UserName</a></div>
+                    <div class="col-sm-6">
+                        <i class="fa fa-thumbs-o-up"></i> @LikeList.Where(l => l.PostId == item.DOCMENTID).Count() &nbsp;&nbsp;
+                        <i class="fa fa-commenting"></i> @CommentList.Where(l => l.PostId == item.DOCMENTID).Count()
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

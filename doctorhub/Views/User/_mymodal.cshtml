@@ -1,0 +1,33 @@
+﻿@model doctorhubBusinessEntities.Blog
+<div>
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Blog Details</h4>
+    </div>
+    <div class="modal-body">
+        @using (Html.BeginForm("BlogPost", "User", FormMethod.Post))
+        {
+            @Html.HiddenFor(m => m.BlogId)
+            <div class="form-group">
+                <div>
+                    @Html.LabelFor(m => m.Title)
+                    @Html.EditorFor(m => m.Title, new { @class = "form-group" })
+
+                    <div class="panel-body">
+                        <div class="loaderCenter">
+                            @Html.LabelFor(m => m.Message)
+                            @Html.TextAreaFor(m => m.Message)
+                            @Html.ValidationMessageFor(m => m.Message, "", new { @class = "error" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <div class="modal-footer">
+                    <button type="submit" id="postblog" class="btn btn-primary button button4">Update Post</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+        }
+    </div>
+</div>
+
+

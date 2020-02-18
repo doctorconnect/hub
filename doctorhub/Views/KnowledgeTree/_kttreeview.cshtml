@@ -1,0 +1,35 @@
+﻿
+@{
+    List<doctorhubBusinessEntities.KnowledgeTreemModel> KTList = new doctorhubDataAccess.DirectoryDataAccess().GetKnowledgeTree();
+}
+@if (KTList != null)
+{
+    Session["cat"] = "X";
+    Session["catGo"] = "Y";
+    <ul>
+        @foreach (var item in KTList.Distinct().ToList())
+        {
+            if (Session["catGo"].ToString() != @item.RootName || Session["catGo"].ToString() == "Y")
+            {
+                <h4 class="media-heading" style="color:coral">
+                    @item.RootName
+                </h4>
+                foreach (var Ritem in KTList.Distinct().ToList().Where(m => m.RootName == item.RootName))
+                {
+                    <li>
+                        <ul>
+                            @if (Session["cat"].ToString() != @Ritem.CATEGORYNAME || Session["cat"].ToString() == "X")
+                            {
+
+                                <a href="/KnowledgeTree/KtData?Id=@Ritem.CATEGORYNAME" class="btn btn-group-vertical btn-sm"> @Ritem.CATEGORYNAME</a>
+                                @*<a href="@Url.Action("KtData", "KnowledgeTree")" class="btn btn-group-vertical btn-sm"> @Ritem.CATEGORYNAME</a>*@
+                                Session["cat"] = Ritem.CATEGORYNAME;
+                            }
+                        </ul>
+                    </li>
+                }
+                Session["catGo"] = item.RootName;
+            }
+        }
+    </ul>
+}

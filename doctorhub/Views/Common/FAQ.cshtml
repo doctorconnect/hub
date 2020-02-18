@@ -1,0 +1,64 @@
+﻿@model doctorhubBusinessEntities.FaqModel
+@{
+    ViewBag.Title = "FAQ";
+    List<doctorhubBusinessEntities.FaqModel> faqlist = new doctorhubDataAccess.DirectoryDataAccess().GetFaqList();
+}
+<div class="panel panel-success">
+    <div class="panel-heading"><h2>Frequently Asked Questions</h2></div>
+    <br />
+    <div class="form-group" style="display: inline; margin-right: 10px;" align="right">
+        <div class="input-group" style="width: 50%;">
+            <input type="text" class="form-control" placeholder="FAQ Search Here.." name="Name" id="Search">
+            <div class="input-group-btn">
+                @*<button class="btn btn-default" type="submit" id="btnSearch">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </button>*@
+            </div>
+        </div>
+        <br />
+    </div>
+
+    @foreach (var cmt in faqlist.Where(f => f.IsActive == true))
+    {
+        <div class="media" style="align-content:center">
+            <ul>
+                <div class="grey-border Search">
+                    <div class="media-body ">
+                        <a data-toggle="collapse" href="#collapseTitleName_@cmt.Id" aria-expanded="false" aria-controls="collapseExample">
+                            @cmt.FaqQuestion
+                        </a>
+                        @*<h4 class="media-heading">
+                                @cmt.FaqQuestion
+                            </h4>*@
+                        <div class="collapse" id="collapseTitleName_@cmt.Id">
+                            @cmt.FaqAnswer
+                        </div>
+                        @*<small>@cmt.FaqAnswer</small>*@
+                    </div>
+
+                </div>
+            </ul>
+        </div>
+    }
+</div>
+<script>
+        $(document).ready(function () {
+            function Contains(text_one, Tex_two) {
+                if (text_one.indexOf(Tex_two) != -1)
+                    return true;
+            }
+            $("#Search").keyup(function () {
+                var searchtext = $("#Search").val().toLowerCase();
+                $(".Search").each(function () {
+                    if (!Contains($(this).text().toLowerCase(), searchtext)) {
+                        $(this).hide();
+                    }
+                    else {
+                        $(this).show();
+                    }
+
+                });
+            });
+        });
+</script>
+

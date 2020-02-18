@@ -71,8 +71,10 @@ namespace doctorhubBusinessEntities.viewModels
     {
         public int QuizID { get; set; }
         public string QuizName { get; set; }
+        public string UserName { get; set; }
         public int AttendCount { get; set; }
         public string status { get; set; }
         public int Marks { get; set; }
+        
     }
 }

@@ -1,0 +1,126 @@
+﻿
+@{
+    List<doctorhubBusinessEntities.KnowledgeTreemModel> KTList = ViewBag.listOfKnowledgeTreemModel;
+    IEnumerable<doctorhubBusinessEntities.KnowledgeTreemModel> listOfKtdata = ViewBag.listOfKtdata;
+    List<doctorhubBusinessEntities.posts> LikeList = new doctorhubDataAccess.DirectoryDataAccess().GetLikeCount("DOC");
+    List<doctorhubBusinessEntities.posts> CommentList = new doctorhubDataAccess.DirectoryDataAccess().GetCommentListOnPost("DOC");
+    List<doctorhubBusinessEntities.UploadDocument> CategoryList = new doctorhubDataAccess.DirectoryDataAccess().GetDocumentCategoryForKT();
+    List<doctorhubBusinessEntities.UploadDocument> DocypeList = new doctorhubDataAccess.DirectoryDataAccess().GetUploadDocumentType();
+    List<doctorhubBusinessEntities.LobModel> LobList = new doctorhubDataAccess.DirectoryDataAccess().GetLob();
+    List<string> checkedcategories = ViewBag.checkedcategories as List<string>;
+    List<string> checkeddoctypes = ViewBag.checkeddoctypes as List<string>;
+    List<string> checkedlobs = ViewBag.checkedlobs as List<string>;
+}
+<style>
+    body {
+        background: #efefef;
+    }
+</style>
+<div class="content">
+    <div class="treeview">
+        <h1>KNOWLEDGE TREE</h1>
+        <div class="row">
+            <div class="col-sm-3">
+                @if (KTList != null)
+                {
+                    <div class="treeview-category-list-container">
+                        <h2>CATEGORY</h2>
+                        <div class="treeview-category-list">
+                            @foreach (var item in CategoryList)
+                            {
+                                {
+                                    <div class="checkbox">
+                                        @if (checkedcategories != null && checkedcategories.Contains(@item.Name))
+                                        {
+                                            <label><input type="checkbox" id="@item.Name" onclick="FilterResults()" value="@item.Name" name="category" checked="checked">@item.Name</label>
+                                        }
+                                        else
+                                        {
+                                            <label><input type="checkbox" id="@item.Name" onclick="FilterResults()" value="@item.Name" name="category">@item.Name</label>
+                                        }
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+
+                        <div class="treeview-category-list-container">
+                            <h2>DOCUMENT TYPE</h2>
+                            <div class="treeview-category-list">
+                                @foreach (var item in DocypeList)
+                                {
+                                    <div class="checkbox">
+                                        @if (checkeddoctypes != null && checkeddoctypes.Contains(@item.type))
+                                        {
+                                            <label><input type="checkbox" id="@item.type" onclick="FilterResults()" value="@item.type" name="doctype" checked="checked">@item.type</label>
+                                        }
+                                        else
+                                        {
+                                            <label><input type="checkbox" id="@item.type" onclick="FilterResults()" value="@item.type" name="doctype">@item.type</label>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+
+                        <div class="treeview-category-list-container">
+                            <h2>LINE OF BUSINESS</h2>
+                            <div class="treeview-category-list">
+                                @foreach (var item in LobList)
+                                {
+                                    <div class="checkbox">
+                                        @if (checkedlobs != null && checkedlobs.Contains(@item.Name))
+                                        {
+                                            <label><input type="checkbox" id="@item.Name" onclick="FilterResults()" value="@item.Name" name="lob" checked="checked">@item.Name</label>
+                                        }
+                                        else
+                                        {
+                                            <label><input type="checkbox" id="@item.Name" onclick="FilterResults()" value="@item.Name" name="lob">@item.Name</label>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                }
+            </div>
+            <div class="col-sm-9">
+                @*@Html.Partial("~/Views/KnowledgeTree/_KTSelectData.cshtml")*@
+                <div id="divResults" class="treeview-info-list">
+                    @foreach (var item in listOfKtdata)
+                    {
+                        <div class='info-card'>
+                            <div class='row'>
+                                <div class='col-sm-6 title'>@item.TITLE</div>
+                                <div class='col-sm-6 text-right'><a class='btn btn-success' href='/Admin/DownLoadDoc?key= @item.DOCMENTID'><i class='fa fa-download'></i> Download</a></div>
+                                <div class='clearfix'></div>
+                                <div class='col-sm-6'>Category: <small>@item.CATEGORYNAME</small></div>
+                                <div class='col-sm-6'>Line of Business: <small>@item.LOBName</small></div>
+                                <div class='col-sm-12 tags'>
+                                    @foreach (var tags in @item.Tags.Split(',').ToList())
+                                    {
+                                        <span><a href='#'>@tags</a></span>
+                                    }
+                                </div>
+                                <div class='col-sm-6'>Document Type: <small>@item.DOCUTYPE</small></div>
+
+
+                                <div class='col-sm-6 text-right'><a href='/User/UserProfile?Usercode=@item.UserCode'> @item.UserName</a></div>
+                                <div class='col-sm-6'>
+                                    <i class='fa fa-thumbs-o-up'></i> @LikeList.Where(l => l.PostId == item.DOCMENTID).Count() &nbsp;&nbsp;
+                                    <i class='fa fa-commenting'></i> @CommentList.Where(l => l.PostId == item.DOCMENTID).Count()
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/CustomScripts/KnowledgeTree.js"></script>
+
+
+
+

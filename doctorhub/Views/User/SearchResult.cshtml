@@ -1,0 +1,220 @@
+﻿@{
+    ViewBag.Title = "Search Result";
+    List<doctorhubBusinessEntities.UserRegistrationModel> UserList = new doctorhubDataAccess.DirectoryDataAccess().GetUserList("");
+    List<doctorhubBusinessEntities.posts> PostList = new doctorhubDataAccess.DirectoryDataAccess().GetPost();
+    List<doctorhubBusinessEntities.Blog> BlogList = new doctorhubDataAccess.DirectoryDataAccess().GetBlogList();
+    List<doctorhubBusinessEntities.UploadDocument> DocList = new doctorhubDataAccess.DirectoryDataAccess().GetListOfUploadDoc();
+    string SearchKey = Session["SearchKey"].ToString();
+}
+
+<div class="row">
+    <div class="col-sm-3">
+    </div>
+    <div class="col-sm-6">
+        <div class="nav-custom">
+            <br /><br /><br /><br />
+            @*<div class="input-group">
+                    <input type="text" id="Search" class="form-control" placeholder="Search" name="Name">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="submit" id="btnSearch">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </div>
+                </div>*@
+        </div>
+        <br />
+        <div class="nav-custom">
+            <ul class="nav nav-tabs nav-justified">
+                <li class="active"><a data-toggle="tab" href="#new">Peoples</a></li>
+                <li><a data-toggle="tab" href="#post">Post</a></li>
+                <li><a data-toggle="tab" href="#blog">Blog</a></li>
+                <li><a data-toggle="tab" href="#doc">Documents</a></li>
+            </ul>
+
+            <div class="tab-content tab-custom Search">
+                <div id="new" class="tab-pane fade in active ">
+                    @if ((ViewBag.user_detail as ICollection<doctorhubBusinessEntities.UserRegistrationModel>).Count() != 0)
+                    {
+                        foreach (var item in ViewBag.user_detail)
+                        {
+                            string Applicant = @item.UserName;
+                            <div class="grey-border">
+                                <div class="media">
+
+                                    <div class="media">
+                                        <div class="media-left media-top">
+                                            <a href="/User/UserProfile" onclick='navigate(this.href);'>
+                                                <img src="~/Images/avatar1.png" class="img-circle" />
+                                            </a>
+                                        </div>
+                                        <div class="media-body">
+                                            <h4 class="media-heading">
+                                                <a href="/User/UserProfile?Usercode=@item.UserCode.ToString()">» @item.UserName</a>
+                                            </h4>
+                                            <p>User NTID : @item.UserNTID</p>
+                                            <p> Manager Name :@item.ManagerName</p>
+                                            <p>User Email : @item.UserEmail </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="grey-border">
+                            <div class="media">
+                                <div class="media">
+                                    <div class="media-left media-top">
+                                        <a>
+                                            <img src="~/Images/avatar1.png" class="img-circle" />
+                                        </a>
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="media-heading">
+                                            No matching results
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div id="post" class="tab-pane fade">
+                    @if (PostList.Where(p => p.PostedByName.Contains(SearchKey) || p.Message.Contains(SearchKey)).Count() != 0)
+                    {
+                        foreach (var cp in PostList.Where(p => p.PostedByName.Contains(SearchKey) || p.Message.Contains(SearchKey)))
+                        {
+                            <!-- end grey border -->
+                            <div class="grey-border">
+                                <div class="media">
+                                    <div class="media-left media-top">
+                                        <img src="../images/avatar1.png" alt="" class="media-object img-circle" style="width:40px">
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="media-heading">
+                                            <a href="/User/UserProfile?Usercode=@cp.UserCode">» @cp.PostedByName</a>
+                                            <time class="timeago"><small>@cp.PostedDate</small></time>
+                                        </h4>
+                                        @{
+                                            <p style="font:15px;color:black;">@cp.Message</p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="grey-border">
+                                                    <div class="media">
+                                                        <div class="media">
+                                                            <div class="media-left media-top">
+                                                            </div>
+                                                            <div class="media-body">
+                                                                <h4 class="media-heading">
+                                                                    No matching results
+                                                                </h4>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                </div>
+                <div id="blog" class="tab-pane fade">
+                    @if (BlogList.Where(m => m.Status == 1 && (m.Message.Contains(SearchKey) || m.BlogBy.Contains(SearchKey))).Count() != 0)
+                    {
+                        foreach (var item in BlogList.Where(m => m.Status == 1 && (m.Message.Contains(SearchKey) || m.BlogBy.Contains(SearchKey))))
+                        {
+                            <div class="grey-border">
+                                <div class="media">
+                                    <div class="media-body">
+                                        <h4 class="media-heading" style="color:crimson">
+                                            @item.Title
+                                        </h4>
+                                        <hr />
+                                        <p>@Html.Raw(@item.Message)</p>
+                                        <h4 class="media-heading" align="right">Blog By :@item.BlogBy</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="grey-border">
+                            <div class="media">
+                                <div class="media">
+                                    <div class="media-left media-top">
+                                    </div>
+                                    <div class="media-body">
+                                        <h4 class="media-heading">
+                                            No matching results
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div id="doc" class="tab-pane fade">
+                    @if (DocList.Where(m => m.Status == 1 && (m.Title.Contains(SearchKey) || m.Name.Contains(SearchKey) || m.UploadByName.Contains(SearchKey) || m.Message.Contains(SearchKey))).Count() != 0)
+                    {
+                        foreach (var item in DocList.Where(m => m.Status == 1 && (m.Title.Contains(SearchKey) || m.Name.Contains(SearchKey) || m.UploadByName.Contains(SearchKey) || m.Message.Contains(SearchKey))))
+                        {
+                            <div class="grey-border">
+                                <div class="media">
+                                    <div class="media-body">
+                                        <h4 class="media-heading"> Title :  @item.Title</h4>
+                                        <h4 class="media-heading"> Category :  @item.Category </h4>
+                                        <h4 class="media-heading"> File Name :  @item.Name </h4>
+                                        <h4 class="media-heading"> File Description  : @Html.Raw(@item.Message)  </h4>
+                                        <h4 class="media-heading" align="right">Uploaded By :@item.UploadByName</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="grey-border">
+                            <div class="media">
+
+                                <div class="media">
+                                    <div class="media-body">
+                                        <h4 class="media-heading">
+                                            No matching results
+                                        </h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="col-sm-3">
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        function Contains(text_one, Tex_two) {
+            if (text_one.indexOf(Tex_two) != -1)
+                return true;
+        }
+        $("#Search").keyup(function () {
+            var searchtext = $("#Search").val().toLowerCase();
+            $(".Search").each(function () {
+                if (!Contains($(this).text().toLowerCase(), searchtext)) {
+                    $(this).hide();
+                }
+                else {
+                    $(this).show();
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,180 @@
+﻿
+@{
+    List<doctorhubBusinessEntities.Blog> BlogList = new doctorhubDataAccess.DirectoryDataAccess().GetBlogList();
+    List<doctorhubBusinessEntities.posts> CommentList = new doctorhubDataAccess.DirectoryDataAccess().GetCommentListOnPost("BLOG");
+    List<doctorhubBusinessEntities.posts> LikeList = new doctorhubDataAccess.DirectoryDataAccess().GetLikeCount("BLOG");
+    int RoleId = Convert.ToInt32(HttpContext.Current.Session["RoleId"]);
+}
+@model doctorhubBusinessEntities.Blog
+@foreach (var item in BlogList.Where(m => m.Status == 1 && m.BlogerId.ToString() == Session["Serchid"].ToString()))
+{
+    <div class="grey-border">
+        <div class="media">
+            <div class="media-body">
+                <h4 class="media-heading" style="color:crimson">
+                    @item.Title
+                </h4>
+                <hr />
+                <p>@Html.Raw(@item.Message)</p>
+                <h4 class="media-heading" align="right">  <a href="/User/UserProfile?Usercode=@item.UserCode"> @item.BlogBy</a></h4>
+                @{
+
+                }
+            </div>
+        </div>
+        @if (CommentList.Where(l => l.PostId == item.BlogId).Count() > 0)
+        {
+            <hr />
+        }
+
+        <div class="actions-icon">
+            <ul>
+                <li> <button class="btn btn-default" title="Like Blog" onclick="window.location.href='/User/PostLikes?key=@item.BlogId&Identifier=BLOG'"> <i class="fa fa-thumbs-o-up"></i></button> @LikeList.Where(l => l.PostId == item.BlogId).Count()</li>
+                <li><button class="btn btn-default" title="Comment On Blog" onclick="window.location.href='javascript:showhide(@item.BlogId)'"> <i class="fa fa-commenting"></i></button>  @CommentList.Where(l => l.PostId == item.BlogId).Count() </li>
+                @*<li><button class="btn btn-default" title="Edit Blog" onclick="window.location.href='/Admin/UpdateBlog?key=@item.BlogId'"> <i class="glyphicon glyphicon-edit"></i> </button></li>*@
+                <li><a href="javascript:void(0);" class="anchorDetail" data-id="@item.BlogId"><i class="glyphicon glyphicon-edit"></i></a></li>
+                @if (RoleId == 1) // Role: Admin = 1
+                {
+                    <li><button class="btn btn-default" title="Delete Blog" onclick="DeleteBlog(@item.BlogId)"> <i class="fa fa-trash-o"></i> </button></li>
+                }
+
+            </ul>
+        </div>
+        <div style="display:none; margin-top:10px;" id="@item.BlogId" class="publishComment">
+            @foreach (var cmt in CommentList.Where(l => l.PostId == item.BlogId))
+            {
+                <div class="media" style="align-content:center">
+                    <ul>
+                        <div class="media-left media-top">
+                            <img src="../images/avatar2.png" alt="" class="media-object img-circle" style="width:40px">
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">
+                                @cmt.CommentedByName
+                                <small>@cmt.CommentedDate</small>
+                            </h4>
+                            <p>@cmt.Message</p>
+                        </div>
+                    </ul>
+                </div>
+            }
+
+
+            @using (Html.BeginForm("SaveComment", "User", FormMethod.Post))
+            {
+                <div class="input-group input-group-sm">
+                    <input type="hidden" name="PostId" id="@item.BlogId" value="@item.BlogId" />
+                    <input type="hidden" name="Identifier" value="BLOG" />
+                    <input type="text" name="txtcomment" id="txtcomment" class="form-control" placeholder="write a comment..." />
+                    <div class="input-group-btn"><button type="submit" id="postComment" class="btn btn-primary button button4">Comment</button> </div>
+                </div>
+            }
+        </div>
+    </div>
+                    }
+
+<div>
+    <fieldset>
+        <div class="row">
+            <div class="col-xs-12">
+
+                <div class="modal fade" tabindex="-1" id="loginModal"
+                     data-keyboard="false" data-backdrop="static">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">
+                                    ×
+                                </button>
+                                <h4 class="modal-title">Blogs</h4>
+                            </div>
+                            <div class="modal-body">
+                                @using (Html.BeginForm("BlogPost", "Home", FormMethod.Post))
+                                {
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.Title)
+                                                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { id = "txttitle" } })
+                                            </div>
+                                            <div class="form-group">
+                                                @Html.LabelFor(model => model.Message)
+                                                @Html.TextAreaFor(model => model.Message, new { @class = "form-control input-sm rich", id = "txtmessage" })
+                                                @Html.ValidationMessageFor(model => model.Message)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="submit" id="postblog" class="btn btn-primary button button4">Post</button>
+                                        <button type="button" id="btnHideModal" data-dismiss="modal" class="btn btn-primary button button4">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </fieldset>
+</div>
+<div id='myModalblg' class='modal'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'></div>
+        </div>
+    </div>
+</div>
+<script src="~/CustomScripts/Blogs.js"></script>
+<script>
+    var TeamDetailPostBackURL = '/User/MyBlog';
+    $(function () {
+        $(".anchorDetail").click(function () {
+            var $buttonClicked = $(this);
+            var id = $buttonClicked.attr('data-id');
+            $.ajax({
+                type: "GET",
+                url: TeamDetailPostBackURL,
+                contentType: "application/json; charset=utf-8",
+                data: { "Id": id },
+                datatype: "json",
+                success: function (data) {
+                    $('#myModalContent').html(data);
+                    $('#myModalblg').modal('show');
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    window.location.href = "/Home/Error";
+                }
+            });
+        });
+    });
+
+    function DeleteBlog(key) {
+        var Identifier = "BLOG";
+        $.confirm({
+            title: '',
+            type: 'red',
+            content: '<p style="font-style:italic;">Are you sure, do you want to delete blog ?</p>',
+            buttons: {
+                confirm: function () {
+                    $.ajax({
+                        url: "/User/DeletePost",
+                        method: 'post',
+                        dataType: 'json',
+                        data: { keyId: key, Identifier: Identifier },
+                        success: function (data) {
+                            location.reload();
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            window.location.href = "/Home/Error";
+                        }
+                    });
+                },
+                cancel: function () {
+                }
+            }
+        });
+    }
+</script>
