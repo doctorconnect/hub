@@ -1,0 +1,160 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<div class="row">
+    <div class="col-sm-3">
+        <div class="grey-border">
+            <div class="profile-sidebar">
+                @Html.Partial("~/Views/MyProfile/_MyProfileImage.cshtml")
+                <!-- end sidebar profile-userpic -->
+                <div style="padding-top:120px; text-align:center;">
+                    @Html.Partial("~/Views/MyProfile/_MyBadge.cshtml")
+
+                    <!-- end badges sidebar -->
+                </div>
+                <div class="profile-usertitle" style="padding-top:10px;">
+                    <div class="profile-usertitle-name">
+                        @ViewBag.UserName<br>
+                        @Convert.ToString(Session["Department"])<br />
+                        @Convert.ToString(Session["Designation"])<br />
+                        @Convert.ToString(Session["CapabilitiesName"])<br />
+                        @*@ViewBag.BusinessSegment*@
+                    </div>
+                    <div class="profile-usertitle-job">@ViewBag.LOBName</div>
+                </div>
+                <!-- end sidebar profile-usertitle -->
+                <div class="profile-userbuttons">
+                    <div class="row">
+                        <div class="col-sm-6">
+
+                        </div>
+                        <div class="col-sm-6 text-center"></div>
+                    </div>
+                </div>
+                <!-- end sidebar profile-userbuttons -->
+                @Html.Partial("~/Views/MyProfile/_MyFollow.cshtml")
+                <!-- end sidebar profile-followers -->
+                <hr>
+                @*<div id="dvAboutBind">
+                    </div>*@
+                @Html.Partial("~/Views/MyProfile/_AboutMe.cshtml")
+                <!-- end sidebar profile-text -->
+            </div>
+            <!-- end profile sidebar -->
+        </div>
+        <!-- end grey border -->
+
+        <div class="grey-border">
+            <div class="popular-post-sidebar">
+                @Html.Partial("~/Views/MyProfile/_MySystemLink.cshtml")
+            </div>
+        </div>
+        <!-- end grey border -->
+    </div>
+    <!-- end right section -->
+
+    <div class="col-sm-6">
+        <div class="nav-custom">
+            <ul class="nav nav-tabs nav-justified">
+                <li><a data-toggle="tab" id="W" href="#new">What's New</a></li>
+                <li><a data-toggle="tab" id="P" onclick="LoadPostsAndComment();" href="#post">Post</a></li>
+                <li><a data-toggle="tab" id="B" onclick="LoadBlogeHome();" href="#blog">Blog</a></li>
+                <li><a data-toggle="tab" id="D" onclick="LoadDocumentHome();" href="#doc">Documents</a></li>
+            </ul>
+            <div class="tab-content tab-custom">
+                <div id="new" class="tab-pane fade in active ">
+                    @Html.Partial("~/Views/MyProfile/_MyWhatsNew.cshtml")
+                </div>
+                <div id="post" class="tab-pane fade ">
+                    <div id="dvHomePostsAndCommentBind">
+                        <div class="loaderCenter">
+                            <span class="loadingText">Recent Post's Loading....</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- end grey border -->
+                <div id="blog" class="tab-pane fade ">
+                    <div id="dvBlogeBind">
+                        <div class="loaderCenter">
+                            <span class="loadingText">Recent Blog's Loading....</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="doc" class="tab-pane fade">
+                    <div id="dvHomeDocumentBind">
+                        <div class="loaderCenter">
+                            <span class="loadingText">Recent Document's Loading....</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- end mid section -->
+    <div class="col-sm-3">
+        <div class="grey-border">
+            <div class="popular-post-sidebar">
+                @Html.Partial("~/Views/MyProfile/_MyTraining.cshtml")
+                <!-- end user features links -->
+            </div>
+            <!-- end popular post sidebar -->
+        </div>
+
+        <div class="grey-border">
+            <div class="popular-post-sidebar">
+                @Html.Partial("~/Views/MyProfile/_MyAssessment.cshtml")
+                <!-- end user features links -->
+            </div>
+            <!-- end popular post sidebar -->
+        </div>
+        <!-- end grey border -->
+        <div class="grey-border">
+            <div class="join-poll-sidebar">
+                @Html.Partial("~/Views/MyProfile/_ManageVote.cshtml")
+                <!-- end join poll option -->
+            </div>
+            <!-- end popular post sidebar -->
+        </div>
+        <!-- end grey border -->
+        <div class="grey-border" id="PopularPost">
+            @Html.Partial("~/Views/MyProfile/_MyPopularPost.cshtml")
+            <!-- end popular post sidebar -->
+        </div>
+        <div class="grey-border" id="PopularBlog">
+            @Html.Partial("~/Views/MyProfile/_MyPopularBlog.cshtml")
+            <!-- end popular post sidebar -->
+        </div>
+        <!-- end grey border -->
+        <div class="grey-border">
+            <div class="popular-post-sidebar">
+                @Html.Partial("~/Views/MyProfile/MyRssFeed.cshtml")
+            </div>
+        </div>
+    </div>
+    <!-- end left section -->
+</div>
+<script src="~/CustomScripts/Blog.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#PopularPost").hide();
+        $("#PopularBlog").hide();
+    });
+    $("#W").click(function () {
+        $("#PopularPost").hide();
+        $("#PopularBlog").hide();
+    });
+    $("#P").click(function () {
+        $("#PopularPost").show();
+        $("#PopularBlog").hide();
+    });
+    $("#B").click(function () {
+        $("#PopularBlog").show();
+        $("#PopularPost").hide();
+    });
+    $("#D").click(function () {
+        $("#PopularPost").hide();
+        $("#PopularBlog").hide();
+    });
+</script>
