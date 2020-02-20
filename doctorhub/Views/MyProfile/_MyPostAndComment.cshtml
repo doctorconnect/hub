@@ -120,7 +120,7 @@
     function LoadPostLike(Id) {
         $.ajax
             ({
-                url: "Admin/PostLikes?key=" + Id.id,
+                url: "Admin/PostLikes?key=2",
                 contentType: "application/html; charset=utf-8",
                 type: "POST",
                 datatype: "html",
@@ -129,7 +129,7 @@
                 },
                 error: function () {
                     $("#dvHomePostsAndCommentBind").html("PostsAndComment Not Found");
-                    window.location.href = "/Home/Error";
+                   window.location.href = "/Home/Error";
                 }
             });
     }

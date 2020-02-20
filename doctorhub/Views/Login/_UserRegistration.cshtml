@@ -1,0 +1,142 @@
+﻿
+<div class="modal fade" id="modalRegisterForm" tabindex="-1" role="dialog" data-keyboard="false" data-backdrop="static" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                @*<h4 class="modal-title w-100 font-weight-bold">Sign up</h4>*@
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+            <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+            <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+            <!------ Include the above in your HEAD tag ---------->
+            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+
+            <div class="container">
+           
+                <div class="card bg-light">
+                    <article class="card-body mx-auto" style="max-width: 400px;">
+                        <h4 class="card-title mt-3 text-center">Create Account</h4>
+                        <p class="text-center">Get started with your free account</p>
+                        <p>
+                            <a href="" class="btn btn-block btn-twitter"> <i class="fab fa-twitter"></i>   Login via Twitter</a>
+                            <a href="" class="btn btn-block btn-facebook"> <i class="fab fa-facebook-f"></i>   Login via facebook</a>
+                        </p>
+                        <p class="divider-text">
+                            <span class="bg-light">OR</span>
+                        </p>
+                        <form>
+                            <div class="form-group input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                                </div>
+                                <input name="" class="form-control" placeholder="Full name" type="text" id="name">
+                            </div> <!-- form-group// -->
+                            <div class="form-group input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
+                                </div>
+                                <input name="" class="form-control" placeholder="Email address" type="email" id="email">
+                            </div> <!-- form-group// -->
+                            <div class="form-group input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"> <i class="fa fa-phone"></i> </span>
+                                </div>
+                                <select class="custom-select" style="max-width: 120px;">
+                                    <option selected="">+91</option>
+                                    <option value="1">+972</option>
+                                    <option value="2">+198</option>
+                                    <option value="3">+701</option>
+                                </select>
+                                <input name="" class="form-control" placeholder="Phone number" type="text" id="Mobile">
+                            </div> <!-- form-group// -->
+                            @*<div class="form-group input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"> <i class="fa fa-building"></i> </span>
+                                </div>
+                                <select class="form-control">
+                                    <option selected=""> Select job type</option>
+                                    <option>Designer</option>
+                                    <option>Manager</option>
+                                    <option>Accaunting</option>
+                                </select>
+                            </div>*@ <!-- form-group end.// -->
+                            <div class="form-group input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                                </div>
+                                <input class="form-control" placeholder="Create password" type="password" id="password">
+                            </div> <!-- form-group// -->
+                            <div class="form-group input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                                </div>
+                                <input class="form-control" placeholder="Repeat password" type="password" id="password2">
+                            </div> <!-- form-group// -->
+                            <div class="form-group">
+                                <button type="submit" onclick="func(this)" class="btn btn-primary btn-block"> Create Account  </button>
+                            </div> <!-- form-group// -->
+                            @*<p class="text-center">Have an account? <a href="">Log In</a> </p>*@
+                        </form>
+                    </article>
+                </div> <!-- card.// -->
+            </div>
+            <!--container end.//-->
+            <br>
+
+            @*<div class="modal-body mx-3">
+                    <div class="md-form mb-5">
+                        <i class="fas fa-user prefix grey-text"></i>
+                        <label data-error="wrong" data-success="right" id="name" for="orangeForm-name">Your name</label>
+                        <input type="text" id="orangeForm-name" class="form-control validate input100">
+
+                    </div>
+                    <div class="md-form mb-5">
+                        <i class="fas fa-envelope prefix grey-text"></i>
+                        <label data-error="wrong" data-success="right" id="email" for="orangeForm-email">Your email</label>
+                        <input type="email" id="orangeForm-email" class="form-control validate input100">
+
+                    </div>
+                    <div class="md-form mb-4">
+                        <i class="fas fa-lock prefix grey-text"></i>
+                        <label data-error="wrong" data-success="right" id="password" for="orangeForm-pass">Your password</label>
+                        <input type="password" id="orangeForm-pass" class="form-control validate input100">
+
+                    </div>
+
+                </div>*@
+            @*<div class="modal-footer d-flex justify-content-center">
+                    <button class="login100-form-btn"  onclick="func(this)" data-dismiss="modal">Sign up</button>
+                </div>*@
+        </div>
+    </div>
+</div>
+<script src="~/CustomScript/UserRegistration.js"></script>
+<script>
+
+    $(document).ready(function () {
+        $("#SignUp").click(function () {
+            $('#modalRegisterForm').modal('show');
+        });
+    });
+
+            function func(x) {
+                var name = document.getElementById("orangeForm-name").value;
+                var email = document.getElementById("orangeForm-email").value;
+                var mobile = document.getElementById("orangeForm-mobile").value;
+                var password = document.getElementById("orangeForm-pass").value;
+                var password2 = document.getElementById("orangeForm-pass").value;
+                $.ajax({
+                    url: '@Url.Content("~/Login/UserRegistration/")',
+                    type: 'POST',
+                    dataType: 'application/json',
+                    data: { 'name': name, 'email': email, 'mobile': mobile, 'password': password, 'password': password2 },
+                    success: function (response) {
+                        alert("Registration Success");
+                    }
+                });
+
+            }
+</script>

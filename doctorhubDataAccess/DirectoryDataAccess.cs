@@ -217,7 +217,7 @@ namespace doctorhubDataAccess
                 m_Database.AddInParameter(dbCommand, "@BusinessSegmentId", DbType.Int32, model.BusinessSegmentId);
                 m_Database.AddInParameter(dbCommand, "@CapabilitiesId", DbType.Int32, model.CapabilitiesId);
                 m_Database.AddInParameter(dbCommand, "@LOBId", DbType.Int32, model.LOBId);
-                m_Database.AddInParameter(dbCommand, "@Status", DbType.Int32, StatusType.Pending);
+                m_Database.AddInParameter(dbCommand, "@Status", DbType.Int32, model.Status);
                 m_Database.AddInParameter(dbCommand, "@IsActive", DbType.Boolean, true);
                 m_Database.AddInParameter(dbCommand, "@CreatedBy", DbType.String, "DOCTOR-HUB");
                 m_Database.AddInParameter(dbCommand, "@CreatedOn", DbType.DateTime, DateTime.Now);
@@ -3166,6 +3166,162 @@ namespace doctorhubDataAccess
             return objAssessmentResult;
         }
 
+
+        public bool UserExist(string UserEmail, string Password)
+        {
+            bool status = false;
+            //List<UserLogin> ObjCategory = new List<UserLogin>();
+            using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETLOGININFO))
+            {
+                m_Database.AddInParameter(dbCommand, "@UserEmail", DbType.String, UserEmail);
+                m_Database.AddInParameter(dbCommand, "@Password", DbType.String, Password);
+
+                var x = m_Database.ExecuteReader(dbCommand);
+                using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
+                {
+                    while (dataReader.Read())
+                    {
+                     status = GetSatausOfUserLogin(dataReader);
+                    }
+                }
+            }
+            return status;
+        }
+
+        private bool GetSatausOfUserLogin(IDataReader datareader)
+        {
+            UserLogin ObjFaq = new UserLogin();
+            ObjFaq.Status = SafeTypeHandling.ConvertStringToBoolean(datareader["STATUS"]);
+           
+            return ObjFaq.Status;
+        }
+
+        public bool RegisterUserExist(string UserEmail)
+        {
+            bool status = false;
+            //List<UserLogin> ObjCategory = new List<UserLogin>();
+            using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETEXISTUSER))
+            {
+                m_Database.AddInParameter(dbCommand, "@UserEmail", DbType.String, UserEmail);
+               
+                var x = m_Database.ExecuteReader(dbCommand);
+                using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
+                {
+                    while (dataReader.Read())
+                    {
+                        status = GetSatausOfRegisterUser(dataReader);
+                    }
+                }
+            }
+            return status;
+        }
+
+        private bool GetSatausOfRegisterUser(IDataReader datareader)
+        {
+            UserLogin Objlogin = new UserLogin();
+            Objlogin.Status = SafeTypeHandling.ConvertStringToBoolean(datareader["STATUS"]);
+
+            return Objlogin.Status;
+        }
+
+
+        public List<UserRegistration> GetNtidAndPass(string UserEmail)
+        {           
+            List<UserRegistration> ObjCategory = new List<UserRegistration>();
+            using (DbCommand dbCommand = m_Database.GetStoredProcCommand(DBConstant.PROCGETPASS))
+            {
+                m_Database.AddInParameter(dbCommand, "@UserEmail", DbType.String, UserEmail);
+              using (IDataReader dataReader = m_Database.ExecuteReader(dbCommand))
+                {
+                    while (dataReader.Read())
+                    {
+                        ObjCategory.Add(GetNtidAndPassFromDataReader(dataReader));
+                    }
+                }
+            }
+            return ObjCategory;
+        }
+
+        private UserRegistration  GetNtidAndPassFromDataReader(IDataReader datareader)
+        {
+            UserRegistration Objntid = new UserRegistration();
+            Objntid.UserNTID = SafeTypeHandling.ConvertToString(datareader["UserNTID"]);
+            Objntid.Password = SafeTypeHandling.ConvertToString(datareader["Password"]);
+
+            return Objntid;
+        }
+
+        public string SendPasswordToEmail(string mailTo, string mailCC, string mailSubject, string mailBody)
+        {
+            string success = string.Empty;
+            using (var message = new MailMessage(mailTo, "doctorhub4u@gmail.com"))
+            {
+                message.Subject = "Password Recovery mail";
+                message.Body = createEmailBody(mailTo, mailSubject, mailSubject);
+                //message.Subject = mailSubject;
+                //message.Body = mailBody;
+                using (SmtpClient client = new SmtpClient
+                {
+                    EnableSsl = true,
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    Credentials = new NetworkCredential("doctorhub4u@gmail.com", "hub@1234")
+                })
+                {
+                    client.Send(message);
+                    success = "Send Password to Email-id : "+ mailTo +" : " + mailSubject;
+                }
+            }
+            return success;
+        }
+
+
+        private string createEmailBody(string userName, string title, string message)
+
+        { 
+
+            userName = userName;
+            title = "Password Is : ";
+            
+            string body = string.Empty;
+            //using streamreader for reading my htmltemplate   
+
+            using (StreamReader reader = new StreamReader(System.Web.HttpContext.Current.Server.MapPath("~/Emailtamp.html")))
+            {
+                body = reader.ReadToEnd();
+            }
+
+            body = body.Replace("{UserName}", userName); //replacing the required things  
+
+            body = body.Replace("{Title}", title);
+
+            body = body.Replace("{message}", message);
+
+            return body;
+
+        }
+
+        ////public string UserExist(string UserName, string Password)
+        ////{
+        ////    string x = "";
+        ////    string constring = "";
+        ////    using (SqlConnection con = new SqlConnection(constring))
+        ////    {
+        ////        using (SqlCommand cmd = new SqlCommand("GetLoginInfo", con))
+        ////        {
+        ////            cmd.CommandType = CommandType.StoredProcedure;
+        ////            cmd.Parameters.AddWithValue("@UserName", UserName);
+        ////            cmd.Parameters.AddWithValue("@Password", Password);
+        ////            cmd.Parameters.Add("@countNo", SqlDbType.VarChar, 30);
+        ////            cmd.Parameters["@countNo"].Direction = ParameterDirection.Output;
+        ////            con.Open();
+        ////            cmd.ExecuteNonQuery();
+        ////            con.Close();
+        ////            x = cmd.Parameters["@countNo"].Value.ToString();
+        ////        }
+        ////    }
+        ////    return x;
+        ////}
         #endregion
     }
 

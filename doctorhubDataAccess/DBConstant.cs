@@ -191,5 +191,11 @@ namespace doctorhubDataAccess
         public const string PROCGETPOSTS = "uspGetPostsReport";
         public const string PROCGETFLAGGEDPOSTS = "uspGetFlaggedPostsReports";
         public const string PROCGETASSESSMENTRESULT = "uspGetAssessmentResult";
+
+
+        public const string PROCGETCBLOGININFO = "GetCBLoginInfo";
+        public const string PROCGETLOGININFO = "GetLoginInfo";
+        public const string PROCGETEXISTUSER = "GetExistUser";
+        public const string PROCGETPASS = "Getpass";
     }
 }

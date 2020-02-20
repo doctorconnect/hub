@@ -1,44 +1,20 @@
 ﻿
 @{
     ViewBag.Title = "Login";
-    Layout = null;
+    Layout = "~/Views/Shared/_Login_reg_Layout.cshtml";
 }
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>Doctor Hub Login</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">   
-    <link href="~/content/logincssjs/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
-    <!--===============================================================================================-->
-    <link href="~/content/logincssjs/fonts/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-    <!--===============================================================================================-->
-    <link href="~/content/logincssjs/fonts/iconic/css/material-design-iconic-font.min.css" rel="stylesheet" />
-    <!--===============================================================================================-->
-    <link href="~/content/logincssjs/vendor/animsition/css/animsition.css" rel="stylesheet" />
-    <!--===============================================================================================-->
-    <link href="~/content/logincssjs/vendor/css-hamburgers/hamburgers.min.css" rel="stylesheet" />
-    <!--===============================================================================================-->
-    <link href="~/content/logincssjs/vendor/animsition/css/animsition.min.css" rel="stylesheet" />
-    <!--===============================================================================================-->
-    <link href="~/content/logincssjs/vendor/select2/select2.min.css" rel="stylesheet" />
-    <!--===============================================================================================-->
-    <link href="~/content/logincssjs/vendor/daterangepicker/daterangepicker.css" rel="stylesheet" />
-    <!--===============================================================================================-->
-    <link href="~/content/logincssjs/css/util.css" rel="stylesheet" />
-    <link href="~/content/logincssjs/css/main.css" rel="stylesheet" />
 
-    <!--===============================================================================================-->
-</head>
+<html lang="en">
+
 @using (Html.BeginForm("Login", "Login", FormMethod.Post))
 {
     //this  is for create form tag
     @Html.AntiForgeryToken()
     // this is for prevent CSRF attack
     @Html.ValidationSummary(true)
-    <body>
-
-        <div class="limiter">
+    <body>       
+        <div class="limiter">           
             <div class="container-login100" style="background-image: url('content/logincssjs/images/bg-01.jpg');">
                 <div class="wrap-login100">
                     <form class="login100-form validate-form">
@@ -51,8 +27,8 @@
                             Doctor Connect LOGIN
                         </span>
 
-                        <div class="wrap-input100 validate-input" data-validate="Enter username">
-                            <input class="input100" type="text" name="username" placeholder="Username">
+                        <div class="wrap-input100 validate-input" data-validate="Enter EmailId">
+                            <input class="input100" type="text" name="EmailId" placeholder="Email Id">
                             @*@Html.LabelFor(a => a.username)
                                 @Html.TextBoxFor(a => a.username)
                                 @Html.ValidationMessageFor(a => a.username)*@
@@ -67,92 +43,25 @@
                             <span class="focus-input100" data-placeholder="&#xf191;"></span>
                         </div>
 
-                        <div class="contact100-form-checkbox">
-                            <input class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me">
-                            <label class="label-checkbox100" for="ckb1">
+                        @*<div class="contact100-form-checkbox">*@
+                            @*<input class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me">
+                            <label class="label-checkbox100" for="ckb1">*@
 
-                                @Html.ValidationMessage("loginprb")
-                            </label>
-                        </div>
+                                @*@Html.ValidationMessage("loginprb")
+                            </label>*@
+                        @*</div>*@
                         <div class="container-login100-form-btn">
-                            <button class="login100-form-btn" type="submit" value="Login">Login</button>
-                            <a href="" class="login100-form-btn" data-toggle="modal" data-target="#modalRegisterForm">SignUp</a>
+                            <button class="login100-form-btn" type="submit" value="Login">Login</button> 
+                            <input class="login100-form-btn" type="button" value="SignUp" onclick="location.href='@Url.Action("UserRegistration", "Login")'" />
+                                                                            
+                          @*<a class="login100-form-btn" data-toggle="modal" data-target="#modalRegisterForm">SignUp</a>*@
                         </div>
-
-
+                       
+                        @ViewBag.error
                     </form>
                 </div>
             </div>
-        </div>
-
-        <div class="modal fade" id="modalRegisterForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header text-center">
-                        <h4 class="modal-title w-100 font-weight-bold">Sign up</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body mx-3">
-                        <div class="md-form mb-5">
-                            <i class="fas fa-user prefix grey-text"></i>
-                            <input type="text" id="orangeForm-name" class="form-control validate">
-                            <label data-error="wrong" data-success="right" id ="name" for="orangeForm-name">Your name</label>
-                        </div>
-                        <div class="md-form mb-5">
-                            <i class="fas fa-envelope prefix grey-text"></i>
-                            <input type="email" id="orangeForm-email" class="form-control validate">
-                            <label data-error="wrong" data-success="right" id ="email" for="orangeForm-email">Your email</label>
-                        </div>
-                        <div class="md-form mb-4">
-                            <i class="fas fa-lock prefix grey-text"></i>
-                            <input type="password" id="orangeForm-pass" class="form-control validate">
-                            <label data-error="wrong" data-success="right" id="password" for="orangeForm-pass">Your password</label>
-                        </div>
-
-                    </div>
-                    <div class="modal-footer d-flex justify-content-center">
-                        <button class="btn btn-deep-orange"  onclick="func(this)">Sign up</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <script src="~/CustomScript/UserRegistration.js"></script>
-        <script>
-            function func(x) {
-                var name = document.getElementById("orangeForm-name").value;
-                var email = document.getElementById("orangeForm-email").value;
-                var password = document.getElementById("orangeForm-pass").value;
-                $.ajax({
-                    url: '@Url.Content("~/Login/UserRegistration/")',
-                    type: 'POST',
-                    dataType: 'application/json',
-                    data: { 'name': name, 'email': email, 'password': password },
-                    success: function (response) {
-                        alert(responseText.text);
-                    }
-                });
-
-            }
-        </script>
-        <!--===============================================================================================-->
-        <script src="~/content/logincssjs/vendor/jquery/jquery-3.2.1.min.js"></script>
-        <!--===============================================================================================-->
-        <script src="~/content/logincssjs/vendor/animsition/js/animsition.min.js"></script>
-        <!--===============================================================================================-->
-        <script src="~/content/logincssjs/vendor/bootstrap/js/popper.js"></script>
-        <script src="~/content/logincssjs/vendor/bootstrap/js/bootstrap.min.js"></script>
-        <!--===============================================================================================-->
-        <script src="~/content/logincssjs/vendor/select2/select2.min.js"></script>
-        <!--===============================================================================================-->
-        <script src="~/content/logincssjs/vendor/daterangepicker/moment.min.js"></script>
-        <script src="~/content/logincssjs/vendor/daterangepicker/daterangepicker.js"></script>
-        <!--===============================================================================================-->
-        <script src="~/content/logincssjs/vendor/countdowntime/countdowntime.js"></script>
-        <!--===============================================================================================-->
-        <script src="~/content/logincssjs/js/main.js"></script>
+        </div>      
 
     </body>
 }

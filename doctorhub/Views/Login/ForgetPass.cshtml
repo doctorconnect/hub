@@ -1,0 +1,94 @@
+﻿
+@{
+    ViewBag.Title = "ForgetPass";
+    Layout = null;  
+}
+
+<style>
+    .divider-text {
+        position: relative;
+        text-align: center;
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+
+        .divider-text span {
+            padding: 7px;
+            font-size: 12px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .divider-text:after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            border-bottom: 1px solid #ddd;
+            top: 55%;
+            left: 0;
+            z-index: 1;
+        }
+
+    .btn-facebook {
+        background-color: #405D9D;
+        color: #fff;
+    }
+
+    .btn-twitter {
+        background-color: #42AEEC;
+        color: #fff;
+    }
+</style>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+
+@using (Html.BeginForm("ForgetPass", "Login", FormMethod.Post))
+{
+    //this  is for create form tag
+    @Html.AntiForgeryToken()
+    // this is for prevent CSRF attack
+    @Html.ValidationSummary(true)
+
+
+
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="container">
+                <p style="color:red">@ViewBag.Perror</p>
+                <p style="color:forestgreen">@ViewBag.Psuccess</p>
+                <div class="card bg-light">
+                    <article class="card-body mx-auto" style="max-width: 400px;">
+                        <h4 class="card-title mt-3 text-center">Password Recovery</h4>
+                        
+                        <form>
+                           
+                            <div class="form-group input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
+                                </div>
+                                <input name="email" class="form-control" placeholder="Email address" type="email" id="email">
+                            </div> <!-- form-group// -->                         
+                           
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary btn-block"> Submit </button>
+                            </div> <!-- form-group// -->
+                            <p class="text-center">Have an account? <a href='@Url.Action("Login", "Login")'>Log In</a> </p>
+                            <p class="text-center">Create New account? <a href='@Url.Action("UserRegistration", "Login")'>Registration</a> </p>
+                        </form>
+                    </article>
+                </div> <!-- card.// -->
+
+            </div>
+            <!--container end.//-->
+            <br>
+
+        </div>
+    </div>
+
+
+
+}

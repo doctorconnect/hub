@@ -16,8 +16,8 @@ namespace doctorhub
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",                
-               // defaults: new { controller = "Login", action = "Login", id = UrlParameter.Optional }
-                defaults: new { controller = "Home", action = "index", id = UrlParameter.Optional }
+                defaults: new { controller = "Login", action = "Login", id = UrlParameter.Optional }
+                //defaults: new { controller = "Home", action = "index", id = UrlParameter.Optional }
             );
         }
     }

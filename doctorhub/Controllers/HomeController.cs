@@ -25,8 +25,8 @@ namespace doctorhub.Controllers
 
         public ActionResult Index()
         {
-            string xy ="shiv";
-            objDirectoryDataAccess.SendToEmail(xy, xy, xy,xy);
+          
+           // objDirectoryDataAccess.SendToEmail(xy, xy, xy,xy);
             string userNTId = HttpContext.Session["UserNTID"].ToString();
             var userDetails = objDirectoryDataAccess.GetListOfRegisteredUser().Where(x => x.UserNTID == userNTId && x.IsActive == true).FirstOrDefault();
             if (userDetails != null)

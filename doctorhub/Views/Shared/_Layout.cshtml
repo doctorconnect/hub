@@ -12,10 +12,11 @@
     @*<link href="~/Content/font-awesome.min.css" rel="stylesheet" />*@
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
     <link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <link href="  https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.css" rel="stylesheet" />  
     <link href="~/Content/daterangepicker.css" rel="stylesheet" />
-    @*<link href="~/Content/jquery.dataTables.min.css" rel="stylesheet" />*@
-    @*<link href="~/Content/dataTables.bootstrap.min.css" rel="stylesheet" />*@
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <link href="~/Content/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="~/Content/dataTables.bootstrap.min.css" rel="stylesheet" />
+    @*<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">*@
     <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
     <link href="~/Content/jquery.dataTables_themeroller.css" rel="stylesheet" />
         @*<link href="~/Content/buttons.dataTables.min.css" rel="stylesheet" />*@
@@ -23,7 +24,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pnotify/3.2.1/pnotify.css">
         <link href="~/Content/toastr.css" rel="stylesheet" />
         @*<link href="~/Content/dataTables.bootstrap.min.css" rel="stylesheet" />*@
-        <link href="~/Content/jquery-confirm.min.css" rel="stylesheet" />
+        @*<link href="~/Content/jquery-confirm.min.css" rel="stylesheet" />*@
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.css" rel="stylesheet" />
         <link href="~/Content/jquery-ui.css" rel="stylesheet" />
         <link href="~/Content/style.css" rel="stylesheet" />
         @*<script src="~/Scripts/jquery-1.10.2.js"></script>*@
@@ -38,21 +40,26 @@
         @*<script src="~/Scripts/jquery.dataTables.js"></script>*@
         @*<script src="~/Scripts/jquery.dataTables.min.js"></script>*@
 
-    <script src="~/Content/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"></script>
+      <script src="~/Content/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"></script>
         @*<script src="~/Scripts/jquery.dataTables.min.js"></script>*@
         @*<script src="~/Scripts/dataTables.bootstrap.min.js"></script>*@
 
         <script src="~/CustomScripts/UserProfile.js"></script>
         <script src="~/CustomScripts/PushNotification.js"></script>
         <script src="~/Scripts/DataTables/dataTables.buttons.min.js"></script>
-        <script src="~/Scripts/jquery-confirm.min.js"></script>
+        @*<script src="~/Scripts/jquery-confirm.min.js"></script>*@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.4/jquery-confirm.min.js"></script>
         <script src="~/Scripts/DataTables/buttons.html5.min.js"></script>
         <script src="~/Scripts/DataTables/buttons.print.min.js"></script>
         <script src="~/CustomScripts/CustomLoader.js"></script>
-        <script src="~/Scripts/moment.min.js"></script>
-        <script src="~/Scripts/daterangepicker.js"></script>
-        <script src="~/Scripts/bootstrap-select.min.js"></script>
-        <script src="~/Scripts/bootstrap-datetimepicker.js"></script>
+        <script src="~/Scripts/moment.min.js"></script>      
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js"></script>
+    @*<script src="~/Scripts/daterangepicker.js"></script>*@
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.12/js/bootstrap-select.min.js"></script>
+    <script src="~/Scripts/bootstrap-select.min.js"></script>
+    @*<script src="~/Scripts/bootstrap-datetimepicker.js"></script>*@
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+   
 </head>
 <body>
     <div class="top-orange">
@@ -114,6 +121,12 @@
                                     @*<li><a href="/@mp.MenuUrl">@mp.MenuName</a></li>*@
                                 }
                             }
+                            <li>
+                                <a href="@Url.Action("LogOut","Login")">
+                                    <img src="~/images/logout.jpg" alt="" /><br>
+                                    LogOut
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
