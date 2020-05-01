@@ -3254,13 +3254,16 @@ namespace doctorhubDataAccess
         public string SendPasswordToEmail(string mailTo, string mailCC, string mailSubject, string mailBody)
         {
             string success = string.Empty;
-            using (var message = new MailMessage(mailTo, "doctorhub4u@gmail.com"))
+            MailAddress from = new MailAddress("doctorhub4u@gmail.com", "DOCTOR HUB");
+
+            using (var message = new MailMessage("doctorhub4u@gmail.com", mailTo))
             {
-                message.Subject = "Password Recovery mail";
+                message.From = from;
+                // message.Subject = "Password Recovery e-mail";
+                message.Subject = "Join Us Free !!";
                 message.Body = createEmailBody(mailTo, mailSubject, mailSubject);
-                //message.Subject = mailSubject;
-                //message.Body = mailBody;
-                using (SmtpClient client = new SmtpClient
+                message.IsBodyHtml = true;
+               using (SmtpClient client = new SmtpClient
                 {
                     EnableSsl = true,
                     Host = "smtp.gmail.com",
@@ -3269,7 +3272,7 @@ namespace doctorhubDataAccess
                 })
                 {
                     client.Send(message);
-                    success = "Send Password to Email-id : "+ mailTo +" : " + mailSubject;
+                    success = "Send Password to Email-id : "+ mailTo+":-"+ mailSubject;
                 }
             }
             return success;
@@ -3277,16 +3280,14 @@ namespace doctorhubDataAccess
 
 
         private string createEmailBody(string userName, string title, string message)
-
-        { 
-
-            userName = userName;
+        {            
             title = "Password Is : ";
             
             string body = string.Empty;
             //using streamreader for reading my htmltemplate   
-
-            using (StreamReader reader = new StreamReader(System.Web.HttpContext.Current.Server.MapPath("~/Emailtamp.html")))
+            string path = "~/doctorhub.html";
+          //  string path = "~/Emailtamp.htm";
+            using (StreamReader reader = new StreamReader(System.Web.HttpContext.Current.Server.MapPath(path)))
             {
                 body = reader.ReadToEnd();
             }

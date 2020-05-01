@@ -48,7 +48,7 @@ namespace doctorhub.Controllers
         }
         public ActionResult UserRegistration()
         {
-            return View();
+            return View("Login");
         }
 
         [HttpPost, ValidateInput(false)]
@@ -62,8 +62,8 @@ namespace doctorhub.Controllers
 
                     UserRegistrationModel user = new UserRegistrationModel();
                     user.RoleId = 12;
-                    user.UserCode = RandomDigits(10);
-                    user.UserNTID = "HUB" + RandomDigits(5);
+                    user.UserCode = RandomDigits(8);
+                    user.UserNTID = "HUB" + RandomDigits(4);
                     user.UserName = name;
                     user.UserEmail = email;
                     user.ManagerName = "INDIA";
@@ -91,15 +91,15 @@ namespace doctorhub.Controllers
 
                     }
                     ViewBag.success = "Register Sucessfully..!!";
-                    return View();
+                    return View("Login");
                 }
                 ViewBag.Rerror = "Oppss User E-mail Id Allaeady Register !!";
                 // return Json(new { success = true, responseText = " Sucessfully." }, JsonRequestBehavior.AllowGet);
-                return View();
+                return View("Login");
             }
             ViewBag.Rerror = "Plese fill your detail correctly Not balnk !!";
             // return Json(new { success = true, responseText = " Sucessfully." }, JsonRequestBehavior.AllowGet);
-            return View();
+            return View("Login");
         }
 
         public string RandomDigits(int length)

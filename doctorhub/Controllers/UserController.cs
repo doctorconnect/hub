@@ -5,7 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Web.Mvc;
 
-namespace KMT.Controllers
+namespace doctorhub.Controllers
 {
     public class UserController : Controller
     {
